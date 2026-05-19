@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOSSIER DEBRIEF, Autopsie d'une mission</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+
+:root {
+  --bg:        #1e1608;
+  --bg2:       #261d0a;
+  --bg3:       #2e240e;
+  --parch:     #f5e6c0;
+  --parch-dim: #d4c49a;
+  --parch-dark:#b8a87a;
+  --amber:     #d4860a;
+  --amber-lit: #f0a830;
+  --amber-pale:#ffd97a;
+  --rust:      #8b3a1a;
+  --rust-lit:  #c0522a;
+  --ink:       #2a1f0a;
+  --ink-light: #4a3820;
+  --sage:      #4a6040;
+  --sage-lit:  #7a9a68;
+  --cream:     #ede0c0;
+  --border:    rgba(212,134,10,0.3);
+  --border-lit:rgba(212,134,10,0.7);
+  --shadow:    rgba(10,6,0,0.6);
+  --glow-amb:  0 0 30px rgba(212,134,10,0.3);
+  --glow-rust: 0 0 20px rgba(139,58,26,0.35);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--parch);
+  font-family: 'Cormorant Garamond', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: default;
+  position: relative;
+  background-image:
+    radial-gradient(ellipse 90% 50% at 50% -5%,  rgba(212,134,10,0.10) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 85% 85%,  rgba(139,58,26,0.08)  0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 10% 55%,  rgba(212,170,60,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 40% at 50% 100%, rgba(180,110,20,0.07) 0%, transparent 60%);
+}
+
+/* PAPER GRAIN */
+body::before {
+  content:'';
+  position:fixed; top:0;left:0;right:0;bottom:0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:1; opacity:0.8;
+}
+
+/* VIGNETTE */
+body::after {
+  content:'';
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(10,6,0,0.7) 100%);
+  pointer-events:none; z-index:1;
+}
+
+/* HEADER */
+.arch-header {
+  position:fixed; top:0;left:0;right:0; z-index:100;
+  background: linear-gradient(180deg, rgba(26,20,8,0.98), rgba(26,20,8,0.9));
+  border-bottom: 1px solid var(--border-lit);
+  padding: 12px 28px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+
+.arch-title {
+  font-family:'Playfair Display', serif;
+  font-size:15px; font-weight:700;
+  color:var(--amber-lit);
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+.arch-subtitle {
+  font-family:'Space Mono', monospace;
+  font-size:9px; color:var(--parch-dark);
+  letter-spacing:3px; margin-top:2px;
+}
+
+.arch-nav {
+  display:flex; gap:6px; align-items:center;
+}
+
+.nav-step {
+  width:32px; height:4px;
+  background: var(--bg3);
+  border:1px solid var(--border);
+  border-radius:2px;
+  transition: all 0.5s;
+  position:relative;
+  overflow:hidden;
+}
+
+.nav-step::after {
+  content:'';
+  position:absolute;top:0;left:0;
+  height:100%; width:0%;
+  background: linear-gradient(90deg, var(--amber), var(--amber-lit));
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+.nav-step.done::after { width:100%; }
+.nav-step.active::after { width:60%; }
+
+.nav-label {
+  font-family:'Space Mono',monospace;
+  font-size:9px; color:var(--parch-dark);
+  letter-spacing:2px; margin-left:8px;
+}
+
+/* MAIN */
+main {
+  padding-top:80px;
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+}
+
+/* SCREENS */
+.hidden-btn { display:none !important; pointer-events:none !important; }
+.screen { display:none; visibility:hidden; pointer-events:none; width:100%; max-width:900px; padding:32px 24px 80px; }
+.screen.active { display:block !important; visibility:visible; pointer-events:all; animation:revealer 0.7s ease; }
+
+@keyframes revealer {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* CARD */
+.card {
+  background: linear-gradient(135deg, rgba(34,27,10,0.97), rgba(26,20,8,0.99));
+  border:1px solid var(--border);
+  border-radius:1px;
+  padding:36px;
+  margin-bottom:24px;
+  position:relative;
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.3), 0 4px 24px var(--shadow);
+}
+
+.card::before {
+  content:'';
+  position:absolute; top:6px;left:6px;right:6px;bottom:6px;
+  border:1px solid rgba(212,134,10,0.08);
+  pointer-events:none;
+}
+
+.stamp {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:4px;
+  color:var(--rust-lit);
+  border:1px solid var(--rust-lit);
+  display:inline-block;
+  padding:4px 12px;
+  margin-bottom:20px;
+  opacity:1;
+  transform:rotate(-1deg);
+  text-shadow: 0 0 8px rgba(192,82,42,0.4);
+}
+
+h1.doc-title {
+  font-family:'Playfair Display', serif;
+  font-size:clamp(26px,5vw,44px);
+  font-weight:900; font-style:italic;
+  color:var(--amber-lit);
+  line-height:1.1;
+  margin-bottom:12px;
+  text-shadow: 0 2px 12px rgba(212,134,10,0.2);
+}
+
+h2.act-title {
+  font-family:'Playfair Display', serif;
+  font-size:22px; font-weight:700;
+  color:var(--amber-lit);
+  margin-bottom:6px;
+}
+
+.act-num {
+  font-family:'Space Mono',monospace;
+  font-size:10px; color:var(--amber);
+  letter-spacing:3px; margin-bottom:16px;
+  display:block;
+}
+
+p.body {
+  font-family:'Cormorant Garamond',serif;
+  font-size:19px; line-height:1.8;
+  color:var(--parch);
+  margin-bottom:16px;
+}
+
+p.mono {
+  font-family:'Space Mono',monospace;
+  font-size:11px; line-height:1.9;
+  color:var(--parch-dark);
+  margin-bottom:12px;
+}
+
+.hl  { color:var(--amber-lit);  font-weight:600; }
+.hl2 { color:var(--amber-pale); font-style:italic; }
+.hl3 { color:var(--sage-lit);   font-weight:600; }
+
+hr.rule { border:none; border-top:1px solid var(--border); margin:28px 0; }
+
+/* SECTION LABEL */
+.section-label {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:4px;
+  color:var(--amber);
+  margin-bottom:20px;
+  display:flex; align-items:center; gap:10px;
+}
+.section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ═══ ACTE 1 — MAPPING TABLE ═══ */
+.mapping-grid {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin:20px 0;
+}
+
+.mission-row {
+  display:grid;
+  grid-template-columns:180px 1fr 1fr 1fr;
+  gap:0;
+  border:1px solid var(--border);
+  overflow:hidden;
+  border-radius:1px;
+  transition: box-shadow 0.3s;
+}
+
+.mission-row:hover { box-shadow: var(--glow-amb); }
+
+@media(max-width:680px) {
+  .mission-row { grid-template-columns:1fr; }
+}
+
+.row-cell {
+  padding:14px 16px;
+  border-right:1px solid var(--border);
+  font-family:'Cormorant Garamond',serif;
+  font-size:16px; line-height:1.6;
+  color:var(--parch-dim);
+}
+
+.row-cell:last-child { border-right:none; }
+
+.row-cell.mission-name {
+  background:rgba(212,134,10,0.06);
+  font-family:'Space Mono',monospace;
+  font-size:10px; letter-spacing:2px;
+  color:var(--amber);
+  display:flex; align-items:center;
+}
+
+.row-cell.header {
+  background:rgba(212,134,10,0.1);
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:3px;
+  color:var(--parch-dark);
+  padding:10px 16px;
+}
+
+/* DROP ZONES */
+.drop-target {
+  min-height:60px;
+  display:flex; align-items:center; justify-content:center;
+  border:1px dashed rgba(212,134,10,0.2);
+  border-radius:1px;
+  font-family:'Space Mono',monospace;
+  font-size:10px; color:rgba(212,134,10,0.3);
+  letter-spacing:1px;
+  transition:all 0.3s;
+  cursor:pointer;
+  position:relative;
+  padding:8px;
+  text-align:center;
+}
+
+.drop-target.drag-over {
+  border-color:var(--amber-lit);
+  background:rgba(212,134,10,0.08);
+}
+
+.drop-target.filled {
+  border-style:solid;
+  border-color:var(--amber);
+  background:rgba(212,134,10,0.05);
+  font-size:13px;
+  color:var(--amber-lit);
+  font-family:'Cormorant Garamond',serif;
+  cursor:default;
+  letter-spacing:0;
+  line-height:1.4;
+}
+
+.drop-target.correct-fill {
+  border-color:var(--sage-lit);
+  background:rgba(74,96,64,0.15);
+  color:var(--sage-lit);
+}
+
+.drop-target.wrong-fill {
+  border-color:var(--rust-lit);
+  background:rgba(139,58,26,0.1);
+  animation:shk 0.4s ease;
+}
+
+@keyframes shk { 0%,100%{transform:none} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+.drag-pool {
+  display:flex; flex-wrap:wrap; gap:10px;
+  margin:20px 0;
+}
+
+.drag-chip {
+  font-family:'Cormorant Garamond',serif;
+  font-size:15px;
+  padding:8px 16px;
+  border:1px solid var(--border-lit);
+  background:rgba(212,134,10,0.05);
+  color:var(--parch);
+  cursor:grab;
+  border-radius:1px;
+  transition:all 0.2s;
+  user-select:none;
+}
+
+.drag-chip:hover { background:rgba(212,134,10,0.12); color:var(--amber-pale); transform:translateY(-2px); box-shadow:var(--glow-amb); }
+.drag-chip.used { opacity:0.25; pointer-events:none; }
+
+/* ═══ ACTE 2 — PIÈCES À CONVICTION ═══ */
+.evidence-list {
+  display:flex; flex-direction:column; gap:0;
+  margin:20px 0;
+  border:1px solid var(--border);
+}
+
+.evidence-item {
+  border-bottom:1px solid var(--border);
+  overflow:hidden;
+}
+
+.evidence-item:last-child { border-bottom:none; }
+
+.evidence-header {
+  display:flex; align-items:center; gap:16px;
+  padding:18px 20px;
+  cursor:pointer;
+  transition:background 0.3s;
+}
+
+.evidence-header:hover { background:rgba(212,134,10,0.05); }
+
+.evidence-num {
+  font-family:'Playfair Display',serif;
+  font-size:28px; font-weight:900; font-style:italic;
+  color:rgba(212,134,10,0.3);
+  min-width:40px;
+  transition:color 0.3s;
+}
+
+.evidence-item.open .evidence-num { color:var(--amber-lit); }
+
+.evidence-title-wrap { flex:1; }
+
+.evidence-title {
+  font-family:'Playfair Display',serif;
+  font-size:18px; font-weight:700;
+  color:var(--parch);
+  transition:color 0.3s;
+}
+
+.evidence-item.open .evidence-title { color:var(--amber-pale); }
+
+.evidence-subtitle {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:3px;
+  color:var(--parch-dark);
+  margin-top:4px;
+}
+
+.evidence-arrow {
+  font-size:18px; color:var(--amber);
+  transition:transform 0.4s;
+}
+
+.evidence-item.open .evidence-arrow { transform:rotate(90deg); }
+
+.evidence-body {
+  max-height:0; overflow:hidden;
+  transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.evidence-item.open .evidence-body { max-height:400px; }
+
+.evidence-content {
+  padding:0 20px 24px 76px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+@media(max-width:600px) { .evidence-content { grid-template-columns:1fr; padding:0 20px 24px; } }
+
+.ev-col-label {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:3px;
+  color:var(--amber); margin-bottom:8px;
+}
+
+.ev-col-text {
+  font-family:'Cormorant Garamond',serif;
+  font-size:17px; line-height:1.7;
+  color:var(--parch-dim);
+}
+
+.ev-tag {
+  display:inline-block;
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:2px;
+  padding:3px 8px;
+  border:1px solid var(--sage);
+  color:var(--sage-lit);
+  margin:4px 4px 0 0;
+}
+
+/* ═══ ACTE 3 — VERDICT ═══ */
+.verdict-cases {
+  display:flex; flex-direction:column; gap:20px;
+  margin:20px 0;
+}
+
+.verdict-case {
+  border:1px solid var(--border);
+  border-radius:1px;
+  overflow:hidden;
+}
+
+.case-header {
+  padding:20px 24px;
+  background:rgba(212,134,10,0.04);
+  border-bottom:1px solid var(--border);
+}
+
+.case-ref {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:3px;
+  color:var(--rust-lit); margin-bottom:8px;
+}
+
+.case-scenario {
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px; font-style:italic;
+  color:var(--parch); line-height:1.6;
+}
+
+.case-meta {
+  font-family:'Space Mono',monospace;
+  font-size:10px; color:var(--parch-dark);
+  margin-top:8px;
+}
+
+.verdict-choices {
+  display:grid; grid-template-columns:1fr 1fr 1fr;
+  gap:0;
+}
+
+@media(max-width:600px) { .verdict-choices { grid-template-columns:1fr; } }
+
+.verdict-btn {
+  padding:16px 20px;
+  border:none; border-right:1px solid var(--border);
+  background:transparent;
+  cursor:pointer;
+  transition:all 0.3s;
+  text-align:left;
+  position:relative;
+  overflow:hidden;
+}
+
+.verdict-btn:last-child { border-right:none; }
+
+.verdict-btn::before {
+  content:'';
+  position:absolute;top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(212,134,10,0.06),transparent);
+  transition:left 0.4s;
+}
+
+.verdict-btn:hover::before { left:100%; }
+.verdict-btn:hover { background:rgba(212,134,10,0.05); }
+
+.vb-label {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:2px;
+  color:var(--amber); margin-bottom:6px;
+}
+
+.vb-text {
+  font-family:'Cormorant Garamond',serif;
+  font-size:15px; color:var(--parch-dim); line-height:1.5;
+}
+
+.verdict-btn.chosen-yes { background:rgba(74,96,64,0.15); border-color:var(--sage); }
+.verdict-btn.chosen-no  { background:rgba(139,58,26,0.1);  border-color:var(--rust); }
+.verdict-btn.chosen-dep { background:rgba(212,134,10,0.08); border-color:var(--amber); }
+
+.verdict-feedback {
+  padding:16px 24px;
+  border-top:1px solid var(--border);
+  font-family:'Cormorant Garamond',serif;
+  font-size:17px; line-height:1.7;
+  color:var(--parch-dim);
+  display:none; animation:revealer 0.4s ease;
+}
+
+.verdict-feedback.visible { display:block; }
+.verdict-feedback .fb-label {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:3px;
+  color:var(--amber); margin-bottom:8px;
+}
+
+/* ═══ FICHE CADRAGE ═══ */
+.fiche {
+  background:rgba(245,230,192,0.04);
+  border:1px solid var(--border-lit);
+  padding:32px;
+  position:relative;
+}
+
+.fiche::before {
+  content:'FICHE DE CADRAGE — CONFIDENTIEL';
+  position:absolute; top:-10px; left:24px;
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:3px;
+  color:var(--amber);
+  background:var(--bg);
+  padding:0 8px;
+}
+
+.fiche-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-top:8px;
+}
+
+@media(max-width:600px) { .fiche-grid { grid-template-columns:1fr; } }
+
+.fiche-field {
+  display:flex; flex-direction:column; gap:8px;
+}
+
+.fiche-field.full { grid-column:1/-1; }
+
+.field-label {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:3px;
+  color:var(--amber);
+}
+
+.field-input {
+  background:rgba(212,134,10,0.06);
+  border:none; border-bottom:1px solid var(--border-lit);
+  color:var(--parch);
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px; line-height:1.6;
+  padding:8px 4px;
+  outline:none;
+  transition:border-color 0.3s;
+  resize:none;
+  width:100%;
+}
+
+.field-input:focus { border-color:var(--amber-lit); background:rgba(212,134,10,0.1); }
+.field-input::placeholder { color:var(--parch-dark); font-style:italic; }
+
+.fiche-row3 {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:16px;
+  margin-top:20px;
+}
+
+@media(max-width:600px) { .fiche-row3 { grid-template-columns:1fr; } }
+
+.need-check {
+  display:flex; align-items:center; gap:10px;
+  cursor:pointer; padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:1px; transition:all 0.3s;
+  user-select:none;
+}
+
+.need-check:hover { background:rgba(212,134,10,0.06); border-color:var(--amber); }
+.need-check.checked { background:rgba(212,134,10,0.08); border-color:var(--amber-lit); }
+
+.check-box {
+  width:16px; height:16px;
+  border:1px solid var(--amber);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px; color:var(--amber-lit);
+  flex-shrink:0;
+  transition:all 0.2s;
+}
+
+.need-check.checked .check-box { background:var(--amber); color:var(--bg); }
+
+.check-label {
+  font-family:'Cormorant Garamond',serif;
+  font-size:16px; color:var(--parch-dim);
+}
+
+.fiche-bottom {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:20px;
+}
+
+@media(max-width:600px) { .fiche-bottom { grid-template-columns:1fr; } }
+
+/* BUTTONS */
+.btn {
+  font-family:'Space Mono',monospace;
+  font-size:10px; letter-spacing:3px;
+  padding:14px 28px;
+  border:1px solid var(--amber);
+  background:transparent;
+  color:var(--amber-lit);
+  cursor:pointer;
+  transition:all 0.3s;
+  text-transform:uppercase;
+  position:relative; overflow:hidden;
+}
+
+.btn::before {
+  content:'';
+  position:absolute;top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(212,134,10,0.1),transparent);
+  transition:left 0.4s;
+}
+
+.btn:hover { box-shadow:var(--glow-amb); color:var(--amber-pale); }
+.btn:hover::before { left:100%; }
+
+.btn-rust {
+  border-color:var(--rust);
+  color:var(--rust-lit);
+}
+
+.btn-rust:hover { box-shadow:var(--glow-rust); color:#d47050; }
+
+.btn-large { font-size:11px; padding:18px 40px; letter-spacing:4px; }
+
+.actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:24px; }
+
+/* FEEDBACK */
+.feedback {
+  border-left:2px solid var(--amber);
+  padding:14px 20px;
+  margin:16px 0;
+  background:rgba(212,134,10,0.04);
+  font-family:'Cormorant Garamond',serif;
+  font-size:17px; line-height:1.7;
+  color:var(--parch-dim);
+  display:none;
+}
+
+.feedback.visible { display:block; animation:revealer 0.4s ease; }
+.feedback.sage { border-color:var(--sage-lit); background:rgba(74,96,64,0.08); color:var(--parch); }
+
+/* PROGRESS RING (Acte 1 complete indicator) */
+.acte-badge {
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:'Space Mono',monospace;
+  font-size:10px; letter-spacing:2px;
+  color:var(--sage-lit);
+  padding:8px 16px;
+  border:1px solid var(--sage);
+  background:rgba(74,96,64,0.1);
+  margin-top:16px;
+  display:none;
+  animation:revealer 0.6s ease;
+}
+
+.acte-badge.visible { display:inline-flex; }
+
+/* ORNAMENT */
+.ornament {
+  text-align:center;
+  font-size:24px;
+  color:rgba(212,134,10,0.3);
+  margin:24px 0;
+  letter-spacing:8px;
+}
+
+/* INTRO ANIMATION */
+.reveal-line {
+  overflow:hidden;
+}
+
+.reveal-inner {
+  display:block;
+  animation: slideUp 0.8s cubic-bezier(0.4,0,0.2,1) both;
+}
+
+@keyframes slideUp {
+  from { transform:translateY(100%); opacity:0; }
+  to   { transform:translateY(0);    opacity:1; }
+}
+
+.d1 { animation-delay:0.1s; }
+.d2 { animation-delay:0.25s; }
+.d3 { animation-delay:0.4s; }
+.d4 { animation-delay:0.55s; }
+.d5 { animation-delay:0.7s; }
+
+/* FINAL PAGE */
+.final-wrap {
+  text-align:center;
+  padding:40px 20px;
+}
+
+.seal {
+  width:120px; height:120px;
+  border-radius:50%;
+  border:2px solid var(--amber);
+  box-shadow: 0 0 40px rgba(212,134,10,0.3), inset 0 0 30px rgba(212,134,10,0.08);
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 28px;
+  font-size:48px;
+  animation:seal-rotate 20s linear infinite;
+}
+
+@keyframes seal-rotate {
+  from { box-shadow: 0 0 40px rgba(212,134,10,0.3), inset 0 0 30px rgba(212,134,10,0.08); }
+  50%  { box-shadow: 0 0 60px rgba(212,134,10,0.5), inset 0 0 40px rgba(212,134,10,0.15); }
+  to   { box-shadow: 0 0 40px rgba(212,134,10,0.3), inset 0 0 30px rgba(212,134,10,0.08); }
+}
+
+.next-step-box {
+  border:1px solid var(--border-lit);
+  padding:28px 32px;
+  margin-top:32px;
+  text-align:left;
+  background:rgba(212,134,10,0.03);
+  position:relative;
+}
+
+.next-step-box::before {
+  content:'ÉTAPE SUIVANTE';
+  position:absolute; top:-10px; left:20px;
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:3px;
+  color:var(--amber);
+  background:var(--bg);
+  padding:0 8px;
+}
+
+/* TOOLTIP */
+.tooltip-wrap { position:relative; display:inline; }
+.tooltip {
+  position:absolute;
+  bottom:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--bg2);
+  border:1px solid var(--border-lit);
+  padding:10px 14px;
+  font-family:'Space Mono',monospace;
+  font-size:10px; line-height:1.6;
+  color:var(--parch-dim);
+  width:220px;
+  display:none;
+  z-index:200;
+  text-align:left;
+}
+
+.tooltip-wrap:hover .tooltip { display:block; }
+
+/* ═══ DIAGNOSTIC ITEMS ═══ */
+.diag-item {
+  border:1px solid var(--border);
+  border-radius:1px;
+  overflow:hidden;
+  transition: border-color 0.3s;
+}
+
+.diag-item.analysed { border-color: var(--sage); }
+
+.diag-header {
+  display:flex; align-items:center; gap:14px;
+  padding:16px 20px;
+  cursor:pointer;
+  transition:background 0.3s;
+}
+
+.diag-header:hover { background:rgba(212,134,10,0.04); }
+
+.diag-num {
+  font-family:'Playfair Display',serif;
+  font-size:24px; font-weight:900; font-style:italic;
+  color:rgba(212,134,10,0.3); min-width:32px;
+  transition:color 0.3s;
+}
+
+.diag-item.open .diag-num { color:var(--amber-lit); }
+
+.diag-title-wrap { flex:1; }
+
+.diag-title {
+  font-family:'Playfair Display',serif;
+  font-size:17px; font-weight:700; color:var(--parch);
+}
+
+.diag-sub {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:2px;
+  color:var(--parch-dark); margin-top:3px;
+}
+
+.diag-status {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:2px;
+  color:var(--parch-dark); padding:3px 8px;
+  border:1px solid var(--border);
+  white-space:nowrap; transition:all 0.3s;
+}
+
+.diag-item.analysed .diag-status {
+  color:var(--sage-lit); border-color:var(--sage);
+}
+
+.diag-body {
+  max-height:0; overflow:hidden;
+  transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1);
+  border-top:0px solid var(--border);
+}
+
+.diag-item.open .diag-body {
+  max-height:600px;
+  border-top:1px solid var(--border);
+}
+
+.diag-content {
+  padding:20px 20px 20px 66px;
+  display:grid; grid-template-columns:1fr 1fr; gap:16px;
+}
+
+@media(max-width:600px) { .diag-content { grid-template-columns:1fr; padding:16px; } }
+
+.diag-reveal {
+  display:none; animation:revealer 0.4s ease;
+  border-left:2px solid var(--sage-lit);
+  padding:12px 16px;
+  background:rgba(74,96,64,0.08);
+}
+
+.diag-reveal.visible { display:block; }
+  font-family:'Space Mono',monospace;
+  font-size:10px; letter-spacing:2px;
+  color:var(--parch-dark);
+  text-align:right;
+  margin-bottom:4px;
+}
+
+.print-hint {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:2px;
+  color:var(--parch-dark);
+  margin-top:20px;
+  text-align:center;
+  opacity:0.6;
+}
+
+/* ═══ TRANSMISSION KAPP — style parchemin ═══ */
+.kapp-card-db {
+  background:
+    radial-gradient(ellipse 120% 80% at 10% 0%, rgba(212,134,10,0.05) 0%, transparent 60%),
+    linear-gradient(160deg, rgba(34,22,6,0.98) 0%, rgba(26,16,4,0.99) 100%);
+  border: 1px solid var(--border);
+  padding: 0 0 24px; margin: 20px 0;
+  position: relative; overflow: hidden;
+  box-shadow: 0 0 40px rgba(212,134,10,0.05), inset 0 1px 0 rgba(212,134,10,0.08);
+}
+.kapp-card-db::before {
+  content:''; position:absolute; top:0;left:0;right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--amber),transparent);
+  animation:sweep-kapp 4s linear infinite;
+}
+@keyframes sweep-kapp {
+  0%{transform:scaleX(0);transform-origin:left} 49%{transform:scaleX(1);transform-origin:left}
+  50%{transform:scaleX(1);transform-origin:right} 100%{transform:scaleX(0);transform-origin:right}
+}
+
+.kapp-avatar-bar {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 24px;
+  background: rgba(26,16,4,0.7);
+  border-bottom:1px solid var(--border);
+  margin-bottom: 20px;
+}
+.kapp-avatar-ring {
+  width:38px; height:38px; border:2px solid var(--amber);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:17px; flex-shrink:0; box-shadow:var(--glow-amb);
+}
+.kapp-avatar-name { font-family:'Space Mono',monospace; font-size:10px; font-weight:700; color:var(--amber-lit); letter-spacing:2px; }
+.kapp-avatar-role { font-size:9px; color:var(--parch-dark); letter-spacing:2px; margin-top:2px; font-family:'Space Mono',monospace; }
+.kapp-avatar-status { margin-left:auto; font-size:9px; color:var(--amber); letter-spacing:2px; font-family:'Space Mono',monospace; animation:blink-a 2s step-end infinite; }
+@keyframes blink-a { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.kapp-narrative {
+  font-family:'Cormorant Garamond',serif; font-size:19px; line-height:1.85;
+  color:var(--parch); font-weight:300; min-height:60px;
+  padding: 0 28px;
+}
+.kapp-narrative em { color:var(--amber-pale); font-style:italic; }
+
+/* Bouton trigger */
+.kapp-trigger-wrap {
+  text-align:center; margin:24px 28px 0;
+  opacity:0; transform:translateY(8px); transition:all 0.5s ease;
+}
+.kapp-trigger-wrap.visible { opacity:1; transform:none; }
+
+.kapp-trigger-btn {
+  font-family:'Space Mono',monospace; font-size:10px; font-weight:700;
+  letter-spacing:3px; padding:12px 28px;
+  border:1px solid rgba(139,58,26,0.5); background:rgba(139,58,26,0.06);
+  color:var(--rust-lit); cursor:pointer; transition:all 0.3s;
+  display:inline-flex; align-items:center; gap:10px;
+  position:relative; overflow:hidden;
+}
+.kapp-trigger-btn::before {
+  content:''; position:absolute; top:0;left:-100%; width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(139,58,26,0.1),transparent);
+  transition:left 0.4s;
+}
+.kapp-trigger-btn:hover { box-shadow:var(--glow-rust); color:#d07050; }
+.kapp-trigger-btn:hover::before { left:100%; }
+.kapp-trigger-btn.used { opacity:0.3; pointer-events:none; }
+
+.kapp-dot {
+  width:7px; height:7px; border-radius:50%;
+  background:var(--rust-lit); box-shadow:0 0 8px var(--rust-lit);
+  animation:blink-a 0.7s step-end infinite; flex-shrink:0;
+}
+
+/* Message box parchemin */
+.kapp-msg-wrap { display:none; margin:16px 28px 0; animation:fadeInDb 0.5s ease; }
+.kapp-msg-wrap.visible { display:block; }
+@keyframes fadeInDb { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+.kapp-msg-box {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 26px, rgba(139,58,26,0.06) 26px, rgba(139,58,26,0.06) 27px),
+    linear-gradient(160deg, rgba(42,24,8,0.97), rgba(30,16,6,0.99));
+  border:1px solid rgba(139,58,26,0.35);
+  border-top:3px solid rgba(192,82,42,0.55);
+  padding:20px 24px 18px 36px;
+  position:relative; overflow:hidden;
+  box-shadow:4px 6px 20px rgba(0,0,0,0.45), inset 0 1px 0 rgba(212,134,10,0.07);
+  transform:rotate(0.2deg);
+}
+.kapp-msg-box::before {
+  content:''; position:absolute; top:0;right:0;
+  width:0; height:0; border-style:solid;
+  border-width:0 18px 18px 0;
+  border-color:transparent rgba(139,58,26,0.2) transparent transparent;
+}
+.kapp-msg-box::after {
+  content:''; position:absolute; top:0; left:28px; bottom:0;
+  width:1px; background:rgba(139,58,26,0.25);
+}
+.kapp-msg-text {
+  font-family:'Cormorant Garamond',serif; font-size:18px; line-height:1.85;
+  color:var(--parch-dim); font-style:italic; min-height:50px;
+  position:relative; z-index:1;
+}
+.kapp-msg-text strong { color:var(--amber-lit); font-style:normal; font-family:'Space Mono',monospace; font-size:14px; }
+.kapp-signature {
+  font-size:9px; color:rgba(192,82,42,0.75); letter-spacing:3px;
+  margin-top:14px; text-align:right;
+  border-top:1px solid rgba(139,58,26,0.2); padding-top:10px;
+  position:relative; z-index:1;
+}
+/* PAUSE BLOCK */
+.pause-block-db {
+  margin-top:40px;
+  border:2px solid var(--amber-lit);
+  background:rgba(40,20,0,0.4);
+  position:relative; overflow:hidden;
+}
+.pause-block-db::before {
+  content:''; position:absolute; top:0;left:0;right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--amber-lit),transparent);
+  animation:sweep-kapp 3s linear infinite;
+}
+.pause-inner-db {
+  padding:32px; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:14px;
+}
+.pause-icon-db {
+  font-size:38px; line-height:1;
+  animation:blink-a 1.5s step-end infinite;
+}
+.pause-title-db {
+  font-family:'Space Mono',monospace; font-size:13px; font-weight:700;
+  letter-spacing:6px; color:var(--amber-lit);
+}
+.pause-text-db {
+  font-family:'Cormorant Garamond',serif; font-size:18px; line-height:1.8;
+  color:var(--parch); font-weight:300; max-width:500px;
+}
+.pause-btn-db {
+  font-family:'Space Mono',monospace; font-size:10px; font-weight:700;
+  letter-spacing:3px; padding:14px 32px;
+  border:1px solid var(--sage-lit); background:rgba(74,96,64,0.15);
+  color:var(--sage-lit); text-decoration:none;
+  transition:all 0.3s; display:inline-block; margin-top:8px;
+  position:relative; overflow:hidden;
+}
+.pause-btn-db::before {
+  content:''; position:absolute; top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(122,154,104,0.1),transparent);
+  transition:left 0.4s;
+}
+.pause-btn-db:hover { border-color:var(--green-lit); color:var(--parch); box-shadow:0 0 16px rgba(122,154,104,0.3); }
+.pause-btn-db:hover::before { left:100%; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="arch-header">
+  <div>
+    <div class="arch-title">Dossier Debrief</div>
+    <div class="arch-subtitle">AUTOPSIE D'UNE MISSION // ARCHIVES PÉDAGOGIQUES</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="arch-nav" id="archNav">
+      <div class="nav-step active" id="ns0"></div>
+      <div class="nav-step" id="ns1"></div>
+      <div class="nav-step" id="ns2"></div>
+      <div class="nav-step" id="ns3"></div>
+    </div>
+    <div class="nav-label" id="navLabel">ACTE I</div>
+    <button onclick="window.location.reload()" title="Retour au début" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;padding:5px 12px;border:1px solid rgba(212,134,10,0.35);background:transparent;color:var(--parch-dark);cursor:pointer;transition:all 0.25s;white-space:nowrap;" onmouseover="this.style.borderColor='var(--amber-lit)';this.style.color='var(--amber-lit)'" onmouseout="this.style.borderColor='rgba(212,134,10,0.35)';this.style.color='var(--parch-dark)'">↺ DÉBUT</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ══════════════════ ÉCRAN INTRO ══════════════════ -->
+<section class="screen active" id="screen-intro">
+
+  <div class="card">
+    <div class="stamp">RAPPORT POST-MISSION // CONFIDENTIEL</div>
+    <h1 class="doc-title">
+      <div class="reveal-line"><span class="reveal-inner d1">Autopsie</span></div>
+      <div class="reveal-line"><span class="reveal-inner d2">d'une mission</span></div>
+    </h1>
+    <hr class="rule">
+    <p class="body reveal-line"><span class="reveal-inner d3">
+      Trois actes. Pas de chronomètre. Une <span class="hl">fiche de cadrage</span> à emporter.
+    </span></p>
+    <hr class="rule">
+    <div class="ornament">, ✦ —</div>
+  </div>
+
+  <div class="kapp-card-db">
+    <div class="kapp-avatar-bar">
+      <div class="kapp-avatar-ring">🕵</div>
+      <div>
+        <div class="kapp-avatar-name">AGENT KAPP</div>
+        <div class="kapp-avatar-role">RAPPORT POST-MISSION // ACADÉMIE SECRÈTE</div>
+      </div>
+      <div class="kapp-avatar-status">● DEBRIEFING EN COURS</div>
+    </div>
+    <div class="kapp-narrative" id="kn-intro"></div>
+    <div class="kapp-trigger-wrap" id="kt-intro">
+      <button class="kapp-trigger-btn" onclick="triggerKapp('intro')" id="ktb-intro">
+        <span class="kapp-dot"></span>
+        MESSAGE DE L'AGENT KAPP
+      </button>
+    </div>
+    <div class="kapp-msg-wrap" id="km-intro">
+      <div class="kapp-msg-box">
+        <div class="kapp-msg-text" id="kmsg-intro"></div>
+        <div class="kapp-signature">, KAPP // POST-MISSION // ACADÉMIE SECRÈTE</div>
+      </div>
+    </div>
+    <div class="actions" style="justify-content:center;padding:0 28px;margin-top:20px;">
+      <button class="btn btn-large hidden-btn" id="btn-open-dossier" onclick="goTo('screen-acte1')">OUVRIR LE DOSSIER →</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════ ACTE 1, RÉTROVISION ══════════════════ -->
+<section class="screen" id="screen-acte1">
+  <div class="card">
+    <span class="act-num">ACTE I / III, RÉTROVISION</span>
+    <h2 class="act-title">Ce que vous avez vécu, vu de loin</h2>
+    <p class="body">
+      Chaque mission de <em>Mission Motivation</em> activait un ou plusieurs <span class="hl">leviers motivationnels</span>. 
+      Mais lesquels, exactement ? Et via quelle mécanique de jeu ?
+    </p>
+    <p class="body">
+      Faites glisser les étiquettes dans les bonnes cases. Chaque mission a <span class="hl">un besoin TAD dominant</span> et <span class="hl">un principe de flow</span>.
+    </p>
+    <hr class="rule">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div class="section-label" style="margin-bottom:12px;">BESOINS TAD, DECI &amp; RYAN</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="border-left:2px solid var(--amber);padding:6px 12px;">
+            <span class="hl">Autonomie</span>
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--parch-dark);display:block;margin-top:2px;">Agir par choix, pas sous contrainte</span>
+          </div>
+          <div style="border-left:2px solid var(--amber);padding:6px 12px;">
+            <span class="hl">Compétence</span>
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--parch-dark);display:block;margin-top:2px;">Se sentir efficace, progresser</span>
+          </div>
+          <div style="border-left:2px solid var(--amber);padding:6px 12px;">
+            <span class="hl">Appartenance</span>
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--parch-dark);display:block;margin-top:2px;">Se sentir relié, avoir un rôle</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="section-label" style="margin-bottom:12px;">PRINCIPES FLOW, CSIKSZENTMIHALYI</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="border-left:2px solid var(--rust);padding:6px 12px;">
+            <span style="color:var(--parch);">Feedback immédiat</span>
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--parch-dark);display:block;margin-top:2px;">L'erreur informe, elle ne punit pas</span>
+          </div>
+          <div style="border-left:2px solid var(--rust);padding:6px 12px;">
+            <span style="color:var(--parch);">Zone proximale</span>
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--parch-dark);display:block;margin-top:2px;">Défi légèrement au-dessus du niveau actuel</span>
+          </div>
+          <div style="border-left:2px solid var(--rust);padding:6px 12px;">
+            <span style="color:var(--parch);">Progression</span>
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--parch-dark);display:block;margin-top:2px;">Montée en charge graduelle des défis</span>
+          </div>
+          <div style="border-left:2px solid var(--rust);padding:6px 12px;">
+            <span style="color:var(--parch);">Accomplissement</span>
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--parch-dark);display:block;margin-top:2px;">Clôture rituelle, sentiment d'avoir réussi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAG POOL -->
+  <div class="card">
+    <div class="section-label">ÉTIQUETTES À PLACER</div>
+    <div class="drag-pool" id="dragPool">
+      <div class="drag-chip" draggable="true" data-id="autonomie" ondragstart="chipDragStart(event)">Autonomie</div>
+      <div class="drag-chip" draggable="true" data-id="competence" ondragstart="chipDragStart(event)">Compétence</div>
+      <div class="drag-chip" draggable="true" data-id="appartenance" ondragstart="chipDragStart(event)">Appartenance</div>
+      <div class="drag-chip" draggable="true" data-id="zone-proximale" ondragstart="chipDragStart(event)">Zone proximale</div>
+      <div class="drag-chip" draggable="true" data-id="progression" ondragstart="chipDragStart(event)">Progression</div>
+      <div class="drag-chip" draggable="true" data-id="feedback" ondragstart="chipDragStart(event)">Feedback immédiat</div>
+      <div class="drag-chip" draggable="true" data-id="competence2" ondragstart="chipDragStart(event)">Compétence</div>
+      <div class="drag-chip" draggable="true" data-id="accomplissement" ondragstart="chipDragStart(event)">Accomplissement</div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card">
+    <div class="section-label">TABLEAU DE CORRESPONDANCE</div>
+
+    <!-- Header -->
+    <div class="mission-row" style="font-weight:700;">
+      <div class="row-cell header">MISSION</div>
+      <div class="row-cell header">BESOIN TAD</div>
+      <div class="row-cell header">PRINCIPE FLOW</div>
+      <div class="row-cell header">CE QUE VOUS AVEZ RESSENTI</div>
+    </div>
+
+    <!-- M1 -->
+    <div class="mission-row">
+      <div class="row-cell mission-name">01<br>Profils d'élèves</div>
+      <div class="row-cell" style="padding:8px;">
+        <div class="drop-target" id="drop-m1-tad" data-correct="competence"
+          ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="dropChip(event,this)">
+          déposer ici
+        </div>
+      </div>
+      <div class="row-cell" style="padding:8px;">
+        <div class="drop-target" id="drop-m1-flow" data-correct="feedback"
+          ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="dropChip(event,this)">
+          déposer ici
+        </div>
+      </div>
+      <div class="row-cell" style="font-style:italic;color:var(--parch-dark);font-size:14px;">
+        "Je devais observer, comparer, décider. L'erreur m'expliquait pourquoi."
+      </div>
+    </div>
+
+    <!-- M2 -->
+    <div class="mission-row">
+      <div class="row-cell mission-name">02<br>Corpus infiltré</div>
+      <div class="row-cell" style="padding:8px;">
+        <div class="drop-target" id="drop-m2-tad" data-correct="autonomie"
+          ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="dropChip(event,this)">
+          déposer ici
+        </div>
+      </div>
+      <div class="row-cell" style="padding:8px;">
+        <div class="drop-target" id="drop-m2-flow" data-correct="zone-proximale"
+          ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="dropChip(event,this)">
+          déposer ici
+        </div>
+      </div>
+      <div class="row-cell" style="font-style:italic;color:var(--parch-dark);font-size:14px;">
+        "J'explorais le texte à mon rythme, j'arbitrais moi-même."
+      </div>
+    </div>
+
+    <!-- M3 -->
+    <div class="mission-row">
+      <div class="row-cell mission-name">03<br>Drag &amp; drop</div>
+      <div class="row-cell" style="padding:8px;">
+        <div class="drop-target" id="drop-m3-tad" data-correct="competence"
+          ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="dropChip(event,this)">
+          déposer ici
+        </div>
+      </div>
+      <div class="row-cell" style="padding:8px;">
+        <div class="drop-target" id="drop-m3-flow" data-correct="progression"
+          ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="dropChip(event,this)">
+          déposer ici
+        </div>
+      </div>
+      <div class="row-cell" style="font-style:italic;color:var(--parch-dark);font-size:14px;">
+        "Je reconstituais une logique. Chaque placement avait un sens."
+      </div>
+    </div>
+
+    <!-- M4 -->
+    <div class="mission-row">
+      <div class="row-cell mission-name">04<br>Synthèse + cadenas</div>
+      <div class="row-cell" style="padding:8px;">
+        <div class="drop-target" id="drop-m4-tad" data-correct="appartenance"
+          ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="dropChip(event,this)">
+          déposer ici
+        </div>
+      </div>
+      <div class="row-cell" style="padding:8px;">
+        <div class="drop-target" id="drop-m4-flow" data-correct="accomplissement"
+          ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="dropChip(event,this)">
+          déposer ici
+        </div>
+      </div>
+      <div class="row-cell" style="font-style:italic;color:var(--parch-dark);font-size:14px;">
+        "Le cadenas final m'a donné l'impression de résoudre quelque chose de réel."
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback" id="fb-acte1"></div>
+
+  <div class="acte-badge" id="badge-acte1">✦ RÉTROVISION VALIDÉE, ACTE I COMPLÉTÉ</div>
+
+  <div class="actions">
+    <button class="btn btn-rust" onclick="checkMapping()">VALIDER LE TABLEAU</button>
+    <button class="btn" id="btn-acte2" onclick="goTo('screen-acte2')" style="display:none;">ACTE II →</button>
+  </div>
+</section>
+
+<!-- ══════════════════ ACTE 2, DIAGNOSTIC ══════════════════ -->
+<section class="screen" id="screen-acte2">
+  <div class="card">
+    <span class="act-num">ACTE II / III, DIAGNOSTIC</span>
+    <h2 class="act-title">Autopsie d'un objet ludifié raté</h2>
+    <p class="body">
+      Voici le compte-rendu d'un objet ludifié conçu par un collègue. Les élèves ont décroché au bout de 8 minutes.
+      Le concepteur ne comprend pas pourquoi.
+    </p>
+    <p class="body">
+      Vous, si. Lisez le dossier, puis <span class="hl">identifiez les 5 défaillances</span>, une par mécanique fondamentale.
+      Pour chacune, nommez le problème et proposez une correction concrète.
+    </p>
+  </div>
+
+  <!-- DOSSIER FICTIF -->
+  <div class="card" style="border-color:var(--rust);background:rgba(139,58,26,0.04);">
+    <div class="stamp" style="border-color:var(--rust-lit);color:var(--rust-lit);">DOSSIER INCIDENT, CLASSE 3B</div>
+    <h2 class="act-title" style="color:var(--parch-dim);font-size:18px;margin-bottom:20px;">"La Fuite du Laboratoire", SVT, 3ème</h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div class="ev-col-label">SCÉNARIO ANNONCÉ</div>
+        <div class="ev-col-text" style="font-style:italic;">
+          "Bienvenue dans ce quiz sur la génétique. Répondez aux questions pour avancer."
+        </div>
+      </div>
+      <div>
+        <div class="ev-col-label">CONTEXTE DE CLASSE</div>
+        <div class="ev-col-text">Révision avant contrôle. 28 élèves. 1h. Travail individuel sur ordinateur.</div>
+      </div>
+    </div>
+
+    <hr class="rule">
+
+    <div class="ev-col-label" style="margin-bottom:12px;">DÉROULÉ DES 4 ÉNIGMES</div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="border:1px solid rgba(139,58,26,0.3);padding:14px 16px;border-radius:1px;">
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--rust-lit);letter-spacing:2px;margin-bottom:6px;">ÉNIGME 1</div>
+        <div class="ev-col-text">QCM de 12 questions sur le vocabulaire de la génétique (gène, allèle, phénotype, génotype...). Réponse correcte : message "Bien ! Continuez." Réponse incorrecte : message "Faux. Recommencez depuis le début."</div>
+      </div>
+      <div style="border:1px solid rgba(139,58,26,0.3);padding:14px 16px;border-radius:1px;">
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--rust-lit);letter-spacing:2px;margin-bottom:6px;">ÉNIGME 2</div>
+        <div class="ev-col-text">Schéma de croisement génétique à compléter, niveau avancé, vu une seule fois en cours. Aucune aide disponible. Le code de déverrouillage est bloqué si une seule case est fausse.</div>
+      </div>
+      <div style="border:1px solid rgba(139,58,26,0.3);padding:14px 16px;border-radius:1px;">
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--rust-lit);letter-spacing:2px;margin-bottom:6px;">ÉNIGME 3</div>
+        <div class="ev-col-text">Même type que l'énigme 1 (QCM vocabulaire), légèrement différente. Timer global affiché en rouge dès le début, décompte depuis 60 minutes.</div>
+      </div>
+      <div style="border:1px solid rgba(139,58,26,0.3);padding:14px 16px;border-radius:1px;">
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--rust-lit);letter-spacing:2px;margin-bottom:6px;">ÉNIGME 4</div>
+        <div class="ev-col-text">Cadenas final avec un code à 6 chiffres. Le code est la date de naissance de Mendel (1822) + le nombre de caractères étudiés (7) combinés d'une façon non expliquée dans les énigmes précédentes.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRILLE DE DIAGNOSTIC -->
+  <div class="card">
+    <div class="section-label">VOTRE DIAGNOSTIC, 5 DÉFAILLANCES À IDENTIFIER</div>
+    <p class="body" style="margin-bottom:20px;">Pour chaque mécanique, identifiez le problème dans le dossier et proposez une correction.</p>
+
+    <div style="display:flex;flex-direction:column;gap:16px;" id="diagGrid">
+
+      <div class="diag-item" id="diag1">
+        <div class="diag-header" onclick="toggleDiag('diag1')">
+          <div class="diag-num">I</div>
+          <div class="diag-title-wrap">
+            <div class="diag-title">Scénario ancré</div>
+            <div class="diag-sub">APPARTENANCE & SENS</div>
+          </div>
+          <div class="diag-status" id="status1">À ANALYSER</div>
+          <div class="evidence-arrow" id="arrow1">›</div>
+        </div>
+        <div class="diag-body" id="body1">
+          <div class="diag-content">
+            <div>
+              <div class="ev-col-label">QUEL EST LE PROBLÈME ?</div>
+              <textarea class="field-input" rows="3" placeholder="Décrivez la défaillance que vous observez dans le dossier..." data-diag="1" oninput="autoSaveDiag(1)"></textarea>
+            </div>
+            <div>
+              <div class="ev-col-label">CORRECTION CONCRÈTE</div>
+              <textarea class="field-input" rows="3" placeholder="Proposez une reformulation ou une modification précise..." data-diag="1c" oninput="autoSaveDiag(1)"></textarea>
+            </div>
+            <div style="grid-column:1/-1;margin-top:8px;">
+              <button class="btn" style="font-size:9px;padding:10px 20px;" onclick="revealDiag(1)">VOIR L'ANALYSE</button>
+              <div class="diag-reveal" id="reveal1">
+                <div class="ev-col-label" style="margin-top:16px;">ANALYSE</div>
+                <div class="ev-col-text">Le scénario annoncé n'en est pas un : <em>"Bienvenue dans ce quiz"</em> détruit immédiatement l'immersion. L'élève sait qu'il fait un exercice, pas qu'il vit une mission. Il n'a aucune raison narrative d'agir. <strong>Correction :</strong> ouvrir par une situation fictive ancrée (ex. "Un virus a infecté les fichiers du laboratoire Mendel. Vous êtes le seul généticien disponible. Reconstituez les données avant 9h."), deux phrases suffisent, mais elles doivent donner un rôle et un enjeu.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diag-item" id="diag2">
+        <div class="diag-header" onclick="toggleDiag('diag2')">
+          <div class="diag-num">II</div>
+          <div class="diag-title-wrap">
+            <div class="diag-title">Progressivité</div>
+            <div class="diag-sub">FLOW, DÉFI / COMPÉTENCE</div>
+          </div>
+          <div class="diag-status" id="status2">À ANALYSER</div>
+          <div class="evidence-arrow" id="arrow2">›</div>
+        </div>
+        <div class="diag-body" id="body2">
+          <div class="diag-content">
+            <div>
+              <div class="ev-col-label">QUEL EST LE PROBLÈME ?</div>
+              <textarea class="field-input" rows="3" placeholder="Décrivez la défaillance que vous observez dans le dossier..." data-diag="2" oninput="autoSaveDiag(2)"></textarea>
+            </div>
+            <div>
+              <div class="ev-col-label">CORRECTION CONCRÈTE</div>
+              <textarea class="field-input" rows="3" placeholder="Proposez une reformulation ou une modification précise..." data-diag="2c" oninput="autoSaveDiag(2)"></textarea>
+            </div>
+            <div style="grid-column:1/-1;margin-top:8px;">
+              <button class="btn" style="font-size:9px;padding:10px 20px;" onclick="revealDiag(2)">VOIR L'ANALYSE</button>
+              <div class="diag-reveal" id="reveal2">
+                <div class="ev-col-label" style="margin-top:16px;">ANALYSE</div>
+                <div class="ev-col-text">L'énigme 2 introduit un niveau de difficulté élevé (schéma de croisement avancé) juste après une énigme de vocabulaire de base. Le saut est brutal, c'est exactement la zone d'anxiété de Csikszentmihalyi. De plus, l'énigme 3 redescend au niveau 1 sans raison, cassant la dynamique ascendante. <strong>Correction :</strong> reséquencer les énigmes en montée continue : vocabulaire → lecture de schéma simple → schéma à compléter → croisement inédit à interpréter.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diag-item" id="diag3">
+        <div class="diag-header" onclick="toggleDiag('diag3')">
+          <div class="diag-num">III</div>
+          <div class="diag-title-wrap">
+            <div class="diag-title">Feedback intégré</div>
+            <div class="diag-sub">COMPÉTENCE, SENTIMENT D'EFFICACITÉ</div>
+          </div>
+          <div class="diag-status" id="status3">À ANALYSER</div>
+          <div class="evidence-arrow" id="arrow3">›</div>
+        </div>
+        <div class="diag-body" id="body3">
+          <div class="diag-content">
+            <div>
+              <div class="ev-col-label">QUEL EST LE PROBLÈME ?</div>
+              <textarea class="field-input" rows="3" placeholder="Décrivez la défaillance que vous observez dans le dossier..." data-diag="3" oninput="autoSaveDiag(3)"></textarea>
+            </div>
+            <div>
+              <div class="ev-col-label">CORRECTION CONCRÈTE</div>
+              <textarea class="field-input" rows="3" placeholder="Proposez une reformulation ou une modification précise..." data-diag="3c" oninput="autoSaveDiag(3)"></textarea>
+            </div>
+            <div style="grid-column:1/-1;margin-top:8px;">
+              <button class="btn" style="font-size:9px;padding:10px 20px;" onclick="revealDiag(3)">VOIR L'ANALYSE</button>
+              <div class="diag-reveal" id="reveal3">
+                <div class="ev-col-label" style="margin-top:16px;">ANALYSE</div>
+                <div class="ev-col-text">Deux problèmes cumulés. "Bien ! Continuez" ne dit rien, l'élève ne comprend pas <em>pourquoi</em> il a raison. "Faux. Recommencez depuis le début" est une punition, pas un guidage : elle détruit le sentiment de compétence et provoque l'abandon. <strong>Correction :</strong> différencier le feedback selon la réponse donnée. Ex. si l'élève confond allèle et gène : "Un allèle est une version d'un gène, le gène, c'est le locus ; l'allèle, c'est ce qu'on y trouve." Une phrase, ciblée, informative.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diag-item" id="diag4">
+        <div class="diag-header" onclick="toggleDiag('diag4')">
+          <div class="diag-num">IV</div>
+          <div class="diag-title-wrap">
+            <div class="diag-title">Cadenas, accomplissement</div>
+            <div class="diag-sub">AUTONOMIE & RITUEL DE CLÔTURE</div>
+          </div>
+          <div class="diag-status" id="status4">À ANALYSER</div>
+          <div class="evidence-arrow" id="arrow4">›</div>
+        </div>
+        <div class="diag-body" id="body4">
+          <div class="diag-content">
+            <div>
+              <div class="ev-col-label">QUEL EST LE PROBLÈME ?</div>
+              <textarea class="field-input" rows="3" placeholder="Décrivez la défaillance que vous observez dans le dossier..." data-diag="4" oninput="autoSaveDiag(4)"></textarea>
+            </div>
+            <div>
+              <div class="ev-col-label">CORRECTION CONCRÈTE</div>
+              <textarea class="field-input" rows="3" placeholder="Proposez une reformulation ou une modification précise..." data-diag="3c" oninput="autoSaveDiag(4)"></textarea>
+            </div>
+            <div style="grid-column:1/-1;margin-top:8px;">
+              <button class="btn" style="font-size:9px;padding:10px 20px;" onclick="revealDiag(4)">VOIR L'ANALYSE</button>
+              <div class="diag-reveal" id="reveal4">
+                <div class="ev-col-label" style="margin-top:16px;">ANALYSE</div>
+                <div class="ev-col-text">Le code final (1822 + 7 combinés d'une façon non expliquée) n'est pas déductible par l'élève à partir de ses réponses. Il n'y a aucun lien logique entre ce qu'il a appris et ce qu'il doit entrer. Le cadenas perd sa fonction d'accomplissement, il devient un obstacle opaque et arbitraire. <strong>Correction :</strong> le code doit être entièrement construit à partir des réponses aux énigmes. Chaque énigme révèle un chiffre, et l'élève comprend pourquoi ce chiffre est là.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diag-item" id="diag5">
+        <div class="diag-header" onclick="toggleDiag('diag5')">
+          <div class="diag-num">V</div>
+          <div class="diag-title-wrap">
+            <div class="diag-title">Temps contraint</div>
+            <div class="diag-sub">RÉGULATION, TENSION NARRATIVE</div>
+          </div>
+          <div class="diag-status" id="status5">À ANALYSER</div>
+          <div class="evidence-arrow" id="arrow5">›</div>
+        </div>
+        <div class="diag-body" id="body5">
+          <div class="diag-content">
+            <div>
+              <div class="ev-col-label">QUEL EST LE PROBLÈME ?</div>
+              <textarea class="field-input" rows="3" placeholder="Décrivez la défaillance que vous observez dans le dossier..." data-diag="5" oninput="autoSaveDiag(5)"></textarea>
+            </div>
+            <div>
+              <div class="ev-col-label">CORRECTION CONCRÈTE</div>
+              <textarea class="field-input" rows="3" placeholder="Proposez une reformulation ou une modification précise..." data-diag="5c" oninput="autoSaveDiag(5)"></textarea>
+            </div>
+            <div style="grid-column:1/-1;margin-top:8px;">
+              <button class="btn" style="font-size:9px;padding:10px 20px;" onclick="revealDiag(5)">VOIR L'ANALYSE</button>
+              <div class="diag-reveal" id="reveal5">
+                <div class="ev-col-label" style="margin-top:16px;">ANALYSE</div>
+                <div class="ev-col-text">Timer affiché en rouge dès la première seconde : c'est de l'anxiété pure, pas de la tension narrative. Le rouge signale le danger immédiatement, avant même que l'élève ait commencé à s'engager. La pression doit être <em>progressive</em>, neutre au début, ambrée à mi-chemin, critique dans les dernières minutes. <strong>Correction :</strong> démarrer en vert ou neutre, basculer en amber à 30% du temps restant, rouge uniquement dans les 5 dernières minutes. Et rendre le timer non bloquant : arriver à zéro ne supprime pas l'accès à la suite.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="actions" style="margin-top:28px;">
+    <button class="btn" onclick="goTo('screen-acte3')">ACTE III, VERDICT →</button>
+  </div>
+</section>
+
+<!-- ══════════════════ ACTE 3, VERDICT ══════════════════ -->
+<section class="screen" id="screen-acte3">
+  <div class="card">
+    <span class="act-num">ACTE III / III, VERDICT</span>
+    <h2 class="act-title">L'objet ludifié, pertinent ou gadget ?</h2>
+    <p class="body">
+      Trois situations de classe réelles. Pour chacune, vous devez rendre votre verdict : 
+      un objet ludifié serait-il <span class="hl3">pertinent</span>, <span class="hl">à discuter</span>, ou <span style="color:var(--rust-lit)">inadapté</span> ?
+    </p>
+    <p class="body">Il n'y a pas toujours une bonne réponse unique. L'analyse compte plus que le verdict.</p>
+  </div>
+
+  <div class="verdict-cases">
+
+    <div class="verdict-case" id="case1">
+      <div class="case-header">
+        <div class="case-ref">CAS N°1 // COLLÈGE, 4ème</div>
+        <div class="case-scenario">
+          "Je veux faire découvrir les fractions à mes élèves de 4ème. Ils n'ont jamais manipulé ce concept. 
+          Je pensais faire un objet ludifié pour que ce soit plus fun."
+        </div>
+        <div class="case-meta">DISCIPLINE : Mathématiques, NIVEAU : Découverte, COMPÉTENCE : Nouvelle notion</div>
+      </div>
+      <div class="verdict-choices">
+        <button class="verdict-btn" onclick="renderVerdict('case1','oui',this)">
+          <div class="vb-label">PERTINENT</div>
+          <div class="vb-text">L'objet ludifié est adapté pour faire découvrir une nouvelle notion</div>
+        </button>
+        <button class="verdict-btn" onclick="renderVerdict('case1','dep',this)">
+          <div class="vb-label">À DISCUTER</div>
+          <div class="vb-text">Cela dépend de certaines conditions pédagogiques</div>
+        </button>
+        <button class="verdict-btn" onclick="renderVerdict('case1','non',this)">
+          <div class="vb-label">INADAPTÉ</div>
+          <div class="vb-text">L'objet ludifié game ne convient pas à cette situation</div>
+        </button>
+      </div>
+      <div class="verdict-feedback" id="vf-case1">
+        <div class="fb-label">ANALYSE</div>
+      </div>
+    </div>
+
+    <div class="verdict-case" id="case2">
+      <div class="case-header">
+        <div class="case-ref">CAS N°2 // LYCÉE, Terminale</div>
+        <div class="case-scenario">
+          "Mes élèves ont étudié pendant trois semaines un corpus sur le mouvement des droits civiques. 
+          Je veux vérifier qu'ils ont bien compris les liens entre les événements avant l'évaluation finale."
+        </div>
+        <div class="case-meta">DISCIPLINE : Histoire, NIVEAU : Révision / consolidation, COMPÉTENCE : Liens causaux</div>
+      </div>
+      <div class="verdict-choices">
+        <button class="verdict-btn" onclick="renderVerdict('case2','oui',this)">
+          <div class="vb-label">PERTINENT</div>
+          <div class="vb-text">L'objet ludifié est adapté à cette phase de révision</div>
+        </button>
+        <button class="verdict-btn" onclick="renderVerdict('case2','dep',this)">
+          <div class="vb-label">À DISCUTER</div>
+          <div class="vb-text">Cela dépend de certaines conditions pédagogiques</div>
+        </button>
+        <button class="verdict-btn" onclick="renderVerdict('case2','non',this)">
+          <div class="vb-label">INADAPTÉ</div>
+          <div class="vb-text">L'objet ludifié game ne convient pas à cette situation</div>
+        </button>
+      </div>
+      <div class="verdict-feedback" id="vf-case2">
+        <div class="fb-label">ANALYSE</div>
+      </div>
+    </div>
+
+    <div class="verdict-case" id="case3">
+      <div class="case-header">
+        <div class="case-ref">CAS N°3 // COLLÈGE, 3ème</div>
+        <div class="case-scenario">
+          "Ma classe est très agitée et difficile à gérer. J'espère qu'un objet ludifié va les calmer 
+          et les motiver. Je n'ai pas encore décidé quelles compétences ça travaillerait."
+        </div>
+        <div class="case-meta">DISCIPLINE : Non définie, NIVEAU : Non défini, COMPÉTENCE : Non définie</div>
+      </div>
+      <div class="verdict-choices">
+        <button class="verdict-btn" onclick="renderVerdict('case3','oui',this)">
+          <div class="vb-label">PERTINENT</div>
+          <div class="vb-text">L'objet ludifié est une bonne réponse à cette situation</div>
+        </button>
+        <button class="verdict-btn" onclick="renderVerdict('case3','dep',this)">
+          <div class="vb-label">À DISCUTER</div>
+          <div class="vb-text">Cela dépend de certaines conditions pédagogiques</div>
+        </button>
+        <button class="verdict-btn" onclick="renderVerdict('case3','non',this)">
+          <div class="vb-label">INADAPTÉ</div>
+          <div class="vb-text">L'objet ludifié game ne convient pas à cette situation</div>
+        </button>
+      </div>
+      <div class="verdict-feedback" id="vf-case3">
+        <div class="fb-label">ANALYSE</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <a href="fiche_cadrage.html" target="_blank" class="btn">FICHE DE CADRAGE →</a>
+  </div>
+</section>
+
+<!-- ══════════════════ FICHE DE CADRAGE ══════════════════ -->
+<section class="screen" id="screen-fiche">
+  <div class="card">
+    <span class="act-num">CLÔTURE, TRANSFERT</span>
+    <h2 class="act-title">Votre fiche de cadrage</h2>
+    <p class="body">
+      Avant de concevoir votre objet ludifié, fixez les éléments fondamentaux. 
+      Cette fiche est <span class="hl">votre boussole de conception</span>. 
+      Elle vous accompagne pendant la production.
+    </p>
+  </div>
+
+  <div class="card fiche" style="overflow:visible;margin-top:24px;">
+    <div class="fiche-score" id="ficheDate"></div>
+    <div class="fiche-grid">
+      <div class="fiche-field">
+        <div class="field-label">DISCIPLINE</div>
+        <input class="field-input" type="text" placeholder="ex. Anglais, SVT, Histoire...">
+      </div>
+      <div class="fiche-field">
+        <div class="field-label">NIVEAU DE CLASSE</div>
+        <input class="field-input" type="text" placeholder="ex. Terminale LLCER, 4ème...">
+      </div>
+      <div class="fiche-field full">
+        <div class="field-label">COMPÉTENCE CIBLÉE, Ce que l'élève sera capable de faire</div>
+        <textarea class="field-input" rows="2" placeholder="Formuler en termes de capacité observable : 'L'élève sera capable de...'"></textarea>
+      </div>
+      <div class="fiche-field full">
+        <div class="field-label">SCÉNARIO EN 2 PHRASES, Contexte narratif qui justifie les énigmes</div>
+        <textarea class="field-input" rows="2" placeholder="Un contexte ancré, une raison d'agir, un enjeu clair..."></textarea>
+      </div>
+    </div>
+
+    <hr class="rule">
+    <div class="section-label">BESOINS TAD ACTIVÉS</div>
+    <div class="fiche-row3">
+      <div class="need-check" onclick="toggleCheck(this)">
+        <div class="check-box">✓</div>
+        <div class="check-label">Autonomie<br><span style="font-size:13px;color:var(--parch-dark);">L'élève choisit, arbitre, décide</span></div>
+      </div>
+      <div class="need-check" onclick="toggleCheck(this)">
+        <div class="check-box">✓</div>
+        <div class="check-label">Compétence<br><span style="font-size:13px;color:var(--parch-dark);">L'élève se sent efficace, progresse</span></div>
+      </div>
+      <div class="need-check" onclick="toggleCheck(this)">
+        <div class="check-box">✓</div>
+        <div class="check-label">Appartenance<br><span style="font-size:13px;color:var(--parch-dark);">L'élève a un rôle, fait partie de</span></div>
+      </div>
+    </div>
+
+    <hr class="rule">
+    <div class="section-label">STRUCTURE DES ÉNIGMES</div>
+    <div class="fiche-grid">
+      <div class="fiche-field">
+        <div class="field-label">NOMBRE D'ÉNIGMES</div>
+        <input class="field-input" type="text" placeholder="3 à 5 recommandés">
+      </div>
+      <div class="fiche-field">
+        <div class="field-label">STRUCTURE</div>
+        <input class="field-input" type="text" placeholder="Linéaire / Parallèle / Mixte">
+      </div>
+      <div class="fiche-field full">
+        <div class="field-label">TYPE DE FEEDBACK PRÉVU, Comment l'erreur sera informative</div>
+        <textarea class="field-input" rows="2" placeholder="ex. Message différencié selon la réponse, indice progressif, explication du concept visé..."></textarea>
+      </div>
+    </div>
+
+    <hr class="rule">
+    <div class="section-label">VÉRIFICATION FINALE</div>
+    <div class="fiche-bottom">
+      <div class="need-check" onclick="toggleCheck(this)">
+        <div class="check-box">✓</div>
+        <div class="check-label" style="font-size:15px;">Les énigmes testent bien la compétence ciblée, pas juste la lecture du texte</div>
+      </div>
+      <div class="need-check" onclick="toggleCheck(this)">
+        <div class="check-box">✓</div>
+        <div class="check-label" style="font-size:15px;">La progression respecte le principe du flow (montée en charge)</div>
+      </div>
+      <div class="need-check" onclick="toggleCheck(this)">
+        <div class="check-box">✓</div>
+        <div class="check-label" style="font-size:15px;">Le scénario est cohérent du début à la fin</div>
+      </div>
+      <div class="need-check" onclick="toggleCheck(this)">
+        <div class="check-box">✓</div>
+        <div class="check-label" style="font-size:15px;">L'outil numérique choisi est au service de la pédagogie, pas l'inverse</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions" style="margin-top:28px;">
+    <button class="btn btn-large" onclick="goTo('screen-final-db')">CLÔTURER LE DOSSIER →</button>
+  </div>
+</section>
+
+<!-- ══════════════════ ÉCRAN FINAL ══════════════════ -->
+<section class="screen" id="screen-final-db">
+  <div class="final-wrap">
+    <div class="seal">📜</div>
+    <h2 class="act-title" style="text-align:center;font-size:26px;">Dossier clos</h2>
+    <p class="body" style="text-align:center;color:var(--parch-dark);max-width:600px;margin:0 auto 24px;">
+      Vous avez joué. Vous avez déconstruit. Vous avez jugé. Vous avez cadré.<br>
+      Vous êtes prêts à concevoir.
+    </p>
+    <div class="ornament">, ✦ —</div>
+  </div>
+
+  <div class="debrief-final">
+    <div class="card" style="margin-bottom:16px;">
+      <div class="section-label">CE QUE VOUS EMPORTEZ</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:8px;">
+        <div style="border:1px solid var(--border);padding:18px;">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--amber);margin-bottom:10px;">PRINCIPE</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--parch);line-height:1.6;">
+            L'outil ne motive pas. <strong>Le design de l'expérience</strong> motive.
+          </div>
+        </div>
+        <div style="border:1px solid var(--border);padding:18px;">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--amber);margin-bottom:10px;">TEST</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--parch);line-height:1.6;">
+            Si je retire le scénario et le cadenas, reste-t-il quelque chose de pédagogique ?
+          </div>
+        </div>
+        <div style="border:1px solid var(--border);padding:18px;">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--amber);margin-bottom:10px;">GARDE-FOU</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--parch);line-height:1.6;">
+            La compétence ciblée doit être visible pour le concepteur, invisible pour le joueur.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:32px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+    <button class="btn" onclick="window.location.reload()">↺ RECOMMENCER</button>
+    <button class="btn btn-rust" onclick="window.print()">IMPRIMER LA FICHE</button>
+  </div>
+
+  <!-- PAUSE -->
+  <div class="pause-block-db">
+    <div class="pause-inner-db">
+      <div class="pause-icon-db">⏸</div>
+      <div class="pause-title-db">PAUSE — BILAN ORAL</div>
+      <div class="pause-text-db">Le formateur anime un retour en groupe avant de continuer.<br>Prenez le temps d'échanger sur ce que vous venez d'analyser.</div>
+      <a href="operation_forge.html" class="pause-btn-db">CONTINUER VERS OPÉRATION FORGE →</a>
+    </div>
+  </div>
+
+</section>
+
+</main>
+
+<script>
+// ══════════════════════════════ KAPP NARRATIVES ══════════════════════════════
+const KAPP_NARRATIVES = {
+  intro: "Dossier TRM-042 déverrouillé. Vous avez fait le travail. Mais un bon agent ne ferme pas un dossier sans comprendre pourquoi ses méthodes ont fonctionné. Ce qui vient d'opérer sur vous, l'urgence narrative, les missions enchaînées, le cadenas final, ce n'était pas du hasard. C'était de la conception fondée sur ce que Deci et Ryan ont appelé la <em>Théorie de l'Autodétermination</em>, la TAD, et sur le flow de Csikszentmihalyi. Et cette conception, vous allez maintenant devoir la maîtriser pour vos propres élèves.",
+};
+
+const KAPP_RADIOS = {
+  intro: "Ici Kapp. Vous venez de vivre cet objet ludifié de l'intérieur. Maintenant je veux que vous le regardiez de l'extérieur, avec les yeux du concepteur. <strong>Pourquoi avez-vous été engagés ? Quelles mécaniques ont activé quels besoins ?</strong> C'est le travail de ce dossier. Ouvrez-le.",
+};
+
+function typewriteDb(el, text, speed, cb) {
+  el.innerHTML = '';
+  let i = 0, inTag = false, buf = '';
+  function tick() {
+    if (i >= text.length) { if (cb) cb(); return; }
+    const ch = text[i];
+    if (ch === '<') inTag = true;
+    if (inTag) { buf += ch; if (ch === '>') { el.innerHTML += buf; buf = ''; inTag = false; } i++; setTimeout(tick, 0); }
+    else { el.innerHTML += ch; i++; setTimeout(tick, speed); }
+  }
+  tick();
+}
+
+function triggerKapp(key) {
+  const btn    = document.getElementById('ktb-' + key);
+  const msgWrap = document.getElementById('km-' + key);
+  const msgEl  = document.getElementById('kmsg-' + key);
+  const openBtn = document.getElementById('btn-open-dossier');
+
+  btn.classList.add('used');
+  msgWrap.classList.add('visible');
+  setTimeout(() => msgWrap.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+
+  typewriteDb(msgEl, KAPP_RADIOS[key], 22, () => {
+    if (openBtn) setTimeout(() => {
+      openBtn.classList.remove('hidden-btn');
+      openBtn.style.display = 'inline-block';
+    }, 400);
+  });
+}
+
+function initIntroKapp() {
+  try {
+    const narEl  = document.getElementById('kn-intro');
+    const trigWrap = document.getElementById('kt-intro');
+    if (!narEl || !trigWrap) return;
+    trigWrap.classList.remove('visible');
+    typewriteDb(narEl, KAPP_NARRATIVES.intro, 16, () => {
+      setTimeout(() => trigWrap.classList.add('visible'), 400);
+    });
+  } catch(e) { console.error('initIntroKapp error:', e); }
+}
+
+// ══════════════════════════════ NAV ══════════════════════════════
+const screenOrder = ['screen-intro','screen-acte1','screen-acte2','screen-acte3','screen-fiche','screen-final-db'];
+const navLabels = ['INTRO','ACTE I','ACTE II','ACTE III','FICHE','FIN'];
+
+function goTo(id) {
+  console.log('goTo called:', id);
+  try {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(id);
+    if (!target) { console.error('Screen not found:', id); return; }
+    target.classList.add('active');
+    console.log('Active classes:', target.className);
+    const idx = screenOrder.indexOf(id);
+    updateNav(idx);
+    window.scrollTo({top:0, behavior:'smooth'});
+    if (id === 'screen-fiche') setFicheDate();
+  } catch(e) { console.error('goTo error:', e); }
+}
+
+function updateNav(idx) {
+  for (let i=0;i<4;i++) {
+    const ns = document.getElementById('ns'+i);
+    ns.classList.remove('done','active');
+    if (i < idx-1) ns.classList.add('done');
+    else if (i === idx-1) ns.classList.add('active');
+  }
+  document.getElementById('navLabel').textContent = navLabels[idx] || '';
+}
+
+// ══════════════════════════════ ACTE 1, DRAG MAPPING ══════════════════════════════
+let draggingChipId = null;
+const placedChips = {}; // dropId -> chipId
+const answers = {
+  'drop-m1-tad': 'competence',
+  'drop-m1-flow': 'feedback',
+  'drop-m2-tad': 'autonomie',
+  'drop-m2-flow': 'zone-proximale',
+  'drop-m3-tad': 'competence',
+  'drop-m3-flow': 'progression',
+  'drop-m4-tad': 'appartenance',
+  'drop-m4-flow': 'accomplissement',
+};
+
+const chipLabels = {
+  'autonomie':'Autonomie','competence':'Compétence','competence2':'Compétence',
+  'appartenance':'Appartenance','zone-proximale':'Zone proximale','progression':'Progression',
+  'feedback':'Feedback immédiat','accomplissement':'Accomplissement'
+};
+
+function isCorrectAnswer(dropId, placed) {
+  const competenceCases = ['drop-m1-tad','drop-m3-tad'];
+  if (competenceCases.includes(dropId)) return placed === 'competence' || placed === 'competence2';
+  return placed === answers[dropId];
+}
+
+function chipDragStart(e) {
+  draggingChipId = e.currentTarget.dataset.id;
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function allowDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+
+function leaveDrop(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function dropChip(e, target) {
+  e.preventDefault();
+  target.classList.remove('drag-over');
+  if (!draggingChipId) return;
+
+  // If target already filled, return chip to pool
+  const prevChip = placedChips[target.id];
+  if (prevChip) {
+    const prevEl = document.querySelector(`.drag-chip[data-id="${prevChip}"]`);
+    if (prevEl) prevEl.classList.remove('used');
+  }
+
+  // Place new chip
+  placedChips[target.id] = draggingChipId;
+  target.textContent = chipLabels[draggingChipId];
+  target.classList.add('filled');
+  target.classList.remove('correct-fill','wrong-fill');
+
+  // Mark chip as used
+  const chipEl = document.querySelector(`.drag-chip[data-id="${draggingChipId}"]`);
+  if (chipEl) chipEl.classList.add('used');
+
+  draggingChipId = null;
+}
+
+function checkMapping() {
+  let allFilled = true;
+  let allCorrect = true;
+  const drops = document.querySelectorAll('.drop-target');
+
+  drops.forEach(drop => {
+    const placed = placedChips[drop.id];
+    if (!placed) { allFilled = false; return; }
+    if (isCorrectAnswer(drop.id, placed)) {
+      drop.classList.add('correct-fill');
+      drop.classList.remove('wrong-fill');
+    } else {
+      drop.classList.add('wrong-fill');
+      drop.classList.remove('correct-fill');
+      allCorrect = false;
+      setTimeout(() => {
+        const chipEl = document.querySelector(`.drag-chip[data-id="${placed}"]`);
+        if (chipEl) chipEl.classList.remove('used');
+        delete placedChips[drop.id];
+        drop.textContent = 'déposer ici';
+        drop.classList.remove('filled','wrong-fill');
+      }, 800);
+    }
+  });
+
+  const fb = document.getElementById('fb-acte1');
+
+  if (!allFilled) {
+    fb.className = 'feedback visible';
+    fb.style.borderColor = 'var(--rust-lit)';
+    fb.innerHTML = 'Toutes les cases ne sont pas remplies. Placez une étiquette dans chaque zone avant de valider.';
+    return;
+  }
+
+  if (allCorrect) {
+    fb.className = 'feedback sage visible';
+    fb.innerHTML = `<strong>✦ Tableau validé.</strong><br><br>
+    Mission 01, <em>Compétence</em> : vous deviez analyser et discriminer. <em>Feedback immédiat</em> : chaque erreur était expliquée différemment selon le profil.<br>
+    Mission 02, <em>Autonomie</em> : vous choisissiez librement dans le texte, à votre rythme. <em>Zone proximale</em> : le corpus était accessible mais demandait une lecture active.<br>
+    Mission 03, <em>Compétence</em> : reconstruire une logique renforce le sentiment d'efficacité. <em>Progression</em> : l'ordre lui-même illustrait le concept travaillé.<br>
+    Mission 04, <em>Appartenance</em> : Amara avait un rôle, le cadenas ritualisait la clôture. <em>Accomplissement</em> : le clic final était une récompense intrinsèque.`;
+    document.getElementById('badge-acte1').classList.add('visible');
+    setTimeout(() => { document.getElementById('btn-acte2').style.display = 'inline-block'; }, 600);
+  } else {
+    fb.className = 'feedback visible';
+    fb.style.borderColor = 'var(--rust-lit)';
+    fb.innerHTML = 'Certaines étiquettes ne sont pas au bon endroit. Elles sont revenues dans la liste. Réessayez.';
+  }
+}
+
+// ══════════════════════════════ ACTE 2, DIAGNOSTIC ══════════════════════════════
+function toggleDiag(id) {
+  const item = document.getElementById(id);
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.diag-item').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+function revealDiag(n) {
+  const reveal = document.getElementById('reveal' + n);
+  reveal.classList.add('visible');
+  const item = document.getElementById('diag' + n);
+  item.classList.add('analysed');
+  document.getElementById('status' + n).textContent = 'ANALYSÉ';
+}
+
+function autoSaveDiag(n) {
+  const item = document.getElementById('diag' + n);
+  const textareas = item.querySelectorAll('textarea');
+  const filled = [...textareas].some(t => t.value.trim().length > 0);
+  if (filled) {
+    item.classList.add('analysed');
+    document.getElementById('status' + n).textContent = 'EN COURS';
+  }
+}
+
+// ══════════════════════════════ ACTE 3, VERDICTS ══════════════════════════════
+const verdictData = {
+  case1: {
+    oui: { label:'PERTINENT', text: `Un objet ludifié peut très bien introduire une nouvelle notion, à condition que les énigmes <em>construisent</em> le concept pas à pas, et que le premier contact avec la fraction soit guidé et étayé. Ce n'est pas le dispositif qui est inadapté : c'est l'absence de réflexion sur la progressivité qui peut l'être. Si l'enseignant conçoit les énigmes pour faire manipuler le concept (comparer des fractions via des choix de partage, par exemple), c'est solide.` },
+    dep: { label:'À DISCUTER', text: `Verdict le plus nuancé et le plus juste. Un objet ludifié pour découvrir une notion <em>peut</em> fonctionner, mais demande une conception très rigoureuse : chaque énigme doit réellement construire la notion, pas juste la tester. Le risque : surcharger cognitivement l'élève avec la mécanique de jeu au moment même où il doit assimiler un concept nouveau. La progression doit être pensée millimètre par millimètre.` },
+    non: { label:'INADAPTÉ', text: `Pas nécessairement. Un objet ludifié n'est pas réservé à la révision. Il peut introduire une notion, c'est une question de conception, pas de principe. Dire que l'objet ludifié ne convient pas à la découverte, c'est confondre l'outil et son usage. Ce qui pose problème ici, c'est si la conception n'est pas rigoureuse, pas le fait de vouloir introduire une notion.` }
+  },
+  case2: {
+    oui: { label:'PERTINENT', text: `Cas d'usage idéal. La révision de connaissances déjà construites est le terrain le plus fertile pour l'objet ludifié pédagogique. Les élèves ont les compétences nécessaires pour jouer, ils ne sont pas en situation de double surcharge (apprendre + jouer). Le flow sera plus facile à calibrer. Les énigmes peuvent jouer sur des liens causaux, des chronologies, des comparaisons d'événements, c'est exactement ce que le format permet.` },
+    dep: { label:'À DISCUTER', text: `C'est un contexte favorable, mais il reste des conditions à vérifier : les élèves connaissent-ils bien le corpus ? La durée est-elle calibrée ? Les énigmes travaillent-elles réellement les <em>liens causaux</em> ou juste la mémorisation de dates ? Si ces points sont traités, l'objet ludifié est clairement pertinent ici.` },
+    non: { label:'INADAPTÉ', text: `Au contraire, c'est même l'un des meilleurs contextes pour un objet ludifié. La révision d'un corpus maîtrisé, avec des énigmes qui travaillent les liens causaux plutôt que la simple restitution, est exactement ce pour quoi le format est fait. Revoir ce verdict à la lumière des 5 pièces à conviction.` }
+  },
+  case3: {
+    oui: { label:'RISQUÉ', text: `Utiliser l'objet ludifié pour "calmer" une classe difficile sans avoir défini au préalable les compétences ciblées, c'est partir de la forme plutôt que du fond. L'objet ludifié sans objectif pédagogique défini est du numérique gadget, exactement ce que la formation cherche à éviter. Une classe difficile a besoin d'un dispositif bien cadré, pas d'un dispositif spectaculaire.` },
+    dep: { label:'À DISCUTER', text: `La situation peut évoluer dans le bon sens, si l'enseignant prend le temps de définir les compétences visées avant de concevoir. L'intention de motiver est bonne. Le problème, c'est l'ordre : on ne choisit pas l'outil avant de savoir ce qu'on veut enseigner. La fiche de cadrage est exactement faite pour ce cas.` },
+    non: { label:'ANALYSE JUSTE', text: `Oui : dans l'état actuel, sans objectifs définis, l'objet ludifié serait du numérique gadget. <em>Pas parce que c'est un objet ludifié</em>, mais parce qu'aucune compétence ciblée n'est identifiée. L'outil ne motive pas, le design de l'expérience motive. Ici, il n'y a pas encore de design. La prochaine étape pour cet enseignant : remplir la fiche de cadrage.` }
+  }
+};
+
+function renderVerdict(caseId, choice, btn) {
+  const data = verdictData[caseId][choice];
+  const fb = document.getElementById('vf-' + caseId);
+  const btns = btn.parentElement.querySelectorAll('.verdict-btn');
+  btns.forEach(b => b.classList.remove('chosen-yes','chosen-no','chosen-dep'));
+  btn.classList.add(choice === 'oui' ? 'chosen-yes' : choice === 'non' ? 'chosen-no' : 'chosen-dep');
+  fb.innerHTML = `<div class="fb-label">${data.label}</div>${data.text}`;
+  fb.classList.add('visible');
+}
+
+// ══════════════════════════════ FICHE ══════════════════════════════
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+}
+
+function setFicheDate() {
+  const now = new Date();
+  document.getElementById('ficheDate').textContent =
+    'FORMATION LUDIFICATION N2, ' + now.toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'});
+}
+
+// ══════════════════════════════ AUDIO ══════════════════════════════
+function playTick() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.frequency.value = 880; osc.type = 'sine';
+    g.gain.setValueAtTime(0.06, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.start(); osc.stop(ctx.currentTime + 0.1);
+  } catch(e) {}
+}
+
+document.querySelectorAll('.btn, .verdict-btn, .evidence-header, .need-check').forEach(el => {
+  el.addEventListener('click', playTick);
+});
+
+// Init
+initIntroKapp();
+</script>
+</body>
+</html>
