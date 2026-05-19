@@ -512,7 +512,54 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
   color:rgba(0,255,136,0.3); letter-spacing:2px;
 }
 
-/* PAUSE BLOCK */
+/* MOT MÊLÉ */
+.ws-container {
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  gap: 2px;
+  margin-bottom: 20px;
+  user-select: none;
+}
+
+.ws-cell {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron', monospace; font-size: clamp(9px, 1.5vw, 13px);
+  font-weight: 700; letter-spacing: 0;
+  border: 1px solid rgba(0,255,136,0.08);
+  background: rgba(0,20,12,0.5);
+  color: var(--grey-lit);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ws-cell:hover { background: rgba(0,255,136,0.08); color: var(--green); }
+.ws-cell.selected { background: rgba(0,255,136,0.15); color: var(--green); border-color: rgba(0,255,136,0.4); }
+.ws-cell.found { background: rgba(255,170,0,0.12); color: var(--amber); border-color: rgba(255,170,0,0.35); }
+.ws-cell.found-key { background: rgba(0,255,136,0.25); color: var(--green); border-color: var(--green); box-shadow: 0 0 8px rgba(0,255,136,0.3); }
+
+.ws-words {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
+}
+.ws-word {
+  font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 2px;
+  padding: 4px 10px; border: 1px solid var(--border); color: var(--grey-lit);
+  transition: all 0.3s;
+}
+.ws-word.found { border-color: var(--amber); color: var(--amber); text-decoration: line-through; opacity: 0.6; }
+.ws-word.found-key { border-color: var(--green); color: var(--green); text-decoration: none; opacity: 1; font-weight: 700; }
+
+.ws-code-cell {
+  font-family: 'Orbitron', monospace; font-size: 20px; font-weight: 900;
+  width: 40px; height: 40px;
+  border: 1px solid rgba(255,170,0,0.4); background: rgba(40,20,0,0.5);
+  color: var(--amber); display: flex; align-items: center; justify-content: center;
+  transition: all 0.4s;
+}
+.ws-code-cell.revealed {
+  border-color: var(--green); background: rgba(0,40,20,0.5);
+  color: var(--green); box-shadow: 0 0 12px rgba(0,255,136,0.3);
+}
+
 .pause-block {
   margin-top:40px;
   border:2px solid var(--amber);
@@ -603,7 +650,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
   <div class="theory-box" id="th-intro">
     <div class="theory-tag">// CONTEXTE OPÉRATIONNEL</div>
     <div class="theory-content">
-      Avant d'entrer dans le vif du sujet, voici ce que vous devez savoir. La motivation d'un élève n'est pas une qualité fixe, c'est un état qui fluctue selon les conditions dans lesquelles il apprend. Les psychologues distinguent trois états : agir pour le plaisir de l'activité elle-même, agir pour une raison externe, ou <strong>ne plus percevoir de raison d'agir du tout</strong>. Ce troisième état est le plus dangereux, et le plus silencieux.
+      La motivation n'est pas une qualité fixe. C'est un état qui fluctue sur un continuum : de l'engagement total à l'absence complète de raison d'agir. Deci et Ryan ont cartographié ce continuum. Un élève peut être motivé de l'extérieur, de l'intérieur, ou ne plus l'être du tout. Ces états se lisent dans les comportements, à condition de savoir quoi chercher.
     </div>
   </div>
 
@@ -639,25 +686,32 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
   </div>
   <div class="card">
     <div class="card-tag">DOSSIER TRM-042, FICHES ÉLÈVES</div>
-    <p class="body-text">Kapp vous a transmis quatre profils. <span class="hl">Un seul élève</span> est en état d'<span class="hl">amotivation</span>, il ne perçoit plus aucun lien entre ses actions et leurs résultats. Ni peur. Ni plaisir. Rien.</p>
-    <p class="body-text">Identifiez-le et transmettez votre analyse à Kapp.</p>
+    <p class="body-text">Kapp vous a transmis <span class="hl">six profils</span>. Un seul élève est en état d'<span class="hl">amotivation profonde et structurelle</span> : il ne perçoit plus aucun lien entre ses actions et leurs résultats, dans aucune matière, depuis plusieurs mois. Les autres ont décroché pour d'autres raisons. Identifiez le bon profil.</p>
   </div>
   <div class="profiles-grid">
     <div class="profile-card" onclick="selectProfile(this,false)">
-      <div class="profile-name">ÉLÈVE A // LUCAS</div>
-      <div class="profile-text">"Je fais mes devoirs parce que mes parents me retirent la tablette si je ne les fais pas. Mais bon, au moins je sais pourquoi je travaille."</div>
+      <div class="profile-name">ÉLÈVE A // MALIA</div>
+      <div class="profile-text">"Je travaille surtout en SVT et en maths. Pour les autres matières, je vois pas trop l'intérêt. Mais si c'est utile pour médecine, je le ferai."</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile(this,false)">
+      <div class="profile-name">ÉLÈVE B // THÉO</div>
+      <div class="profile-text">"J'ai eu 13 en Histoire alors que j'avais tout révisé. J'arrive pas à dormir depuis. Ma mère a vu la note et elle a rien dit, ça m'a encore plus stressé."</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile(this,false)">
+      <div class="profile-name">ÉLÈVE C // JONAS</div>
+      <div class="profile-text">"J'aimais bien l'anglais avant. Mais depuis que le prof a lu ma rédac devant toute la classe pour montrer les fautes, je réponds plus."</div>
     </div>
     <div class="profile-card" onclick="selectProfile(this,true)">
-      <div class="profile-name">ÉLÈVE B // NORA</div>
-      <div class="profile-text">"Je comprends pas à quoi ça sert. Que je travaille ou pas, ça change rien. J'ai arrêté d'essayer."</div>
+      <div class="profile-name">ÉLÈVE D // NORA</div>
+      <div class="profile-text">"J'sais pas. Je viens, je suis là, mais... ça fait des mois que peu importe ce que je fais, ça change rien. J'ai arrêté d'essayer."</div>
     </div>
     <div class="profile-card" onclick="selectProfile(this,false)">
-      <div class="profile-name">ÉLÈVE C // MEHDI</div>
-      <div class="profile-text">"J'adore les maths. Je résous des problèmes même le week-end, pas pour les notes, juste parce que c'est bon quand ça clique."</div>
+      <div class="profile-name">ÉLÈVE E // CAMILLE</div>
+      <div class="profile-text">"Je bosse quand y'a un contrôle. Le reste du temps c'est pas la peine. De toute façon c'est noté ou c'est pas noté."</div>
     </div>
     <div class="profile-card" onclick="selectProfile(this,false)">
-      <div class="profile-name">ÉLÈVE D // CAMILLE</div>
-      <div class="profile-text">"Je travaille pour avoir mon bac. Après je verrai. Pour l'instant je fais ce qu'il faut faire."</div>
+      <div class="profile-name">ÉLÈVE F // SAMIR</div>
+      <div class="profile-text">"En cours j'attends que ça finisse. Je comprends tout du premier coup, alors je regarde par la fenêtre. C'est long."</div>
     </div>
   </div>
   <div class="feedback" id="fb-m1"></div>
@@ -697,6 +751,20 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     <div class="theory-content">
       Deci et Ryan ont passé trente ans à observer ce qui fait qu'un être humain s'engage ou se retire. Leur conclusion : trois besoins psychologiques fondamentaux doivent être satisfaits pour que la motivation soit durable.<br><br>
       Ces trois besoins portent chacun un nom précis. Ils concernent la façon dont un individu perçoit sa propre action, son efficacité, et sa relation aux autres. Quand ils sont nourris simultanément, la motivation intrinsèque s'installe d'elle-même. Quand l'un d'eux est ignoré, le système se fragilise. Quand tous trois sont absents, <strong>c'est Nora</strong>.
+    </div>
+  </div>
+
+  <div class="theory-box" style="border-color:rgba(0,255,136,0.3);margin-top:16px;">
+    <div class="theory-tag" style="color:var(--green);">// ET L'ESCAPE GAME DANS TOUT ÇA ?</div>
+    <div class="theory-content">
+      Un escape game pédagogique bien conçu peut adresser plusieurs profils simultanément, mais pas tous de la même façon.<br><br>
+      <strong style="color:var(--amber);">MALIA</strong> : le scénario ancré dans une discipline donne du sens à l'activité. Elle s'investit si elle perçoit la pertinence.<br><br>
+      <strong style="color:var(--amber);">THÉO</strong> : le feedback bienveillant sur l'erreur et l'absence d'enjeu de note réduisent la pression introjectée. Attention aux classements et aux scores visibles.<br><br>
+      <strong style="color:var(--amber);">JONAS</strong> : le rôle narratif et le travail en groupe réactivent le besoin d'appartenance. C'est souvent suffisant pour réamorcer l'engagement.<br><br>
+      <strong style="color:var(--amber);">NORA</strong> : les micro-succès des premières énigmes peuvent recréer un sentiment de compétence. Mais c'est fragile : une énigme trop difficile casse tout. L'escape game est un point d'entrée, pas une solution.<br><br>
+      <strong style="color:var(--amber);">CAMILLE</strong> : l'urgence narrative du compte à rebours remplace l'échéance du contrôle. Efficace à court terme pour maintenir l'engagement.<br><br>
+      <strong style="color:var(--amber);">SAMIR</strong> : une énigme finale complexe, un rôle de leader de groupe. Il faut que le défi soit réel pour qu'il s'investisse.<br><br>
+      <strong>La limite :</strong> l'escape game ne résout pas une amotivation structurelle. Il peut créer les conditions d'un réamorçage, pas d'une guérison.
     </div>
   </div>
   <div class="radio-trigger-wrap" id="rt-ch1">
@@ -903,7 +971,90 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     </div>
   </div>
   <div class="feedback" id="fb-m4"></div>
-  <div class="card" id="padlock-card" style="display:none;">
+</section>
+
+<!-- ══ MOT MÊLÉ ══ -->
+<section class="screen" id="s-wordsearch">
+  <div class="cinematic-header">
+    <div class="ch-eyebrow">DÉCHIFFREMENT FINAL // DOSSIER TRM-042</div>
+    <div class="ch-title">Construction<br>du code</div>
+    <div class="ch-rule"></div>
+  </div>
+
+  <div class="kapp-card">
+    <div class="kapp-avatar-bar">
+      <div class="kapp-avatar-ring">🕵</div>
+      <div>
+        <div class="kapp-avatar-name">AGENT KAPP</div>
+        <div class="kapp-avatar-role">DÉCHIFFREMENT // TRANSMISSION FINALE</div>
+      </div>
+    </div>
+    <div class="narrative-text">
+      Le code d'accès au dossier TRM-042 est dissimulé dans les concepts de cette mission. Retrouvez tous les mots cachés dans la grille. La clé de déchiffrement sera révélée une fois la grille complète.
+    </div>
+  </div>
+
+  <!-- MOT MÊLÉ -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-tag">MOT MÊLÉ // <span id="wsFoundCount">0</span> / 17 MOTS TROUVÉS</div>
+    <div style="font-size:11px;color:var(--grey);letter-spacing:2px;margin-bottom:16px;">Cliquez sur les lettres pour sélectionner un mot. La sélection se valide automatiquement.</div>
+
+    <div class="ws-container" id="wsGrid"></div>
+    <div class="ws-words" id="wsWords"></div>
+  </div>
+
+  <!-- DÉCHIFFREMENT — caché jusqu'à la fin -->
+  <div class="card" id="ws-decode-block" style="display:none;margin-top:20px;border-color:var(--amber);">
+    <div class="card-tag" style="color:var(--amber);">✦ GRILLE COMPLÈTE — CONSTRUCTION DU CODE</div>
+    <div class="narrative-text" style="margin-bottom:20px;">
+      Tous les concepts sont identifiés. Appliquez maintenant la table de conversion pour construire le code d'accès.<br><br>
+      <span style="color:var(--amber);font-size:13px;letter-spacing:2px;display:block;margin-bottom:12px;">TABLE : A=1 B=2 C=3 D=4 E=5 F=6 G=7 H=8 I=9 J=0 K=1 L=2 M=3 N=4 O=5 P=6 Q=7 R=8 S=9 T=0 U=1 V=2 W=3 X=4 Y=5 Z=6</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+
+      <div class="enigme-box">
+        <div class="enigme-box-tag">① LE CHERCHEUR DONT LA TAD PORTE LE NOM</div>
+        <div class="enigme-box-text">Première lettre → table de conversion → <strong>premier chiffre du code</strong></div>
+      </div>
+
+      <div class="enigme-box">
+        <div class="enigme-box-tag">② LE VERBE DE BLOOM QUI SUIT "APPLIQUER"</div>
+        <div class="enigme-box-text">Première lettre → table de conversion → <strong>deuxième chiffre</strong></div>
+      </div>
+
+      <div class="enigme-box">
+        <div class="enigme-box-tag">③ LE BESOIN TAD LIÉ AU SENTIMENT D'EFFICACITÉ</div>
+        <div class="enigme-box-text">Première lettre → table de conversion → <strong>troisième chiffre</strong></div>
+      </div>
+
+      <div class="enigme-box">
+        <div class="enigme-box-tag">④ LE TYPE DE MOTIVATION QUI VIENT DE L'INTÉRIEUR</div>
+        <div class="enigme-box-text">Première lettre → table de conversion → <strong>quatrième chiffre</strong></div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:20px;padding:14px 18px;border:1px solid rgba(255,170,0,0.3);background:rgba(40,20,0,0.3);">
+      <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--amber);letter-spacing:3px;margin-bottom:12px;">VOTRE CODE À 4 CHIFFRES</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <div class="ws-code-cell" id="wc0">?</div>
+        <div class="ws-code-cell" id="wc1">?</div>
+        <div class="ws-code-cell" id="wc2">?</div>
+        <div class="ws-code-cell" id="wc3">?</div>
+      </div>
+      <div style="font-size:10px;color:var(--grey);letter-spacing:2px;margin-top:10px;">Entrez ce code dans le cadenas pour déverrouiller le dossier.</div>
+    </div>
+
+    <div class="actions" style="margin-top:20px;">
+      <button class="btn btn-amber btn-large" onclick="goTo('s-m4-cadenas')">ACCÉDER AU CADENAS →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CADENAS ══ -->
+<section class="screen" id="s-m4-cadenas">
+  <div class="card">
     <div class="card-tag">CADENAS, DOSSIER TRM-042</div>
     <div class="padlock-section">
       <div class="padlock-svg-wrap">
@@ -921,19 +1072,19 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
       <div class="code-dials">
         <div class="dial-wrap">
           <button class="dial-btn" onclick="dialUp(0)">▲</button>
-          <div class="dial-display"><span class="digit-inner" id="d0">7</span></div>
+          <div class="dial-display"><span class="digit-inner" id="d0">0</span></div>
           <button class="dial-btn" onclick="dialDown(0)">▼</button>
         </div>
         <div class="dial-sep">·</div>
         <div class="dial-wrap">
           <button class="dial-btn" onclick="dialUp(1)">▲</button>
-          <div class="dial-display"><span class="digit-inner" id="d1">3</span></div>
+          <div class="dial-display"><span class="digit-inner" id="d1">0</span></div>
           <button class="dial-btn" onclick="dialDown(1)">▼</button>
         </div>
         <div class="dial-sep">·</div>
         <div class="dial-wrap">
           <button class="dial-btn" onclick="dialUp(2)">▲</button>
-          <div class="dial-display"><span class="digit-inner" id="d2">9</span></div>
+          <div class="dial-display"><span class="digit-inner" id="d2">0</span></div>
           <button class="dial-btn" onclick="dialDown(2)">▼</button>
         </div>
         <div class="dial-sep">·</div>
@@ -945,14 +1096,6 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
       </div>
       <div class="padlock-msg" id="padlockMsg">ENTREZ LE CODE POUR DÉVERROUILLER</div>
       <button class="btn-validate" onclick="validatePadlock()">▶ DÉVERROUILLER</button>
-      <div class="enigme-box" id="enigme-4" style="display:none;">
-        <div class="enigme-box-tag">🔑 ÉNIGME, 4ème CHIFFRE</div>
-        <div class="enigme-box-text">
-          Vous avez traversé cette mission en mobilisant les besoins fondamentaux de la motivation.<br>
-          Combien sont-ils, exactement, selon Deci & Ryan ?<br>
-          <span style="color:var(--amber);font-size:13px;margin-top:8px;display:block;letter-spacing:1px;">Ce chiffre est votre quatrième code.</span>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -1037,18 +1180,18 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
 //  CONTENU
 // ══════════════════════════════════════════
 const NARRATIVES = {
-  intro:   "Six classes. Trois semaines. Un même symptôme : des élèves qui disparaissent sans bruit. Pas de conflit, pas d'incident. Juste une présence qui s'efface, un regard qui se détourne. L'Académie m'a chargé d'enquêter. J'ai ouvert le dossier TRM-042 et j'ai trouvé quatre profils. L'un d'eux m'a arrêté net, pas parce qu'il est rebelle ou paresseux, mais parce qu'il ne perçoit plus rien. Aucune raison d'agir. Ni dedans, ni dehors.",
-  ch1:     "Vous avez trouvé Nora. Ce que j'ai vu dans son dossier correspond exactement à ce qu'un chercheur américain a décrit il y a quarante ans, un état qu'il a appelé l'amotivation. Pas un manque de volonté. Une absence de sens. Deci et son collègue Ryan ont consacré leur carrière à comprendre pourquoi certains élèves s'investissent et d'autres s'effacent. Ils ont identifié trois besoins fondamentaux que tout être humain porte en lui, trois besoins dont les noms sont précis, et dont la satisfaction simultanée conditionne tout le reste.",
-  ch2:     "Les trois besoins sont entre vos mains maintenant. Mais quelque chose m'échappait encore. J'ai vu des classes où ces besoins semblaient satisfaits, et pourtant les élèves décrochaient à mi-séance. Comme si l'énergie s'évaporait sans raison. J'ai fini par consulter les travaux d'un chercheur hongrois, Csikszentmihalyi, qui a passé sa vie à observer des chirurgiens, des alpinistes, des musiciens de jazz dans leurs moments d'engagement le plus intense. Sa réponse tient en un mot : le flow. Un état qui n'arrive pas par accident, il se construit, étape par étape.",
-  ch3:     "Amara. 16 ans. Notes solides jusqu'en début de trimestre. Puis le silence. Elle ne perturbe pas, elle ne refuse pas, elle s'est simplement retirée, comme si elle avait décidé que sa présence n'avait plus d'effet sur ce qui se passait en classe. J'ai relu ses copies. Il n'y a pas de lacune disciplinaire. Il y a une absence de conditions. Personne ne lui a donné de rôle. Personne n'a ajusté le défi à son niveau réel. Personne n'a remarqué qu'elle avait cessé d'essayer.",
-  final:   "Rapport de clôture, Agent Kapp, Académie Secrète. Dossier TRM-042 déverrouillé. Ce qui semblait être un problème de discipline était une absence totale de conditions motivationnelles : trois besoins non satisfaits, un équilibre défi-compétence ignoré, une élève progressivement effacée du dispositif. Le réseau l'a vu. Vous avez mobilisé les bons cadres théoriques et vous les avez appliqués à un cas réel. Ce n'est pas un exercice. C'est la compétence que vous emportez d'ici."
+  intro:   "Six classes. Trois semaines. Même symptôme. Des élèves qui disparaissent sans bruit. Pas de conflit, pas d'incident. Une présence qui s'efface, un regard qui se détourne. L'Académie m'a chargé d'enquêter. J'ai ouvert le dossier TRM-042. Six profils. Chacun a décroché, mais pas pour la même raison.",
+  ch1:     "Vous avez trouvé Nora. Ce que j'ai vu dans son dossier correspond exactement à ce que Deci et Ryan ont décrit : l'amotivation. Pas un manque de volonté. Une rupture totale entre l'effort et le sens. Mais en regardant les cinq autres profils, j'ai compris que le problème était plus large. Chaque élève est sur un point différent d'un même continuum. Et selon où il se trouve, ce que le prof peut faire change radicalement.",
+  ch2:     "Les trois besoins sont entre vos mains. Mais j'ai vu des classes où ils semblaient satisfaits, et pourtant les élèves décrochaient à mi-séance. Comme si l'énergie s'évaporait. J'ai consulté les travaux de Csikszentmihalyi, qui a observé des chirurgiens, des alpinistes, des musiciens dans leurs moments d'engagement le plus intense. Sa réponse tient en un mot : le flow. Un état qui ne s'installe pas par hasard, il se construit.",
+  ch3:     "Amara. 16 ans. Notes solides jusqu'en début de trimestre. Puis le silence. Elle ne perturbe pas, elle ne refuse pas. Elle s'est simplement retirée. J'ai relu ses copies : pas de lacune disciplinaire. Une absence de conditions. Personne ne lui a donné de rôle. Personne n'a ajusté le défi à son niveau réel. Personne n'a remarqué qu'elle avait cessé d'essayer.",
+  final:   "Rapport de clôture. Dossier TRM-042 déverrouillé. Ce qui semblait être un problème de discipline était une absence de conditions motivationnelles : trois besoins non satisfaits, un équilibre défi-compétence ignoré, une élève progressivement effacée du dispositif. Vous avez mobilisé les bons cadres théoriques et vous les avez appliqués à un cas réel. C'est la compétence que vous emportez d'ici."
 };
 
 const RADIOS = {
-  intro: "Ici Kapp. J'ai besoin de votre regard sur ce dossier. Quatre élèves, quatre postures face à l'apprentissage. Trois d'entre eux ont encore une raison d'agir, quelle qu'elle soit. <strong>Le quatrième ne l'a plus.</strong> Je ne peux pas me tromper de cible. Analysez les profils et identifiez-le.",
-  ch1:   "Kapp à réseau. J'ai un rapport pédagogique compromis entre les mains, quelqu'un a mélangé les vrais besoins motivationnels avec des leurres pour brouiller les pistes. Je ne peux pas prendre le risque de me tromper. <strong>Extrayez les trois besoins authentiques du corpus.</strong> Ne vous laissez pas piéger par le vocabulaire familier.",
-  ch2:   "Transmission urgente. Le plan de cours de TRM-042 a été manipulé, les activités ont été réordonnées pour <strong>casser la montée en charge progressive</strong>. La logique du flow a été sabotée. J'ai besoin que vous reconstruisiez la séquence correcte. Vous avez les clés théoriques. Utilisez-les.",
-  ch3:   "Dernière transmission avant déverrouillage. Voici le cas Amara. J'ai identifié quatre interventions possibles, une seule active les trois besoins et respecte son niveau de flow. <strong>Je veux votre confirmation avant d'agir.</strong> Faites le bon choix."
+  intro: "Ici Kapp. Six élèves, six postures. Certains ont encore une raison d'agir, quelle qu'elle soit. L'un d'eux n'en a plus aucune. Pas de rébellion, pas de paresse : une rupture totale entre l'effort et le sens. C'est l'état le plus critique, et le plus difficile à repérer. <strong>Identifiez-le.</strong>",
+  ch1:   "Kapp à réseau. J'ai un rapport pédagogique compromis entre les mains. Quelqu'un a mélangé les vrais besoins motivationnels avec des leurres pour brouiller les pistes. <strong>Extrayez les trois besoins authentiques du corpus.</strong> Ne vous laissez pas piéger par le vocabulaire familier.",
+  ch2:   "Transmission urgente. Le plan de cours de TRM-042 a été manipulé : les activités ont été réordonnées pour <strong>casser la montée en charge progressive</strong>. La logique du flow a été sabotée. Reconstruisez la séquence correcte. Vous avez les clés. Utilisez-les.",
+  ch3:   "Dernière transmission avant déverrouillage. Voici le cas Amara. J'ai identifié quatre interventions possibles. Une seule active les trois besoins et respecte son niveau de flow. <strong>Je veux votre confirmation avant d'agir.</strong>"
 };
 
 // ══════════════════════════════════════════
@@ -1102,8 +1245,10 @@ const PHASES = [
   {id:'s-ch2',  label:'CH2', type:'chapter'},
   {id:'s-m3',   label:'M3',  type:'mission'},
   {id:'s-ch3',  label:'CH3', type:'chapter'},
-  {id:'s-m4',   label:'M4',  type:'mission'},
-  {id:'s-final',label:'FIN', type:'chapter'},
+  {id:'s-m4',        label:'M4',      type:'mission'},
+  {id:'s-wordsearch',label:'CODE',    type:'mission'},
+  {id:'s-m4-cadenas',label:'CADENAS',type:'mission'},
+  {id:'s-final',     label:'FIN',     type:'chapter'},
 ];
 
 function buildPhaseTrack() {
@@ -1139,7 +1284,7 @@ function updatePhase(idx) {
 // ══════════════════════════════════════════
 //  NAVIGATION
 // ══════════════════════════════════════════
-const SCREEN_PHASE = { 's0':0,'s-m1':1,'s-ch1':2,'s-m2':3,'s-ch2':4,'s-m3':5,'s-ch3':6,'s-m4':7,'s-final':8 };
+const SCREEN_PHASE = { 's0':0,'s-m1':1,'s-ch1':2,'s-m2':3,'s-ch2':4,'s-m3':5,'s-ch3':6,'s-m4':7,'s-wordsearch':7,'s-m4-cadenas':7,'s-final':8 };
 
 function goTo(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1154,6 +1299,7 @@ function goTo(id) {
     's-ch2': () => initChapter('ch2', true),
     's-ch3': () => initChapter('ch3', true),
     's-final': initFinal,
+    's-wordsearch': initWordSearch,
     's-m2':  buildCorpus,
     's-m3':  buildSortable,
   };
@@ -1227,7 +1373,7 @@ function selectProfile(el, correct) {
   if (correct) {
     el.classList.add('correct'); m1Done = true;
     fb.className = 'feedback visible';
-    fb.innerHTML = '✓ IDENTIFICATION CONFIRMÉE, Nora est en état d\'<strong>amotivation</strong>. Elle ne perçoit plus aucun lien entre son effort et ses résultats, ni contrainte externe (Lucas), ni plaisir interne (Mehdi), ni objectif intermédiaire (Camille). C\'est l\'état le plus critique et le plus discret.';
+    fb.innerHTML = '✓ IDENTIFICATION CONFIRMÉE. Nora est en état d\'<strong>amotivation profonde et structurelle</strong>. Depuis plusieurs mois, dans toutes les matières, elle ne perçoit plus aucun lien entre son effort et ses résultats. Ni pression externe ni intérêt interne ne fonctionnent. L\'enseignant seul ne peut pas grand-chose : il faut une action coordonnée. Créer des micro-succès reste le premier levier possible.';
     document.getElementById('code-1').classList.add('visible');
     setTimeout(() => { document.getElementById('btn-next-m1').style.display = 'inline-block'; }, 800);
     playTone([523,659,784], 0.1);
@@ -1235,9 +1381,18 @@ function selectProfile(el, correct) {
     el.classList.add('wrong'); score = Math.max(0, score - 5);
     const name = el.querySelector('.profile-name').textContent;
     fb.className = 'feedback error visible';
-    if (name.includes('LUCAS'))   fb.innerHTML = '✗ Lucas a une motivation <strong>extrinsèque</strong> : il agit sous contrainte externe. Il sait pourquoi il travaille. L\'amotivation, c\'est précisément l\'absence de cette perception.';
-    else if (name.includes('MEHDI')) fb.innerHTML = '✗ Mehdi présente une motivation <strong>intrinsèque</strong> forte : il agit pour le plaisir. Cas diamétralement opposé à l\'amotivation.';
-    else fb.innerHTML = '✗ Camille a une motivation <strong>extrinsèque régulée</strong> : elle vise un objectif. L\'amotivation, c\'est ne plus en avoir aucun.';
+    if (name.includes('MALIA'))
+      fb.innerHTML = '✗ Malia a une <strong>motivation extrinsèque par identification</strong> : elle a intégré la valeur de certaines matières pour son projet médical. Elle est sélective, pas amotivée. Levier pour le prof : connecter la matière à son projet personnel.';
+    else if (name.includes('THÉO'))
+      fb.innerHTML = '✗ Théo a une <strong>motivation introjectée</strong> : il agit pour éviter la honte, pas pour le plaisir. C\'est fragile et épuisant, mais il perçoit encore une raison d\'agir. Levier pour le prof : dédramatiser l\'erreur, valoriser le processus sur le résultat.';
+    else if (name.includes('JONAS'))
+      fb.innerHTML = '✗ Attention : Jonas ressemble à Nora en surface, mais son désengagement est <strong>récent et circonstanciel</strong>. Un incident a détruit son besoin d\'appartenance. C\'est une amotivation situationnelle, pas structurelle. Levier direct pour le prof : reconnaître, réparer, redonner un rôle.';
+    else if (name.includes('CAMILLE'))
+      fb.innerHTML = '✗ Camille a une <strong>motivation extrinsèque régulée par contrainte</strong>. Elle agit sous pression d\'échéance. Sans contrôle, pas d\'engagement. Mais elle perçoit encore une raison d\'agir. Levier pour le prof : multiplier les micro-échéances et progressivement connecter l\'activité à un sens.';
+    else if (name.includes('SAMIR'))
+      fb.innerHTML = '✗ Samir est désengagé par <strong>ennui cognitif</strong>. Le défi est trop bas par rapport à son niveau réel : il est en dehors de la zone de flow, du côté de l\'ennui. Ce n\'est pas de l\'amotivation. Levier direct : relever le curseur, proposer un rôle de référent, une tâche complexe.';
+    else
+      fb.innerHTML = '✗ Ce profil ne correspond pas à une amotivation structurelle. Relisez attentivement chaque profil en cherchant l\'élève qui ne perçoit plus aucune raison d\'agir, ni interne ni externe, et ce depuis plusieurs mois.';
     setTimeout(() => el.classList.remove('wrong'), 500);
   }
 }
@@ -1399,10 +1554,7 @@ function selectSyn(el, correct) {
     fb.className = 'feedback visible';
     fb.innerHTML = '✓ DÉCISION VALIDÉE, L\'option C active les 3 besoins : <strong>appartenance</strong> (rôle de tutrice), <strong>compétence</strong> (domaine maîtrisé + progression), <strong>autonomie</strong> (choix du rôle). Le défi parallèle maintient Amara dans sa zone de flow. Les autres options activent au plus un levier et risquent d\'aggraver le retrait.';
     setTimeout(() => {
-      const pc = document.getElementById('padlock-card');
-      pc.style.display = 'block';
-      document.getElementById('enigme-4').style.display = 'block';
-      pc.scrollIntoView({behavior:'smooth'});
+      goTo('s-wordsearch');
     }, 1200);
     playTone([523,659,784], 0.1);
   } else {
@@ -1419,11 +1571,137 @@ function selectSyn(el, correct) {
   }
 }
 
+
+// ══════════════════════════════════════════
+//  MOT MÊLÉ
+// ══════════════════════════════════════════
+const WS_SIZE = 18;
+let wsData = Array.from({length:WS_SIZE}, () => Array(WS_SIZE).fill(''));
+
+const WS_WORDS = [
+  {word:'AMOTIVATION',  r:17, c:2,  dr:0, dc:1, key:false},
+  {word:'AUTONOMIE',    r:1,  c:0,  dr:1, dc:0, key:false},
+  {word:'COMPETENCE',   r:1,  c:7,  dr:0, dc:1, key:true,  codeIdx:2, codeVal:'3'},
+  {word:'APPARTENANCE', r:7,  c:4,  dr:0, dc:1, key:false},
+  {word:'INTRINSEQUE',  r:6,  c:7,  dr:0, dc:1, key:true,  codeIdx:3, codeVal:'9'},
+  {word:'EXTRINSEQUE',  r:3,  c:7,  dr:0, dc:1, key:false},
+  {word:'PROGRESSION',  r:12, c:2,  dr:0, dc:1, key:false},
+  {word:'ANALYSE',      r:10, c:1,  dr:0, dc:1, key:false},
+  {word:'EVALUER',      r:8,  c:4,  dr:0, dc:1, key:true,  codeIdx:1, codeVal:'5'},
+  {word:'FLOW',         r:11, c:5,  dr:0, dc:1, key:false},
+  {word:'NORA',         r:3,  c:11, dr:0, dc:1, key:false},
+  {word:'KAPP',         r:2,  c:2,  dr:0, dc:1, key:false},
+  {word:'BLOOM',        r:16, c:3,  dr:0, dc:1, key:false},
+  {word:'DECI',         r:2,  c:17, dr:1, dc:0, key:true,  codeIdx:0, codeVal:'4'},
+  {word:'RYAN',         r:9,  c:12, dr:0, dc:1, key:false},
+  {word:'AMARA',        r:4,  c:5,  dr:0, dc:1, key:false},
+  {word:'CREER',        r:2,  c:1,  dr:1, dc:0, key:false},
+];
+
+const FILL_CHARS = 'ABCDEFGHIJKLMNOPRSTUVWYZ';
+
+function buildWsGrid() {
+  wsData = Array.from({length:WS_SIZE}, () => Array(WS_SIZE).fill(''));
+  WS_WORDS.forEach(w => {
+    for (let i = 0; i < w.word.length; i++) {
+      const r = w.r + i * w.dr;
+      const c = w.c + i * w.dc;
+      if (r >= 0 && r < WS_SIZE && c >= 0 && c < WS_SIZE) wsData[r][c] = w.word[i];
+    }
+  });
+  let seed = 42;
+  const rng = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed; };
+  for (let r = 0; r < WS_SIZE; r++)
+    for (let c = 0; c < WS_SIZE; c++)
+      if (!wsData[r][c]) wsData[r][c] = FILL_CHARS[rng() % FILL_CHARS.length];
+}
+
+let wsSelected = [], wsFound = new Set(), wsCells = [];
+
+function initWordSearch() {
+  buildWsGrid();
+  const container = document.getElementById('wsGrid');
+  const wordsEl   = document.getElementById('wsWords');
+  if (!container || !wordsEl) return;
+  container.innerHTML = ''; wordsEl.innerHTML = '';
+  wsSelected = []; wsCells = [];
+
+  for (let r = 0; r < WS_SIZE; r++) {
+    for (let c = 0; c < WS_SIZE; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'ws-cell';
+      cell.textContent = wsData[r][c];
+      cell.dataset.r = r; cell.dataset.c = c;
+      cell.addEventListener('click', () => wsClick(r, c));
+      container.appendChild(cell);
+      wsCells.push(cell);
+    }
+  }
+
+  WS_WORDS.forEach(w => {
+    const el = document.createElement('div');
+    el.className = 'ws-word' + (w.key ? '' : '');
+    el.textContent = w.word;
+    el.id = 'wsw-' + w.word;
+    wordsEl.appendChild(el);
+  });
+}
+
+function wsClick(r, c) {
+  const idx = r * WS_SIZE + c;
+  const cell = wsCells[idx];
+  if (cell.classList.contains('found') || cell.classList.contains('found-key')) return;
+  const existIdx = wsSelected.findIndex(s => s.r === r && s.c === c);
+  if (existIdx >= 0) {
+    wsSelected.splice(existIdx, 1);
+    cell.classList.remove('selected');
+    return;
+  }
+  wsSelected.push({r, c});
+  cell.classList.add('selected');
+  wsCheckWord();
+}
+
+function wsCheckWord() {
+  if (wsSelected.length < 2) return;
+  WS_WORDS.forEach(w => {
+    if (wsFound.has(w.word)) return;
+    const wCells = [];
+    for (let i = 0; i < w.word.length; i++)
+      wCells.push({r: w.r + i * w.dr, c: w.c + i * w.dc});
+    const exact = wsSelected.length === wCells.length &&
+      wCells.every(wc => wsSelected.some(s => s.r === wc.r && s.c === wc.c));
+    if (!exact) return;
+    wsFound.add(w.word);
+    wCells.forEach(wc => {
+      const i = wc.r * WS_SIZE + wc.c;
+      wsCells[i].classList.remove('selected');
+      wsCells[i].classList.add(w.key ? 'found-key' : 'found');
+    });
+    wsSelected = [];
+    const wEl = document.getElementById('wsw-' + w.word);
+    if (wEl) wEl.classList.add(w.key ? 'found-key' : 'found');
+
+    // Update counter
+    const counter = document.getElementById('wsFoundCount');
+    if (counter) counter.textContent = wsFound.size;
+
+    // All words found — reveal decode block
+    if (wsFound.size === WS_WORDS.length) {
+      const block = document.getElementById('ws-decode-block');
+      if (block) {
+        block.style.display = 'block';
+        setTimeout(() => block.scrollIntoView({behavior:'smooth', block:'start'}), 300);
+      }
+    }
+  });
+}
+
 // ══════════════════════════════════════════
 //  CADENAS
 // ══════════════════════════════════════════
-const CORRECT_CODE = [7,3,9,3];
-const dialValues   = [7,3,9,0];
+const CORRECT_CODE = [4,5,3,9];
+const dialValues   = [0,0,0,0];
 
 function dialUp(i)   { dialValues[i] = (dialValues[i]+1)%10; animateDial(i,'up'); }
 function dialDown(i) { dialValues[i] = (dialValues[i]+9)%10; animateDial(i,'down'); }
