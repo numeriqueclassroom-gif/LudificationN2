@@ -715,7 +715,6 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     </div>
   </div>
   <div class="feedback" id="fb-m1"></div>
-  <div class="code-revealed" id="code-1">CODE, <span class="hl2">7</span> _ _ _</div>
   <div class="actions">
     <button class="btn btn-amber" id="btn-next-m1" onclick="goTo('s-ch1')" style="display:none;">TRANSMETTRE À KAPP →</button>
   </div>
@@ -754,7 +753,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     </div>
   </div>
 
-  <div class="theory-box" style="border-color:rgba(0,255,136,0.3);margin-top:16px;">
+  <div class="theory-box" id="th-ch1-hints" style="border-color:rgba(0,255,136,0.3);margin-top:16px;">
     <div class="theory-tag" style="color:var(--green);">// ET L'ESCAPE GAME DANS TOUT ÇA ?</div>
     <div class="theory-content">
       Un escape game pédagogique bien conçu peut adresser plusieurs profils simultanément, mais pas tous de la même façon.<br><br>
@@ -804,7 +803,6 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     <div class="text-corpus" id="wordCorpus"></div>
   </div>
   <div class="feedback" id="fb-m2"></div>
-  <div class="code-revealed" id="code-2">CODE, 7 <span class="hl2">3</span> _ _</div>
   <div class="actions">
     <button class="btn btn-amber" onclick="checkWords()">VALIDER LA SÉLECTION</button>
     <button class="btn" id="btn-next-m2" onclick="goTo('s-ch2')" style="display:none;">TRANSMETTRE À KAPP →</button>
@@ -880,7 +878,6 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
   </div>
   <div class="sortable-list" id="sortableList"></div>
   <div class="feedback" id="fb-m3"></div>
-  <div class="code-revealed" id="code-3">CODE, 7 3 <span class="hl2">9</span> _</div>
   <div class="actions">
     <button class="btn btn-amber" onclick="checkOrder()">VALIDER L'ORDRE</button>
     <button class="btn" id="btn-next-m3" onclick="goTo('s-ch3')" style="display:none;">TRANSMETTRE À KAPP →</button>
@@ -1328,6 +1325,8 @@ function initChapter(key, hasTheory) {
     if (theoryEl) {
       setTimeout(() => {
         theoryEl.classList.add('visible');
+        const hintsEl = document.getElementById('th-ch1-hints');
+        if (hintsEl) setTimeout(() => hintsEl.classList.add('visible'), 300);
         setTimeout(() => { if (rtWrap) rtWrap.classList.add('visible'); }, 600);
       }, 300);
     } else {
@@ -1374,7 +1373,6 @@ function selectProfile(el, correct) {
     el.classList.add('correct'); m1Done = true;
     fb.className = 'feedback visible';
     fb.innerHTML = '✓ IDENTIFICATION CONFIRMÉE. Nora est en état d\'<strong>amotivation profonde et structurelle</strong>. Depuis plusieurs mois, dans toutes les matières, elle ne perçoit plus aucun lien entre son effort et ses résultats. Ni pression externe ni intérêt interne ne fonctionnent. L\'enseignant seul ne peut pas grand-chose : il faut une action coordonnée. Créer des micro-succès reste le premier levier possible.';
-    document.getElementById('code-1').classList.add('visible');
     setTimeout(() => { document.getElementById('btn-next-m1').style.display = 'inline-block'; }, 800);
     playTone([523,659,784], 0.1);
   } else {
@@ -1465,7 +1463,6 @@ function checkWords() {
     });
     fb.className = 'feedback visible';
     fb.innerHTML = '✓ EXTRACTION VALIDÉE, Les trois besoins authentiques : <strong>autonomie</strong> (agir par choix), <strong>compétence</strong> (se sentir efficace), <strong>appartenance</strong> (se sentir relié). Les six leurres appartiennent au registre de la contrainte externe ou de la performance, ils peuvent inhiber la motivation intrinsèque.';
-    document.getElementById('code-2').classList.add('visible');
     setTimeout(() => { document.getElementById('btn-next-m2').style.display = 'inline-block'; }, 800);
     playTone([523,659,784], 0.1);
   } else {
@@ -1530,7 +1527,6 @@ function checkOrder() {
     });
     fb.className = 'feedback visible';
     fb.innerHTML = '✓ SÉQUENCE VALIDÉE, Deux lectures apparaissent sur chaque étape. En <span style="color:var(--amber)">amber</span> : le niveau d\'engagement perçu selon Csikszentmihalyi, la charge de défi ressentie par l\'élève. En <span style="color:var(--green-dim)">vert</span> : le niveau cognitif correspondant selon la taxonomie de Bloom. Les deux progressent ensemble, ce n\'est pas un hasard. Un dispositif en flow active naturellement des opérations cognitives de plus en plus complexes.';
-    document.getElementById('code-3').classList.add('visible');
     setTimeout(() => { document.getElementById('btn-next-m3').style.display = 'inline-block'; }, 800);
     playTone([523,659,784], 0.1);
   } else {
@@ -1579,26 +1575,26 @@ const WS_SIZE = 18;
 let wsData = Array.from({length:WS_SIZE}, () => Array(WS_SIZE).fill(''));
 
 const WS_WORDS = [
-  {word:'AMOTIVATION',  r:17, c:2,  dr:0, dc:1, key:false},
-  {word:'AUTONOMIE',    r:1,  c:0,  dr:1, dc:0, key:false},
-  {word:'COMPETENCE',   r:1,  c:7,  dr:0, dc:1, key:true,  codeIdx:2, codeVal:'3'},
-  {word:'APPARTENANCE', r:7,  c:4,  dr:0, dc:1, key:false},
-  {word:'INTRINSEQUE',  r:6,  c:7,  dr:0, dc:1, key:true,  codeIdx:3, codeVal:'9'},
-  {word:'EXTRINSEQUE',  r:3,  c:7,  dr:0, dc:1, key:false},
-  {word:'PROGRESSION',  r:12, c:2,  dr:0, dc:1, key:false},
-  {word:'ANALYSE',      r:10, c:1,  dr:0, dc:1, key:false},
-  {word:'EVALUER',      r:8,  c:4,  dr:0, dc:1, key:true,  codeIdx:1, codeVal:'5'},
-  {word:'FLOW',         r:11, c:5,  dr:0, dc:1, key:false},
-  {word:'NORA',         r:3,  c:11, dr:0, dc:1, key:false},
-  {word:'KAPP',         r:2,  c:2,  dr:0, dc:1, key:false},
-  {word:'BLOOM',        r:16, c:3,  dr:0, dc:1, key:false},
-  {word:'DECI',         r:2,  c:17, dr:1, dc:0, key:true,  codeIdx:0, codeVal:'4'},
-  {word:'RYAN',         r:9,  c:12, dr:0, dc:1, key:false},
-  {word:'AMARA',        r:4,  c:5,  dr:0, dc:1, key:false},
-  {word:'CREER',        r:2,  c:1,  dr:1, dc:0, key:false},
+  {word:'APPARTENANCE', r:7,  c:6,  dr:0, dc:1, key:false},
+  {word:'AMOTIVATION',  r:6,  c:5,  dr:1, dc:0, key:false},
+  {word:'INTRINSEQUE',  r:10, c:7,  dr:0, dc:1, key:true,  codeIdx:3, codeVal:'9'},
+  {word:'EXTRINSEQUE',  r:2,  c:0,  dr:0, dc:1, key:false},
+  {word:'PROGRESSION',  r:16, c:6,  dr:0, dc:1, key:false},
+  {word:'COMPETENCE',   r:13, c:6,  dr:0, dc:1, key:true,  codeIdx:2, codeVal:'3'},
+  {word:'AUTONOMIE',    r:17, c:6,  dr:0, dc:1, key:false},
+  {word:'ANALYSE',      r:14, c:7,  dr:0, dc:1, key:false},
+  {word:'EVALUER',      r:4,  c:9,  dr:0, dc:1, key:true,  codeIdx:1, codeVal:'5'},
+  {word:'BLOOM',        r:5,  c:9,  dr:0, dc:1, key:false},
+  {word:'AMARA',        r:12, c:6,  dr:0, dc:1, key:false},
+  {word:'CREER',        r:3,  c:9,  dr:0, dc:1, key:false},
+  {word:'FLOW',         r:0,  c:5,  dr:0, dc:1, key:false},
+  {word:'NORA',         r:15, c:14, dr:0, dc:1, key:false},
+  {word:'KAPP',         r:4,  c:4,  dr:0, dc:1, key:false},
+  {word:'DECI',         r:5,  c:3,  dr:0, dc:1, key:true,  codeIdx:0, codeVal:'4'},
+  {word:'RYAN',         r:1,  c:14, dr:0, dc:1, key:false},
 ];
 
-const FILL_CHARS = 'ABCDEFGHIJKLMNOPRSTUVWYZ';
+const FILL_CHARS = 'BCDFGHJKLMNPQRSTVWXYZ';
 
 function buildWsGrid() {
   wsData = Array.from({length:WS_SIZE}, () => Array(WS_SIZE).fill(''));
@@ -1617,6 +1613,7 @@ function buildWsGrid() {
 }
 
 let wsSelected = [], wsFound = new Set(), wsCells = [];
+let wsDragging = false, wsStartCell = null;
 
 function initWordSearch() {
   buildWsGrid();
@@ -1624,7 +1621,8 @@ function initWordSearch() {
   const wordsEl   = document.getElementById('wsWords');
   if (!container || !wordsEl) return;
   container.innerHTML = ''; wordsEl.innerHTML = '';
-  wsSelected = []; wsCells = [];
+  wsSelected = []; wsCells = []; wsFound = new Set();
+  wsDragging = false; wsStartCell = null;
 
   for (let r = 0; r < WS_SIZE; r++) {
     for (let c = 0; c < WS_SIZE; c++) {
@@ -1632,34 +1630,88 @@ function initWordSearch() {
       cell.className = 'ws-cell';
       cell.textContent = wsData[r][c];
       cell.dataset.r = r; cell.dataset.c = c;
-      cell.addEventListener('click', () => wsClick(r, c));
+
+      cell.addEventListener('mousedown',  (e) => { e.preventDefault(); wsStartDrag(r, c); });
+      cell.addEventListener('mouseover',  ()  => { if (wsDragging) wsUpdateDrag(r, c); });
+      cell.addEventListener('mouseup',    ()  => { wsEndDrag(); });
+      cell.addEventListener('touchstart', (e) => { e.preventDefault(); wsStartDrag(r, c); }, {passive:false});
+      cell.addEventListener('touchmove',  (e) => { e.preventDefault(); const t = e.touches[0]; const el = document.elementFromPoint(t.clientX, t.clientY); if (el && el.dataset.r !== undefined) wsUpdateDrag(parseInt(el.dataset.r), parseInt(el.dataset.c)); }, {passive:false});
+      cell.addEventListener('touchend',   ()  => { wsEndDrag(); });
+
       container.appendChild(cell);
       wsCells.push(cell);
     }
   }
 
+  document.addEventListener('mouseup', wsEndDrag);
+
   WS_WORDS.forEach(w => {
     const el = document.createElement('div');
-    el.className = 'ws-word' + (w.key ? '' : '');
+    el.className = 'ws-word';
     el.textContent = w.word;
     el.id = 'wsw-' + w.word;
     wordsEl.appendChild(el);
   });
 }
 
-function wsClick(r, c) {
-  const idx = r * WS_SIZE + c;
-  const cell = wsCells[idx];
-  if (cell.classList.contains('found') || cell.classList.contains('found-key')) return;
-  const existIdx = wsSelected.findIndex(s => s.r === r && s.c === c);
-  if (existIdx >= 0) {
-    wsSelected.splice(existIdx, 1);
-    cell.classList.remove('selected');
+function wsStartDrag(r, c) {
+  if (wsCells[r * WS_SIZE + c].classList.contains('found') ||
+      wsCells[r * WS_SIZE + c].classList.contains('found-key')) return;
+  wsDragging = true;
+  wsStartCell = {r, c};
+  wsHighlightLine(r, c, r, c);
+}
+
+function wsUpdateDrag(r, c) {
+  if (!wsDragging || !wsStartCell) return;
+  wsHighlightLine(wsStartCell.r, wsStartCell.c, r, c);
+}
+
+function wsEndDrag() {
+  if (!wsDragging) return;
+  wsDragging = false;
+  wsCheckWord();
+  // Clear selection if no word found
+  setTimeout(() => {
+    wsSelected.forEach(s => {
+      const cell = wsCells[s.r * WS_SIZE + s.c];
+      if (!cell.classList.contains('found') && !cell.classList.contains('found-key'))
+        cell.classList.remove('selected');
+    });
+    wsSelected = [];
+  }, 200);
+}
+
+function wsHighlightLine(r1, c1, r2, c2) {
+  // Clear previous selection
+  wsSelected.forEach(s => {
+    const cell = wsCells[s.r * WS_SIZE + s.c];
+    if (!cell.classList.contains('found') && !cell.classList.contains('found-key'))
+      cell.classList.remove('selected');
+  });
+  wsSelected = [];
+
+  // Determine direction
+  const dr = r2 - r1, dc = c2 - c1;
+  const steps = Math.max(Math.abs(dr), Math.abs(dc));
+  if (steps === 0) {
+    wsSelected.push({r:r1, c:c1});
+    wsCells[r1 * WS_SIZE + c1].classList.add('selected');
     return;
   }
-  wsSelected.push({r, c});
-  cell.classList.add('selected');
-  wsCheckWord();
+
+  // Only allow straight lines (H, V, D)
+  const ndr = dr === 0 ? 0 : dr / Math.abs(dr);
+  const ndc = dc === 0 ? 0 : dc / Math.abs(dc);
+  // Check it's a valid direction (horizontal, vertical, or diagonal)
+  if (dr !== 0 && dc !== 0 && Math.abs(dr) !== Math.abs(dc)) return;
+
+  for (let i = 0; i <= steps; i++) {
+    const r = r1 + i * ndr, c = c1 + i * ndc;
+    if (r < 0 || r >= WS_SIZE || c < 0 || c >= WS_SIZE) break;
+    wsSelected.push({r, c});
+    wsCells[r * WS_SIZE + c].classList.add('selected');
+  }
 }
 
 function wsCheckWord() {
