@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPÉRATION FORGE — Concevoir un escape game pédagogique</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
+
+:root {
+  --bg:       #0a0e14;
+  --bg2:      #0f1520;
+  --bg3:      #141c2a;
+  --steel:    #1e2d42;
+  --blue:     #1a6aff;
+  --blue-lit: #4a9aff;
+  --blue-pale:#a0c8ff;
+  --cyan:     #00d4ff;
+  --cyan-dim: #0098cc;
+  --orange:   #ff6b1a;
+  --orange-lt:#ff9a55;
+  --yellow:   #ffd700;
+  --white:    #e8f0ff;
+  --grey:     #4a6080;
+  --grey-lit: #7a9ab8;
+  --border:   rgba(26,106,255,0.2);
+  --border-lit:rgba(26,106,255,0.5);
+  --border-cy: rgba(0,212,255,0.25);
+  --glow-b:   0 0 30px rgba(26,106,255,0.3);
+  --glow-cy:  0 0 20px rgba(0,212,255,0.25);
+  --glow-or:  0 0 20px rgba(255,107,26,0.3);
+  --glow-g:   0 0 20px rgba(0,255,136,0.25);
+  --green-lit:#00ff88;
+  --grid-line:rgba(26,106,255,0.06);
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(26,106,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 80%, rgba(0,212,255,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 30% at 10% 60%, rgba(255,107,26,0.04) 0%, transparent 50%);
+  background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%, 100% 100%;
+}
+
+/* HEADER */
+.hud {
+  position:fixed; top:0;left:0;right:0; z-index:200;
+  background: rgba(10,14,20,0.96);
+  border-bottom:1px solid var(--border-lit);
+  padding:10px 28px;
+  display:flex; align-items:center; justify-content:space-between;
+  backdrop-filter: blur(8px);
+}
+
+.hud-logo {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px; letter-spacing:6px;
+  color:var(--blue-lit);
+  text-shadow:var(--glow-b);
+}
+
+.hud-logo span { color:var(--cyan); }
+
+.hud-right { display:flex; align-items:center; gap:20px; }
+
+.phase-track { display:flex; align-items:center; gap:4px; }
+
+.ph-node {
+  width:7px; height:7px; border-radius:50%;
+  border:1px solid var(--grey);
+  transition:all 0.4s; position:relative;
+}
+.ph-node::after {
+  content:attr(data-label);
+  position:absolute; top:14px; left:50%;
+  transform:translateX(-50%);
+  font-family:'DM Mono',monospace;
+  font-size:7px; color:var(--grey);
+  white-space:nowrap; letter-spacing:1px;
+}
+.ph-node.done { background:var(--blue); border-color:var(--blue); box-shadow:var(--glow-b); }
+.ph-node.active { background:var(--cyan); border-color:var(--cyan); box-shadow:var(--glow-cy); animation:pulse-ph 1.5s ease infinite alternate; }
+@keyframes pulse-ph { from{transform:scale(1)} to{transform:scale(1.4)} }
+
+.ph-line { width:20px; height:1px; background:var(--border); transition:background 0.4s; }
+.ph-line.done { background:var(--blue); }
+
+/* MAIN */
+main { padding-top:72px; min-height:100vh; display:flex; flex-direction:column; align-items:center; }
+
+/* SCREENS */
+.screen { display:none; visibility:hidden; pointer-events:none; width:100%; max-width:920px; padding:32px 20px 80px; }
+.screen.active { display:block !important; visibility:visible; pointer-events:all; animation:forge-in 0.5s ease; }
+@keyframes forge-in { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+/* ═══ KAPP BLOCK ═══ */
+.kapp-block {
+  background:
+    radial-gradient(ellipse 120% 80% at 5% 0%, rgba(0,212,255,0.04) 0%, transparent 55%),
+    linear-gradient(160deg, rgba(15,21,32,0.98), rgba(10,14,20,0.99));
+  border:1px solid var(--border-cy);
+  padding:0 0 24px; margin:0 0 24px;
+  position:relative; overflow:hidden;
+}
+
+.kapp-block::before {
+  content:'';
+  position:absolute; top:0;left:0;right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  animation:sweep-forge 4s linear infinite;
+}
+@keyframes sweep-forge {
+  0%{transform:scaleX(0);transform-origin:left} 49%{transform:scaleX(1);transform-origin:left}
+  50%{transform:scaleX(1);transform-origin:right} 100%{transform:scaleX(0);transform-origin:right}
+}
+
+.kapp-bar {
+  display:flex; align-items:center; gap:14px;
+  padding:12px 22px; margin-bottom:18px;
+  background:rgba(0,212,255,0.05);
+  border-bottom:1px solid var(--border-cy);
+}
+.kapp-ring {
+  width:38px; height:38px; border:2px solid var(--cyan);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:17px; flex-shrink:0; box-shadow:var(--glow-cy);
+}
+.kapp-name { font-family:'DM Mono',monospace; font-size:10px; font-weight:500; color:var(--cyan); letter-spacing:2px; }
+.kapp-role { font-size:9px; color:var(--grey-lit); letter-spacing:2px; margin-top:2px; font-family:'DM Mono',monospace; }
+.kapp-status { margin-left:auto; font-size:9px; color:var(--cyan); letter-spacing:2px; font-family:'DM Mono',monospace; animation:blink-f 2s step-end infinite; }
+@keyframes blink-f { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.kapp-narrative {
+  font-family:'DM Sans',sans-serif; font-size:18px; line-height:1.85;
+  color:var(--white); font-weight:300; padding:0 24px; min-height:50px;
+}
+.kapp-narrative em { color:#a0c8ff; font-style:italic; }
+.kapp-narrative strong { color:var(--cyan); font-family:'DM Mono',monospace; font-size:15px; font-weight:500; }
+
+/* TRIGGER BTN */
+.trigger-wrap {
+  text-align:center; margin:20px 24px 0;
+  opacity:0; transform:translateY(8px); transition:all 0.5s ease;
+}
+.trigger-wrap.visible { opacity:1; transform:none; }
+
+.trigger-btn {
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:500; letter-spacing:3px;
+  padding:12px 28px; border:1px solid rgba(255,107,26,0.5);
+  background:rgba(255,107,26,0.06); color:var(--orange-lt);
+  cursor:pointer; transition:all 0.3s;
+  display:inline-flex; align-items:center; gap:10px; position:relative; overflow:hidden;
+}
+.trigger-btn::before {
+  content:''; position:absolute; top:0;left:-100%; width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,107,26,0.1),transparent);
+  transition:left 0.4s;
+}
+.trigger-btn:hover { box-shadow:var(--glow-or); color:#ffbb88; }
+.trigger-btn:hover::before { left:100%; }
+.trigger-btn.used { opacity:0.25; pointer-events:none; }
+
+.or-dot {
+  width:7px; height:7px; border-radius:50%;
+  background:var(--orange); box-shadow:0 0 8px var(--orange);
+  animation:blink-f 0.7s step-end infinite; flex-shrink:0;
+}
+
+/* MESSAGE BOX */
+.msg-wrap { display:none; margin:16px 24px 0; animation:forge-in 0.4s ease; }
+.msg-wrap.visible { display:block; }
+
+.msg-box {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(255,107,26,0.04) 24px, rgba(255,107,26,0.04) 25px),
+    linear-gradient(160deg, rgba(28,16,8,0.97), rgba(20,10,4,0.99));
+  border:1px solid rgba(255,107,26,0.3); border-top:3px solid rgba(255,107,26,0.6);
+  padding:20px 24px 18px 36px; position:relative; overflow:hidden;
+  box-shadow:4px 6px 20px rgba(0,0,0,0.5); transform:rotate(0.2deg);
+}
+.msg-box::before {
+  content:''; position:absolute; top:0;right:0; width:0;height:0;
+  border-style:solid; border-width:0 18px 18px 0;
+  border-color:transparent rgba(255,107,26,0.2) transparent transparent;
+}
+.msg-box::after {
+  content:''; position:absolute; top:0;left:28px;bottom:0;
+  width:1px; background:rgba(255,107,26,0.2);
+}
+.msg-text {
+  font-family:'DM Sans',sans-serif; font-size:18px; line-height:1.85;
+  color:#ffe0cc; font-style:italic; min-height:50px; position:relative; z-index:1;
+}
+.msg-text strong { color:var(--orange-lt); font-style:normal; font-family:'DM Mono',monospace; font-size:14px; }
+.msg-sig {
+  font-size:9px; color:rgba(255,107,26,0.65); letter-spacing:3px;
+  margin-top:12px; text-align:right; border-top:1px solid rgba(255,107,26,0.15);
+  padding-top:8px; position:relative; z-index:1; font-family:'DM Mono',monospace;
+}
+
+/* CTA */
+.cta-wrap {
+  text-align:center; margin-top:20px;
+  opacity:0; transform:translateY(8px); transition:all 0.5s ease;
+}
+.cta-wrap.visible { opacity:1; transform:none; }
+
+.cta-btn {
+  font-family:'DM Mono',monospace; font-size:11px; font-weight:500;
+  letter-spacing:4px; padding:15px 40px;
+  border:1px solid var(--blue); background:rgba(26,106,255,0.08);
+  color:var(--blue-lit); cursor:pointer; transition:all 0.3s;
+  position:relative; overflow:hidden;
+}
+.cta-btn::before {
+  content:''; position:absolute; top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(26,106,255,0.12),transparent);
+  transition:left 0.4s;
+}
+.cta-btn:hover { box-shadow:var(--glow-b); color:var(--blue-pale); }
+.cta-btn:hover::before { left:100%; }
+.cta-sub { font-size:9px; color:var(--grey); letter-spacing:3px; margin-top:8px; font-family:'DM Mono',monospace; }
+
+/* ═══ CONTENT CARDS ═══ */
+.forge-card {
+  background:
+    radial-gradient(ellipse 100% 60% at 0% 0%, rgba(26,106,255,0.04) 0%, transparent 50%),
+    linear-gradient(160deg, rgba(15,21,32,0.97), rgba(10,14,20,0.99));
+  border:1px solid var(--border); padding:28px 32px; margin-bottom:20px;
+  position:relative; overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(26,106,255,0.07), 0 4px 24px rgba(0,0,0,0.4);
+}
+.forge-card::before {
+  content:''; position:absolute; top:0;left:0;right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--blue),transparent);
+  animation:sweep-forge 3s linear infinite;
+}
+
+.card-eyebrow {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:4px;
+  color:var(--cyan); margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+.card-eyebrow::before { content:''; width:20px; height:1px; background:var(--cyan); }
+
+.forge-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(28px,4vw,44px); letter-spacing:3px;
+  color:var(--white); line-height:1.1; margin-bottom:10px;
+}
+
+.forge-title span { color:var(--blue-lit); }
+
+.body-text {
+  font-family:'DM Sans',sans-serif; font-size:17px; line-height:1.8;
+  color:rgba(232,240,255,0.85); margin-bottom:14px; font-weight:300;
+}
+
+.hl  { color:var(--cyan); font-weight:500; font-family:'DM Mono',monospace; font-size:14px; }
+.hl2 { color:var(--orange-lt); font-weight:500; }
+.hl3 { color:var(--yellow); font-weight:500; }
+
+hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
+
+/* CITATION / FACT BOX */
+.fact-box {
+  background:rgba(0,212,255,0.04); border:1px solid var(--border-cy);
+  border-left:3px solid var(--cyan); padding:16px 20px; margin:16px 0;
+  position:relative;
+}
+.fact-tag { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; color:var(--cyan); margin-bottom:8px; }
+.fact-text { font-family:'DM Sans',sans-serif; font-size:16px; line-height:1.7; color:rgba(232,240,255,0.8); font-weight:300; }
+.fact-text strong { color:var(--blue-pale); }
+.fact-source { font-family:'DM Mono',monospace; font-size:9px; color:var(--grey-lit); letter-spacing:1px; margin-top:8px; font-style:italic; }
+
+/* WARNING BOX */
+.warn-box {
+  background:rgba(255,107,26,0.04); border:1px solid rgba(255,107,26,0.3);
+  border-left:3px solid var(--orange); padding:14px 18px; margin:14px 0;
+}
+.warn-text { font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.6; color:#ffe0cc; }
+.warn-text::before { content:'⚠ '; color:var(--orange); }
+
+/* TIP BOX */
+.tip-box {
+  background:rgba(26,106,255,0.04); border:1px solid rgba(26,106,255,0.25);
+  border-left:3px solid var(--blue-lit); padding:14px 18px; margin:14px 0;
+}
+.tip-text { font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.6; color:var(--blue-pale); }
+.tip-text::before { content:'→ '; color:var(--blue-lit); }
+
+/* ACCORDION — MÉCANIQUES */
+.accordion-list { display:flex; flex-direction:column; gap:0; margin:16px 0; border:1px solid var(--border); }
+.acc-item { border-bottom:1px solid var(--border); overflow:hidden; }
+.acc-item:last-child { border-bottom:none; }
+
+.acc-header {
+  display:flex; align-items:center; gap:16px; padding:18px 22px;
+  cursor:pointer; transition:background 0.3s; user-select:none;
+}
+.acc-header:hover { background:rgba(26,106,255,0.04); }
+.acc-item.open .acc-header { background:rgba(0,212,255,0.04); }
+
+.acc-num {
+  font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:2px;
+  color:rgba(26,106,255,0.25); min-width:36px; transition:color 0.3s;
+}
+.acc-item.open .acc-num { color:var(--blue-lit); }
+
+.acc-title-wrap { flex:1; }
+.acc-title { font-family:'DM Sans',sans-serif; font-size:17px; font-weight:600; color:var(--white); }
+.acc-sub { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--grey-lit); margin-top:3px; }
+
+.acc-tag {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px;
+  padding:3px 8px; border:1px solid var(--border); color:var(--grey-lit);
+}
+
+.acc-arrow { font-size:18px; color:var(--blue); transition:transform 0.4s; }
+.acc-item.open .acc-arrow { transform:rotate(90deg); }
+
+.acc-body {
+  max-height:0; overflow:hidden;
+  transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1);
+  border-top:0px solid var(--border);
+}
+.acc-item.open .acc-body { max-height:600px; border-top:1px solid var(--border); }
+
+.acc-content {
+  padding:20px 22px 24px 74px;
+  display:grid; grid-template-columns:1fr 1fr; gap:20px;
+}
+@media(max-width:600px) { .acc-content { grid-template-columns:1fr; padding:16px 20px; } }
+
+.acc-col-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; color:var(--cyan); margin-bottom:8px; }
+.acc-col-text { font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.65; color:rgba(232,240,255,0.75); font-weight:300; }
+.acc-col-text strong { color:var(--white); }
+
+.acc-tad-tag {
+  display:inline-block; font-family:'DM Mono',monospace; font-size:9px;
+  letter-spacing:1px; padding:2px 7px; border:1px solid rgba(0,212,255,0.3);
+  color:var(--cyan); margin:3px 3px 0 0;
+}
+
+/* FORMS GRID — FORMES D'ESCAPE */
+.forms-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px; margin:16px 0;
+}
+
+.form-card {
+  border:1px solid var(--border); padding:22px;
+  background:rgba(15,21,32,0.7); position:relative;
+  transition:all 0.25s; cursor:pointer;
+  box-shadow:0 0 0 var(--bg);
+}
+.form-card:hover { border-color:var(--blue-lit); transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.4), var(--glow-b); }
+.form-card.selected { border-color:var(--cyan); background:rgba(0,212,255,0.04); }
+
+.form-level {
+  position:absolute; top:-1px; right:16px;
+  font-family:'DM Mono',monospace; font-size:8px; letter-spacing:3px;
+  padding:3px 10px; border:1px solid var(--border);
+  border-top:none; background:var(--bg2);
+}
+.form-level.débutant { color:var(--cyan); border-color:var(--cyan); }
+.form-level.intermédiaire { color:var(--yellow); border-color:var(--yellow); }
+.form-level.avancé { color:var(--orange-lt); border-color:var(--orange); }
+
+.form-icon { font-size:32px; display:block; margin-bottom:10px; }
+.form-title { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; color:var(--white); margin-bottom:6px; }
+.form-desc { font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.6; color:var(--grey-lit); margin-bottom:12px; }
+.form-tags { display:flex; flex-wrap:wrap; gap:4px; }
+.form-tag { font-family:'DM Mono',monospace; font-size:9px; padding:2px 7px; border:1px solid var(--border); color:var(--grey-lit); }
+
+.form-detail {
+  font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.6;
+  color:rgba(160,200,255,0.8); margin-top:12px; padding-top:12px;
+  border-top:1px solid var(--border); display:none;
+}
+.form-card.selected .form-detail { display:block; }
+
+/* CONCEPTION STEPS */
+.steps-wrap { display:flex; flex-direction:column; gap:0; counter-reset:step; }
+
+.step-row {
+  display:flex; gap:0; position:relative;
+  counter-increment:step;
+}
+
+.step-spine {
+  display:flex; flex-direction:column; align-items:center; width:52px; flex-shrink:0;
+}
+
+.step-dot {
+  width:38px; height:38px;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  border-radius:4px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px;
+  color:var(--bg); flex-shrink:0; position:relative; z-index:1;
+  box-shadow:var(--glow-b);
+}
+
+.step-spine-line {
+  width:2px; flex:1; min-height:20px;
+  background:repeating-linear-gradient(180deg,
+    var(--blue) 0, var(--blue) 6px, transparent 6px, transparent 12px);
+}
+
+.step-content { flex:1; padding:0 0 32px 20px; }
+
+.step-title {
+  font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px;
+  color:var(--white); margin-bottom:6px; margin-top:6px;
+}
+.step-body { font-family:'DM Sans',sans-serif; font-size:16px; line-height:1.75; color:rgba(232,240,255,0.8); font-weight:300; }
+.step-body p { margin-bottom:10px; }
+
+.step-example {
+  background:rgba(0,212,255,0.03); border:1px solid var(--border-cy);
+  border-left:3px solid var(--cyan); padding:12px 16px; margin-top:12px;
+  font-family:'DM Mono',monospace; font-size:12px; line-height:1.7;
+  color:rgba(160,200,255,0.8);
+}
+.step-example::before { content:'ex. '; color:var(--cyan); font-weight:500; }
+
+.step-warn {
+  background:rgba(255,107,26,0.04); border-left:3px solid var(--orange);
+  padding:10px 14px; margin-top:10px; font-family:'DM Sans',sans-serif;
+  font-size:14px; color:#ffe0cc; line-height:1.5;
+}
+.step-warn::before { content:'⚠ '; color:var(--orange); }
+
+.step-tip {
+  background:rgba(26,106,255,0.04); border-left:3px solid var(--blue-lit);
+  padding:10px 14px; margin-top:10px; font-family:'DM Sans',sans-serif;
+  font-size:14px; color:var(--blue-pale); line-height:1.5;
+}
+.step-tip::before { content:'→ '; color:var(--blue-lit); }
+
+/* FIELD INPUTS */
+.field-block { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+.field-label {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; color:var(--cyan);
+}
+.field-input {
+  background:rgba(26,106,255,0.04); border:none; border-bottom:1px solid var(--border-lit);
+  color:var(--white); font-family:'DM Sans',sans-serif; font-size:17px; line-height:1.7;
+  padding:8px 4px; outline:none; transition:all 0.3s; resize:none; width:100%;
+}
+.field-input:focus { border-color:var(--cyan); background:rgba(0,212,255,0.04); }
+.field-input::placeholder { color:var(--grey); font-style:italic; opacity:0.7; }
+
+.fields-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.fields-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+@media(max-width:600px) { .fields-2,.fields-3 { grid-template-columns:1fr; } }
+
+/* VALIDATION TESTS */
+.test-list { display:flex; flex-direction:column; gap:10px; margin:16px 0; }
+
+.test-item {
+  display:flex; align-items:flex-start; gap:14px;
+  padding:16px 18px; border:1px solid var(--border);
+  background:rgba(15,21,32,0.6); cursor:pointer;
+  transition:all 0.25s; user-select:none; position:relative;
+  pointer-events:all;
+}
+.test-item:hover { border-color:var(--blue-lit); background:rgba(26,106,255,0.05); }
+.test-item.pass { border-color:var(--cyan); background:rgba(0,212,255,0.05); }
+.test-item.fail { border-color:var(--orange); background:rgba(255,107,26,0.04); animation:shake-f 0.4s ease; }
+@keyframes shake-f { 0%,100%{transform:none} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+.test-check {
+  width:22px; height:22px; flex-shrink:0;
+  border:1.5px solid var(--blue); display:flex; align-items:center; justify-content:center;
+  font-size:12px; color:var(--cyan); background:rgba(0,0,0,0.3);
+  margin-top:1px; transition:all 0.2s;
+}
+.test-item.pass .test-check { background:var(--cyan); color:var(--bg); border-color:var(--cyan); }
+.test-item.fail .test-check { background:var(--orange); color:var(--bg); border-color:var(--orange); }
+
+.test-content { flex:1; }
+.test-label { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:500; color:var(--white); margin-bottom:4px; }
+.test-desc { font-family:'DM Sans',sans-serif; font-size:14px; color:var(--grey-lit); line-height:1.5; }
+.test-feedback {
+  font-family:'DM Sans',sans-serif; font-size:14px; color:#ffe0cc;
+  line-height:1.6; margin-top:10px; display:none;
+  border-top:1px solid rgba(255,107,26,0.2); padding-top:10px;
+}
+.test-item.fail .test-feedback { display:block; }
+
+/* VALIDATION RESULT */
+.validation-result {
+  text-align:center; padding:32px; margin:20px 0;
+  border:1px solid var(--border); display:none; animation:forge-in 0.6s ease;
+}
+.validation-result.pass-all { border-color:var(--cyan); background:rgba(0,212,255,0.04); }
+.validation-result.pass-all .vr-title { color:var(--cyan); }
+.validation-result.has-fails { border-color:var(--orange); background:rgba(255,107,26,0.04); }
+.validation-result.has-fails .vr-title { color:var(--orange-lt); }
+.validation-result.visible { display:block; }
+.vr-icon { font-size:48px; margin-bottom:12px; }
+.vr-title { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:3px; margin-bottom:8px; }
+.vr-text { font-family:'DM Sans',sans-serif; font-size:16px; color:var(--grey-lit); line-height:1.6; }
+
+/* ACTION BUTTONS */
+.btn {
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:500; letter-spacing:3px;
+  padding:13px 26px; border:1px solid var(--blue-lit); background:transparent;
+  color:var(--blue-lit); cursor:pointer; transition:all 0.3s; position:relative; overflow:hidden;
+}
+.btn::before {
+  content:''; position:absolute; top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(26,106,255,0.1),transparent);
+  transition:left 0.4s;
+}
+.btn:hover { border-color:var(--cyan); box-shadow:var(--glow-cy); color:var(--white); }
+.btn:hover::before { left:100%; }
+.btn-cy { border-color:var(--cyan); color:var(--cyan); }
+.btn-or { border-color:var(--orange); color:var(--orange-lt); }
+.btn-large { font-size:12px; padding:16px 40px; letter-spacing:4px; }
+
+.actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:24px; }
+
+/* SECTION LABEL */
+.section-label {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:4px; color:var(--blue-lit);
+  margin-bottom:16px; display:flex; align-items:center; gap:10px;
+}
+.section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* FINAL SCREEN */
+.final-badge {
+  width:140px; height:140px; border-radius:50%;
+  border:3px solid var(--cyan);
+  box-shadow:0 0 60px rgba(0,212,255,0.4), inset 0 0 30px rgba(0,212,255,0.1);
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 24px; font-size:54px;
+  animation:badge-pulse 2s ease infinite;
+}
+@keyframes badge-pulse {
+  0%,100%{box-shadow:0 0 40px rgba(0,212,255,0.4),inset 0 0 30px rgba(0,212,255,0.1)}
+  50%{box-shadow:0 0 80px rgba(0,212,255,0.7),inset 0 0 40px rgba(0,212,255,0.2)}
+}
+
+.recap-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin:20px 0; }
+.recap-card { border:1px solid var(--border); padding:18px; background:rgba(15,21,32,0.8); }
+.recap-num { font-family:'Bebas Neue',sans-serif; font-size:40px; color:var(--blue-lit); line-height:1; margin-bottom:6px; }
+.recap-text { font-family:'DM Sans',sans-serif; font-size:14px; color:var(--grey-lit); line-height:1.5; }
+
+/* TIMELINE HISTORIQUE */
+.timeline { display:flex; flex-direction:column; gap:0; margin:16px 0; }
+.tl-item { display:flex; gap:16px; padding-bottom:20px; position:relative; }
+.tl-item::before {
+  content:''; position:absolute; left:30px; top:32px; bottom:0; width:1px;
+  background:repeating-linear-gradient(180deg, var(--blue) 0, var(--blue) 5px, transparent 5px, transparent 10px);
+}
+.tl-item:last-child::before { display:none; }
+.tl-year {
+  font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:2px;
+  color:var(--cyan); min-width:60px; padding-top:8px; text-align:right;
+}
+.tl-dot {
+  width:14px; height:14px; border-radius:50%; border:2px solid var(--blue);
+  background:var(--bg); flex-shrink:0; margin-top:10px;
+  box-shadow:var(--glow-b);
+}
+.tl-content { flex:1; padding-top:4px; }
+.tl-title { font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; color:var(--white); margin-bottom:4px; }
+.tl-text { font-family:'DM Sans',sans-serif; font-size:14px; color:var(--grey-lit); line-height:1.6; }
+
+/* TABS */
+.tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:24px; flex-wrap:wrap; }
+.tab {
+  font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; font-weight:500;
+  padding:10px 20px; border:1px solid transparent; border-bottom:none;
+  cursor:pointer; transition:all 0.2s; color:var(--grey-lit); background:transparent;
+}
+.tab:hover { color:var(--white); border-color:var(--border); }
+.tab.active { border-color:var(--border); border-bottom-color:var(--bg); background:var(--bg2); color:var(--cyan); margin-bottom:-1px; }
+
+.tab-content { display:none; animation:forge-in 0.3s ease; }
+.tab-content.active { display:block; }
+/* ═══ EXPORT BAR ═══ */
+.export-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 20px; margin-top:16px;
+  border:1px solid var(--border-cy);
+  background:rgba(0,212,255,0.04);
+  gap:12px; flex-wrap:wrap;
+}
+
+.export-bar-left { display:flex; align-items:center; gap:10px; }
+.export-bar-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+
+.export-save-status {
+  display:flex; align-items:center; gap:8px;
+  font-family:'DM Mono',monospace; font-size:10px;
+  color:var(--grey-lit); letter-spacing:2px;
+}
+
+.save-dot {
+  width:7px; height:7px; border-radius:50%;
+  background:var(--grey); transition:all 0.4s;
+}
+.save-dot.saved { background:var(--green-lit); box-shadow:0 0 8px var(--green-lit); }
+.save-dot.saving { background:var(--yellow); animation:blink-save 0.5s step-end infinite; }
+@keyframes blink-save { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.export-btn {
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:500;
+  letter-spacing:2px; padding:9px 18px;
+  border:1px solid var(--border-lit); background:transparent;
+  color:var(--grey-lit); cursor:pointer; transition:all 0.25s;
+}
+.export-btn:hover { border-color:var(--cyan); color:var(--white); }
+.export-print { border-color:rgba(0,204,102,0.4); color:var(--green-lit); }
+.export-print:hover { border-color:var(--green-lit); box-shadow:var(--glow-g); }
+.export-pdf { border-color:rgba(26,106,255,0.5); color:var(--blue-lit); background:rgba(26,106,255,0.07); }
+.export-pdf:hover { border-color:var(--cyan); box-shadow:var(--glow-cy); color:var(--white); }
+
+/* ═══ PRINT STYLES ═══ */
+@media print {
+  * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+  .hud, .nav-menu, .nav-section-title, .phase-track,
+  .screen:not(#s3), .export-bar,
+  .btn, .cta-btn, .cta-wrap, .actions,
+  .acc-list, .forms-grid .form-detail,
+  #s3 .step-tip, #s3 .step-warn { display:none !important; }
+
+  body {
+    background:white !important;
+    background-image:none !important;
+    color:#111 !important;
+  }
+
+  #s3 { display:block !important; visibility:visible !important; pointer-events:all !important;
+    padding:20px !important; max-width:100% !important; }
+
+  .forge-title { color:#111 !important; font-size:28px !important; }
+  .card-eyebrow { color:#555 !important; }
+
+  .step-title { color:#111 !important; font-size:18px !important; }
+  .step-body  { color:#333 !important; }
+  .step-content { padding-left:14px !important; }
+
+  .field-label { color:#555 !important; font-size:8px !important; }
+
+  .field-input {
+    border:none !important; border-bottom:1px solid #999 !important;
+    color:#111 !important; background:transparent !important;
+    font-size:14px !important; padding:4px 2px !important;
+  }
+
+  table { border-collapse:collapse !important; width:100% !important; }
+  th, td { border:1px solid #ccc !important; padding:6px 8px !important; color:#111 !important; font-size:11px !important; }
+  th { background:#eee !important; }
+
+  .print-title {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:32px; color:#111; letter-spacing:3px;
+    text-align:center; margin-bottom:4px;
+  }
+  .print-sub {
+    font-family:monospace; font-size:9px; letter-spacing:3px;
+    color:#555; text-align:center; margin-bottom:20px;
+  }
+}
+
+/* ═══ PRINT HEADER (visible only on print) ═══ */
+.print-only { display:none; }
+@media print { .print-only { display:block; } }
+
+/* ═══ COMBO HIGHLIGHT ═══ */
+.combo-highlight {
+  margin:20px 0 0;
+  border:2px solid var(--cyan);
+  background:linear-gradient(135deg, rgba(0,212,255,0.07), rgba(26,106,255,0.05));
+  position:relative; overflow:hidden;
+}
+.combo-highlight::before {
+  content:''; position:absolute; top:0;left:0;right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  animation:sweep-forge 3s linear infinite;
+}
+.combo-hl-inner { padding:20px 24px; }
+.combo-hl-tag {
+  font-family:'DM Mono',monospace; font-size:10px; letter-spacing:4px;
+  color:var(--cyan); margin-bottom:12px;
+  display:flex; align-items:center; gap:10px;
+}
+.combo-hl-tag::after { content:''; flex:1; height:1px; background:rgba(0,212,255,0.3); }
+.combo-hl-text {
+  font-family:'DM Sans',sans-serif; font-size:17px; line-height:1.75;
+  color:var(--white); margin-bottom:14px;
+}
+.combo-hl-text strong { color:var(--cyan); }
+.combo-hl-ia {
+  background:rgba(255,215,0,0.06); border:1px solid rgba(255,215,0,0.25);
+  border-left:3px solid var(--yellow);
+  padding:12px 16px;
+  font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.65;
+  color:rgba(255,230,102,0.9);
+}
+.combo-hl-ia strong { color:var(--yellow); }
+.combo-ia-badge {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px;
+  color:var(--yellow); display:inline-block; margin-bottom:6px;
+  border:1px solid rgba(255,215,0,0.35); padding:2px 8px;
+}
+
+/* ═══ PROFILS ═══ */
+.profile-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:14px; margin-top:20px;
+}
+
+.profile-card {
+  border:1px solid var(--border); padding:20px;
+  background:rgba(15,21,32,0.7); cursor:pointer;
+  transition:all 0.25s; position:relative;
+}
+.profile-card:hover { border-color:var(--blue-lit); transform:translateY(-2px); }
+.profile-card.open { border-color:var(--cyan); background:rgba(0,212,255,0.04); }
+
+.profile-level {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px;
+  padding:3px 9px; border:1px solid; display:inline-block;
+  margin-bottom:10px;
+}
+.p0 { color:#7af0b0; border-color:rgba(122,240,176,0.4); }
+.p1 { color:var(--cyan); border-color:var(--border-cy); }
+.p2 { color:var(--yellow); border-color:rgba(255,215,0,0.4); }
+.p3 { color:var(--orange-lt); border-color:rgba(255,107,26,0.4); }
+
+.profile-title { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; color:var(--white); margin-bottom:6px; }
+.profile-desc  { font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.6; color:var(--grey-lit); margin-bottom:14px; }
+
+.profile-stack { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-bottom:10px; }
+.p-tool { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:1px; padding:4px 10px; border:1px solid var(--border-lit); color:var(--blue-pale); background:rgba(26,106,255,0.07); }
+.p-tool.p-star { border-color:var(--cyan); color:var(--cyan); background:rgba(0,212,255,0.08); }
+.p-sep  { color:var(--grey); font-size:14px; }
+
+.profile-detail {
+  font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.65;
+  color:rgba(232,240,255,0.75); border-top:1px solid var(--border);
+  padding-top:12px; margin-top:4px; display:none;
+}
+.profile-card.open .profile-detail { display:block; animation:forge-in 0.4s ease; }
+.profile-detail strong { color:var(--white); }
+
+/* ═══ TUTOS ═══ */
+.tuto-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px; margin-top:20px;
+}
+
+.tuto-card {
+  border:1px solid var(--border); padding:20px;
+  background:rgba(15,21,32,0.7); position:relative;
+  text-decoration:none; display:flex; flex-direction:column; gap:6px;
+  transition:all 0.25s;
+}
+.tuto-card:hover { border-color:var(--blue-lit); transform:translateY(-2px); box-shadow:var(--glow-b); }
+
+.tuto-badge {
+  font-family:'DM Mono',monospace; font-size:8px; letter-spacing:2px;
+  padding:2px 8px; border:1px solid; display:inline-block;
+  margin-bottom:6px; align-self:flex-start;
+}
+.t-freemium { color:var(--orange-lt); border-color:rgba(255,107,26,0.4); }
+.t-gratuit  { color:var(--green-lit); border-color:rgba(0,255,136,0.35); }
+.t-edu      { color:var(--cyan); border-color:var(--border-cy); }
+
+.tuto-icon  { font-size:28px; }
+.tuto-title { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; color:var(--white); }
+.tuto-desc  { font-family:'DM Sans',sans-serif; font-size:13px; line-height:1.6; color:var(--grey-lit); flex:1; }
+.tuto-link  { font-family:'DM Mono',monospace; font-size:10px; color:var(--cyan); letter-spacing:1px; margin-top:6px; }
+.tuto-card:hover .tuto-link { color:var(--white); }
+
+/* ═══ TOOL FAMILIES ═══ */
+.tool-families { display:flex; flex-direction:column; gap:0; margin:16px 0; border:1px solid var(--border); }
+.tool-family { border-bottom:1px solid var(--border); overflow:hidden; }
+.tool-family:last-child { border-bottom:none; }
+.tf-header { display:flex; align-items:center; gap:14px; padding:16px 20px; cursor:pointer; transition:background 0.3s; user-select:none; }
+.tf-header:hover { background:rgba(26,106,255,0.04); }
+.tool-family.open .tf-header { background:rgba(0,212,255,0.04); }
+.tf-icon { font-size:22px; flex-shrink:0; }
+.tf-title-wrap { flex:1; }
+.tf-title { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:600; color:var(--white); }
+.tf-sub   { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px; color:var(--grey-lit); margin-top:3px; }
+.tf-arrow { font-size:16px; color:var(--blue); transition:transform 0.4s; }
+.tool-family.open .tf-arrow { transform:rotate(90deg); }
+.tf-body { max-height:0; overflow:hidden; transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1); border-top:0 solid var(--border); }
+.tool-family.open .tf-body { max-height:1400px; border-top:1px solid var(--border); }
+.tool-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; padding:18px 20px; }
+.tool-item { background:rgba(15,21,32,0.7); border:1px solid var(--border); padding:14px 16px; display:flex; flex-direction:column; gap:6px; transition:border-color 0.25s; }
+.tool-item:hover { border-color:var(--blue-lit); }
+.tool-name { font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; color:var(--white); }
+.tool-link { color:var(--cyan); text-decoration:none; transition:color 0.2s; }
+.tool-link:hover { color:var(--white); text-decoration:underline; text-decoration-color:rgba(0,212,255,0.4); }
+.tool-desc { font-family:'DM Sans',sans-serif; font-size:13px; line-height:1.6; color:var(--grey-lit); flex:1; }
+.tool-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+.t-tag { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:1px; padding:2px 6px; border:1px solid; }
+.t-free    { color:var(--grey-lit); border-color:var(--grey); }
+.t-rgpd    { color:#ffaa44; border-color:rgba(255,170,68,0.4); }
+.t-rgpd-ok { color:var(--green-lit); border-color:rgba(0,255,136,0.35); }
+.t-nocompte{ color:var(--blue-pale); border-color:rgba(160,200,255,0.35); }
+.t-avance  { color:var(--orange-lt); border-color:rgba(255,107,26,0.4); }
+.t-edu     { color:var(--cyan); border-color:rgba(0,212,255,0.35); }
+.tool-combo { margin:0 20px 18px; border:1px solid rgba(0,212,255,0.3); border-left:3px solid var(--cyan); padding:14px 18px; background:rgba(0,212,255,0.04); }
+.combo-tag { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; color:var(--cyan); margin-bottom:8px; }
+.combo-text { font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.6; color:var(--blue-pale); }
+.combo-text strong { color:var(--white); }
+
+/* ═══ MENU NAVIGATION ═══ */
+.nav-menu {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
+  gap:12px;
+  margin:0 0 28px;
+}
+
+.nav-item {
+  border:1px solid var(--border);
+  padding:18px 20px;
+  cursor:pointer;
+  transition:all 0.25s;
+  background:rgba(15,21,32,0.7);
+  position:relative;
+  overflow:hidden;
+  display:flex; flex-direction:column; gap:6px;
+}
+
+.nav-item::before {
+  content:'';
+  position:absolute; top:0;left:0; width:3px; height:100%;
+  background:var(--blue);
+  transform:scaleY(0); transform-origin:bottom;
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.nav-item:hover { border-color:var(--blue-lit); background:rgba(26,106,255,0.06); }
+.nav-item:hover::before { transform:scaleY(1); }
+
+.nav-item.active-nav { border-color:var(--cyan); background:rgba(0,212,255,0.05); }
+.nav-item.active-nav::before { background:var(--cyan); transform:scaleY(1); }
+
+.nav-item-num {
+  font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:3px;
+  color:var(--grey-lit);
+}
+
+.nav-item-title {
+  font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600;
+  color:var(--white); line-height:1.2;
+}
+
+.nav-item-sub {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px;
+  color:var(--grey); margin-top:2px;
+}
+
+.nav-item-arrow {
+  font-size:14px; color:var(--blue);
+  align-self:flex-end; margin-top:4px;
+  transition:transform 0.2s;
+}
+
+.nav-item:hover .nav-item-arrow { transform:translateX(4px); }
+
+.nav-section-title {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:4px;
+  color:var(--grey-lit); margin-bottom:10px;
+  display:flex; align-items:center; gap:10px;
+}
+.nav-section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+</style>
+</head>
+<body>
+
+<!-- HUD -->
+<header class="hud">
+  <div>
+    <div class="hud-logo">OPÉRATION <span>FORGE</span></div>
+  </div>
+  <div class="hud-right">
+    <div class="phase-track" id="phaseTrack"></div>
+  </div>
+</header>
+
+<main>
+
+<!-- ══════════ ACTE 0 — MANDAT KAPP ══════════ -->
+<section class="screen active" id="s0">
+  <div class="forge-card" style="margin-bottom:24px;">
+    <div class="card-eyebrow">OPÉRATION FORGE // ACADÉMIE SECRÈTE</div>
+    <div class="forge-title">Concevoir un <span>escape game</span><br>pédagogique</div>
+    <hr class="rule">
+    <p class="body-text">Vous avez vécu. Vous avez analysé. Maintenant vous construisez.</p>
+    <p class="body-text">Cette opération vous guide de la définition d'un objectif pédagogique jusqu'à un escape game prêt à déployer en classe. Trois actes, un mandat, une fiche de conception à emporter.</p>
+  </div>
+
+  <!-- MENU DE NAVIGATION -->
+  <div class="nav-section-title">ACCÈS DIRECT</div>
+  <div class="nav-menu" id="navMenu">
+
+    <div class="nav-item" id="nav-s0" onclick="navTo('s0')" >
+      <div class="nav-item-num">00</div>
+      <div class="nav-item-title">Mandat Kapp</div>
+      <div class="nav-item-sub">OUVERTURE // MISSION</div>
+      <div class="nav-item-arrow">→</div>
+    </div>
+
+    <div class="nav-item" id="nav-s1" onclick="navTo('s1')">
+      <div class="nav-item-num">ACTE I</div>
+      <div class="nav-item-title">Définition, histoire<br>et formes</div>
+      <div class="nav-item-sub">QU'EST-CE QU'UN ESCAPE GAME</div>
+      <div class="nav-item-arrow">→</div>
+    </div>
+
+    <div class="nav-item" id="nav-s2" onclick="navTo('s2')">
+      <div class="nav-item-num">ACTE II</div>
+      <div class="nav-item-title">Les 5 mécaniques<br>fondamentales</div>
+      <div class="nav-item-sub">L'ARSENAL DU CONCEPTEUR</div>
+      <div class="nav-item-arrow">→</div>
+    </div>
+
+    <div class="nav-item" id="nav-s3" onclick="navTo('s3')">
+      <div class="nav-item-num">ACTE III</div>
+      <div class="nav-item-title">Conception<br>pas à pas</div>
+      <div class="nav-item-sub">7 ÉTAPES // ATELIER</div>
+      <div class="nav-item-arrow">→</div>
+    </div>
+
+    <div class="nav-item" id="nav-s4" onclick="navTo('s4')">
+      <div class="nav-item-num">ACTE IV</div>
+      <div class="nav-item-title">Validation</div>
+      <div class="nav-item-sub">6 TESTS DE RÉSISTANCE</div>
+      <div class="nav-item-arrow">→</div>
+    </div>
+
+  </div>
+
+  <div class="kapp-block">
+    <div class="kapp-bar">
+      <div class="kapp-ring">🕵</div>
+      <div>
+        <div class="kapp-name">AGENT KAPP</div>
+        <div class="kapp-role">MANDAT OPÉRATIONNEL // ACADÉMIE SECRÈTE</div>
+      </div>
+      <div class="kapp-status">● TRANSMISSION ACTIVE</div>
+    </div>
+    <div class="kapp-narrative" id="n0"></div>
+    <div class="trigger-wrap" id="tw0">
+      <button class="trigger-btn" onclick="triggerMsg('0')" id="tb0">
+        <span class="or-dot"></span>MESSAGE DE L'AGENT KAPP
+      </button>
+    </div>
+    <div class="msg-wrap" id="mw0">
+      <div class="msg-box">
+        <div class="msg-text" id="mt0"></div>
+        <div class="msg-sig">— KAPP // OPÉRATION FORGE // ACADÉMIE SECRÈTE</div>
+      </div>
+    </div>
+    <div class="cta-wrap" id="cta0">
+      <button class="cta-btn" onclick="goTo('s1')">ACTE I — L'ESCAPE GAME →</button>
+      <div class="cta-sub">↓ DÉFINITION, HISTOIRE, FORMES</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ACTE 1 — QU'EST-CE QU'UN ESCAPE GAME ══════════ -->
+<section class="screen" id="s1">
+  <div class="forge-card">
+    <div class="card-eyebrow">ACTE I // DÉFINITION ET HISTOIRE</div>
+    <div class="forge-title">Qu'est-ce qu'un<br><span>escape game</span> pédagogique ?</div>
+    <hr class="rule">
+    <p class="body-text">Avant de concevoir, il faut comprendre ce que vous construisez, et ce que vous ne construisez pas.</p>
+  </div>
+
+  <!-- DÉFINITION -->
+  <div class="forge-card">
+    <div class="section-label">DÉFINITION</div>
+    <p class="body-text">
+      Un escape game pédagogique est un <span class="hl">dispositif d'apprentissage immersif</span> dans lequel des joueurs, placés dans une situation narrative fictive, résolvent une série d'énigmes cognitives et progressives pour atteindre un objectif commun, dans un temps contraint.
+    </p>
+    <p class="body-text">
+      Chaque énigme teste une compétence disciplinaire précise. Le scénario donne un sens à l'effort. La progression crée l'engagement. Le dénouement ritualise l'accomplissement.
+    </p>
+    <div class="warn-box">
+      <div class="warn-text">Un escape game pédagogique n'est pas un quiz avec un compte à rebours, ni une série d'exercices habillés en jeu. Si on retire le scénario, les rôles et la progression narrative, et qu'il ne reste rien de pédagogique, ce n'est pas un escape game : c'est un gadget numérique.</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-text">La question de test : si je remplace toutes les énigmes par des exercices classiques sur le même contenu, est-ce que l'apprentissage est équivalent ? Si oui, l'escape game n'apporte rien. Si non, c'est que les mécaniques de jeu créent quelque chose que l'exercice traditionnel ne crée pas.</div>
+    </div>
+  </div>
+
+  <!-- HISTOIRE -->
+  <div class="forge-card">
+    <div class="section-label">BREF HISTORIQUE</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year">2004</div>
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-title">Origines numériques</div>
+          <div class="tl-text">Les premiers « escape the room » apparaissent comme jeux vidéo en Flash, notamment <em>Crimson Room</em> de Toshimitsu Takagi. Le joueur est enfermé et doit trouver des indices pour sortir.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2007</div>
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-title">Premier escape room physique</div>
+          <div class="tl-text">SCRAP Entertainment ouvre le premier escape room physique à Kyoto, Japon. Le concept se répand en Asie puis en Europe à partir de 2012, porté par la culture geek et les team buildings d'entreprise.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2014</div>
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-title">Entrée dans l'éducation</div>
+          <div class="tl-text">Les premiers escape games pédagogiques apparaissent dans les bibliothèques universitaires américaines, puis dans les classes de lycée. Des enseignants pionniers adaptent le format pour travailler des contenus disciplinaires.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2016</div>
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-title">Premières recherches académiques</div>
+          <div class="tl-text">Des études universitaires commencent à documenter l'impact des escape games sur l'engagement et les apprentissages. Nicholson (2016) publie la première synthèse académique sur le sujet.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2020</div>
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-title">Explosion du numérique</div>
+          <div class="tl-text">La crise sanitaire accélère le développement d'escape games numériques (Genially, LearningApps, HTML). Les outils de création se démocratisent, rendant la conception accessible aux enseignants sans compétences techniques avancées.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2023</div>
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-title">Maturité pédagogique</div>
+          <div class="tl-text">Le format est reconnu comme dispositif pédagogique à part entière dans la formation des enseignants. Les recherches convergent sur des conditions d'efficacité précises : alignement objectifs-énigmes, feedback formatif intégré, progressivité.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECHERCHES -->
+  <div class="forge-card">
+    <div class="section-label">CE QUE DIT LA RECHERCHE</div>
+    <div class="fact-box">
+      <div class="fact-tag">// NICHOLSON, 2016 — UNIVERSITÉ DE SYRACUSE</div>
+      <div class="fact-text">La première grande enquête sur les escape rooms éducatifs (n=175) montre que <strong>78% des concepteurs</strong> constatent une amélioration de l'engagement des apprenants. Le facteur déterminant n'est pas la difficulté des énigmes mais la <strong>cohérence narrative</strong> entre le scénario et les objectifs d'apprentissage.</div>
+      <div class="fact-source">Nicholson, S. (2016). Ask Why: Creating a Better Player Experience Through Narrative Design and Questioning.</div>
+    </div>
+    <div class="fact-box">
+      <div class="fact-tag">// LOPERA-OQUENDO ET AL., 2021 — MÉTA-ANALYSE</div>
+      <div class="fact-text">Une méta-analyse portant sur 26 études (2014-2021) confirme que les escape games pédagogiques produisent des effets positifs sur la <strong>motivation</strong> (d=0.62), la <strong>rétention des connaissances</strong> (d=0.54) et le <strong>travail collaboratif</strong> (d=0.71). Les effets sont plus forts quand les énigmes nécessitent un raisonnement de haut niveau selon Bloom.</div>
+      <div class="fact-source">Lopera-Oquendo et al. (2021). Escape room as learning methodology, a systematic review of its use in Higher Education.</div>
+    </div>
+    <div class="fact-box">
+      <div class="fact-tag">// VELDKAMP ET AL., 2020 — UNIVERSITÉ DE TWENTE</div>
+      <div class="fact-text">Les chercheurs identifient le <strong>feedback immédiat</strong> comme le facteur le plus discriminant entre un escape game efficace et un escape game inefficace. Un feedback qui explique <em>pourquoi</em> la réponse est incorrecte multiplie par 2,3 la probabilité que l'élève retienne la notion.</div>
+      <div class="fact-source">Veldkamp, A. et al. (2020). Escape education: a systematic review on escape rooms in education.</div>
+    </div>
+  </div>
+
+  <!-- FORMES D'ESCAPE -->
+  <div class="forge-card">
+    <div class="section-label">LES FORMES DE L'ESCAPE GAME</div>
+    <p class="body-text">Il n'existe pas un modèle unique. Cliquez sur chaque forme pour voir ses caractéristiques.</p>
+    <div class="forms-grid" id="formsGrid">
+
+      <div class="form-card" onclick="toggleForm(this)">
+        <div class="form-level débutant">DÉBUTANT</div>
+        <span class="form-icon">➡️</span>
+        <div class="form-title">Linéaire</div>
+        <div class="form-desc">Une énigme à la fois. Chaque réponse débloque la suivante. Structure narrative forte, progression claire et maîtrisée.</div>
+        <div class="form-tags">
+          <span class="form-tag">Individuel</span>
+          <span class="form-tag">Première conception</span>
+          <span class="form-tag">Narratif fort</span>
+        </div>
+        <div class="form-detail">
+          <strong>Avantages :</strong> simple à concevoir, gestion de classe facile, progression contrôlée.<br><br>
+          <strong>Limites :</strong> un élève bloqué bloque tout, pas de différenciation naturelle.<br><br>
+          <strong>Idéal pour :</strong> révision avant contrôle, découverte guidée d'une notion, travail individuel.
+        </div>
+      </div>
+
+      <div class="form-card" onclick="toggleForm(this)">
+        <div class="form-level intermédiaire">INTERMÉDIAIRE</div>
+        <span class="form-icon">⑂</span>
+        <div class="form-title">Parallèle</div>
+        <div class="form-desc">Plusieurs énigmes accessibles simultanément. Les élèves se répartissent les tâches selon leurs compétences.</div>
+        <div class="form-tags">
+          <span class="form-tag">Groupe</span>
+          <span class="form-tag">Différenciation</span>
+          <span class="form-tag">Coopération</span>
+        </div>
+        <div class="form-detail">
+          <strong>Avantages :</strong> différenciation naturelle, rythmes variés acceptés, interdépendance réelle entre élèves.<br><br>
+          <strong>Limites :</strong> conception plus complexe, gestion de classe exigeante.<br><br>
+          <strong>Idéal pour :</strong> classes hétérogènes, compétences multiples à travailler, séances longues.
+        </div>
+      </div>
+
+      <div class="form-card" onclick="toggleForm(this)">
+        <div class="form-level avancé">AVANCÉ</div>
+        <span class="form-icon">🌐</span>
+        <div class="form-title">Mixte</div>
+        <div class="form-desc">Phases parallèles puis convergence linéaire. Les résultats de chaque groupe s'assemblent pour le dénouement commun.</div>
+        <div class="form-tags">
+          <span class="form-tag">Collectif</span>
+          <span class="form-tag">Synthèse commune</span>
+          <span class="form-tag">Séance longue</span>
+        </div>
+        <div class="form-detail">
+          <strong>Avantages :</strong> accomplissement collectif puissant, interdépendance réelle, synthèse commune mémorable.<br><br>
+          <strong>Limites :</strong> conception longue, synchronisation délicate, imprévu difficile à gérer.<br><br>
+          <strong>Idéal pour :</strong> fin de séquence, projet interdisciplinaire, événement pédagogique fort.
+        </div>
+      </div>
+
+      <div class="form-card" onclick="toggleForm(this)">
+        <div class="form-level débutant">NUMÉRIQUE</div>
+        <span class="form-icon">💻</span>
+        <div class="form-title">Entièrement numérique</div>
+        <div class="form-desc">Toutes les énigmes et le cadenas sont sur écran. Genially, HTML, LearningApps. Déployable à distance ou en salle.</div>
+        <div class="form-tags">
+          <span class="form-tag">Genially</span>
+          <span class="form-tag">HTML</span>
+          <span class="form-tag">Distance</span>
+        </div>
+        <div class="form-detail">
+          <strong>Avantages :</strong> accessible à distance, réutilisable, feedback automatique intégré, correction automatique.<br><br>
+          <strong>Limites :</strong> dépendance au matériel, moins de manipulation physique, risque de technicisme.<br><br>
+          <strong>Idéal pour :</strong> classes équipées, travail à la maison, révision autonome.
+        </div>
+      </div>
+
+      <div class="form-card" onclick="toggleForm(this)">
+        <div class="form-level intermédiaire">HYBRIDE</div>
+        <span class="form-icon">🔗</span>
+        <div class="form-title">Phygital</div>
+        <div class="form-desc">Mix d'énigmes physiques (documents papier, objets, cartes) et numériques (cadenas numérique, QR codes, vidéos).</div>
+        <div class="form-tags">
+          <span class="form-tag">Manipulation</span>
+          <span class="form-tag">QR codes</span>
+          <span class="form-tag">Engagement sensoriel</span>
+        </div>
+        <div class="form-detail">
+          <strong>Avantages :</strong> engagement sensoriel maximal, diversité des supports, mémorisation renforcée.<br><br>
+          <strong>Limites :</strong> logistique plus lourde, préparation matérielle nécessaire.<br><br>
+          <strong>Idéal pour :</strong> séances en présentiel, petits groupes, contenu qui se prête à la manipulation.
+        </div>
+      </div>
+
+      <div class="form-card" onclick="toggleForm(this)">
+        <div class="form-level avancé">INVERSÉ</div>
+        <span class="form-icon">🔄</span>
+        <div class="form-title">Break-in game</div>
+        <div class="form-desc">Les élèves doivent entrer dans quelque chose plutôt qu'en sortir : déverrouiller une boîte, accéder à un fichier secret, ouvrir un coffre.</div>
+        <div class="form-tags">
+          <span class="form-tag">Coffre</span>
+          <span class="form-tag">Boîte à énigmes</span>
+          <span class="form-tag">BreakoutEdu</span>
+        </div>
+        <div class="form-detail">
+          <strong>Avantages :</strong> matériel physique réutilisable, fort sentiment d'accomplissement, adapté au physique comme au numérique.<br><br>
+          <strong>Limites :</strong> investissement matériel initial si version physique.<br><br>
+          <strong>Idéal pour :</strong> révéler un document, accéder à une ressource, dénouement spectaculaire.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-cy btn-large" onclick="goTo('s2')">ACTE II — LES MÉCANIQUES →</button>
+  </div>
+</section>
+
+<!-- ══════════ ACTE 2 — MÉCANIQUES ══════════ -->
+<section class="screen" id="s2">
+  <div class="forge-card">
+    <div class="card-eyebrow">ACTE II // LES MÉCANIQUES FONDAMENTALES</div>
+    <div class="forge-title">L'arsenal du<br><span>concepteur</span></div>
+    <hr class="rule">
+    <p class="body-text">Un escape game pédagogique repose sur cinq mécaniques fondamentales. Chacune répond à un besoin motivationnel précis. Toutes doivent être présentes pour que le dispositif fonctionne.</p>
+  </div>
+
+  <div class="accordion-list">
+
+    <div class="acc-item" id="acc1">
+      <div class="acc-header" onclick="toggleAcc('acc1')">
+        <div class="acc-num">01</div>
+        <div class="acc-title-wrap">
+          <div class="acc-title">Le scénario ancré</div>
+          <div class="acc-sub">BESOIN : APPARTENANCE ET SENS</div>
+        </div>
+        <div class="acc-tag">FONDATION</div>
+        <div class="acc-arrow">›</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <div>
+            <div class="acc-col-label">POURQUOI C'EST INDISPENSABLE</div>
+            <div class="acc-col-text">Le scénario transforme un exercice en mission. L'élève n'est plus un apprenant qui répond à des questions : il est un agent, un archiviste, un enquêteur. Ce changement de posture active le besoin d'<strong>appartenance</strong> (j'ai un rôle), donne un <strong>sens</strong> à l'effort, et crée une <strong>pression narrative</strong> qui remplace avantageusement la pression scolaire.<br><br>Deux phrases suffisent. Elles doivent répondre à : qui suis-je ? quel est l'enjeu ? pourquoi maintenant ?
+              <div style="margin-top:10px;">
+                <span class="acc-tad-tag">APPARTENANCE</span>
+                <span class="acc-tad-tag">SENS</span>
+                <span class="acc-tad-tag">IMMERSION</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="acc-col-label">EXEMPLES CONCRETS</div>
+            <div class="acc-col-text">
+              <strong>✓ Bon scénario :</strong> "Vous êtes archiviste au Musée de l'Histoire. Un hacker a crypté les fiches de 4 documents. Reconstituez leur classification avant 9h."<br><br>
+              <strong>✗ Non-scénario :</strong> "Bienvenue dans ce quiz sur les sources historiques."<br><br>
+              La différence : le premier donne un rôle, un enjeu et une urgence. Le second annonce un exercice.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-item" id="acc2">
+      <div class="acc-header" onclick="toggleAcc('acc2')">
+        <div class="acc-num">02</div>
+        <div class="acc-title-wrap">
+          <div class="acc-title">La progressivité</div>
+          <div class="acc-sub">BESOIN : FLOW — ÉQUILIBRE DÉFI / COMPÉTENCE</div>
+        </div>
+        <div class="acc-tag">ARCHITECTURE</div>
+        <div class="acc-arrow">›</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <div>
+            <div class="acc-col-label">POURQUOI C'EST INDISPENSABLE</div>
+            <div class="acc-col-text">Selon Csikszentmihalyi, le flow n'existe que dans la zone d'équilibre entre le défi et la compétence perçue. Trop facile : ennui. Trop difficile : anxiété et abandon. Un escape bien conçu monte en charge progressivement, chaque énigme résolue renforçant la confiance pour affronter la suivante.<br><br>La progression doit être délibérée : planifiée avant de coder, vérifiée avant de déployer.
+              <div style="margin-top:10px;">
+                <span class="acc-tad-tag">FLOW</span>
+                <span class="acc-tad-tag">COMPÉTENCE</span>
+                <span class="acc-tad-tag">PROGRESSION</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="acc-col-label">COMMENT LA CALIBRER</div>
+            <div class="acc-col-text">
+              <strong>Énigme 1 :</strong> accessible, dans la zone de confort. Elle ancre la confiance.<br>
+              <strong>Énigme 2-3 :</strong> légèrement au-delà. Elle crée le défi sans décourager.<br>
+              <strong>Énigme finale :</strong> mobilise toutes les compétences précédentes. Elle justifie la progression.<br><br>
+              <strong>Test :</strong> demandez à un collègue de jouer sans aide. Notez où il bloque. C'est là que votre progressivité est cassée.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-item" id="acc3">
+      <div class="acc-header" onclick="toggleAcc('acc3')">
+        <div class="acc-num">03</div>
+        <div class="acc-title-wrap">
+          <div class="acc-title">Le feedback informatif</div>
+          <div class="acc-sub">BESOIN : COMPÉTENCE — SENTIMENT D'EFFICACITÉ</div>
+        </div>
+        <div class="acc-tag">APPRENTISSAGE</div>
+        <div class="acc-arrow">›</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <div>
+            <div class="acc-col-label">POURQUOI C'EST INDISPENSABLE</div>
+            <div class="acc-col-text">C'est la mécanique la plus importante pédagogiquement, et la plus souvent négligée. Un feedback qui dit "Faux. Réessayez" punit sans enseigner. Un feedback qui dit pourquoi c'est faux transforme l'erreur en apprentissage. Veldkamp et al. (2020) montrent qu'un feedback explicatif multiplie par 2,3 la probabilité de rétention.
+              <div style="margin-top:10px;">
+                <span class="acc-tad-tag">COMPÉTENCE</span>
+                <span class="acc-tad-tag">ERREUR FORMATIVE</span>
+                <span class="acc-tad-tag">GUIDAGE</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="acc-col-label">LA RÈGLE DES FEEDBACKS</div>
+            <div class="acc-col-text">
+              <strong>Un feedback par mauvaise réponse possible.</strong> Pas un message générique.<br><br>
+              <strong>Structure d'un bon feedback :</strong><br>
+              1. Ce qui est inexact dans la réponse donnée.<br>
+              2. Le concept que ça confond ou ignore.<br>
+              3. Un indice pour se recadrer.<br><br>
+              <strong>40% du temps de conception</strong> devrait être consacré aux feedbacks. C'est là que se joue l'apprentissage réel.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-item" id="acc4">
+      <div class="acc-header" onclick="toggleAcc('acc4')">
+        <div class="acc-num">04</div>
+        <div class="acc-title-wrap">
+          <div class="acc-title">Le cadenas comme rituel</div>
+          <div class="acc-sub">BESOIN : AUTONOMIE ET ACCOMPLISSEMENT</div>
+        </div>
+        <div class="acc-tag">DÉNOUEMENT</div>
+        <div class="acc-arrow">›</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <div>
+            <div class="acc-col-label">POURQUOI C'EST INDISPENSABLE</div>
+            <div class="acc-col-text">Le cadenas n'est pas une validation technique. C'est un rite de passage qui matérialise l'accomplissement. Le "clic" de déverrouillage déclenche une micro-récompense neurologique et confirme l'autonomie : c'est moi qui ai trouvé, c'est moi qui ouvre.<br><br>
+              <strong>Règle absolue :</strong> le code doit être entièrement déductible des réponses aux énigmes. Un code arbitraire détruit la fonction d'accomplissement.
+              <div style="margin-top:10px;">
+                <span class="acc-tad-tag">AUTONOMIE</span>
+                <span class="acc-tad-tag">ACCOMPLISSEMENT</span>
+                <span class="acc-tad-tag">RITUEL</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="acc-col-label">COMMENT LE CONCEVOIR</div>
+            <div class="acc-col-text">
+              <strong>Chaque énigme révèle un élément du code.</strong> L'élève comprend pourquoi ce chiffre ou cette lettre est là.<br><br>
+              <strong>Ritualisez le moment :</strong> animation, son, message de confirmation. Plus le déverrouillage est spectaculaire, plus l'accomplissement est mémorable.<br><br>
+              <strong>Ne dépassez pas 6 caractères.</strong> Au-delà, la saisie devient frustrante et casse l'immersion.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-item" id="acc5">
+      <div class="acc-header" onclick="toggleAcc('acc5')">
+        <div class="acc-num">05</div>
+        <div class="acc-title-wrap">
+          <div class="acc-title">La tension temporelle</div>
+          <div class="acc-sub">LEVIER : RÉGULATION DE L'ENGAGEMENT</div>
+        </div>
+        <div class="acc-tag">ENGAGEMENT</div>
+        <div class="acc-arrow">›</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <div>
+            <div class="acc-col-label">POURQUOI C'EST UN LEVIER</div>
+            <div class="acc-col-text">Le temps crée une pression positive qui empêche la procrastination et maintient la focalisation. Il donne de la crédibilité au scénario : une urgence sans limite de temps n'est pas vraiment urgente.<br><br>
+              <strong>Attention :</strong> un timer bloquant crée de l'anxiété et détruit le flow. Un timer visible mais non bloquant régule le rythme sans punir.
+              <div style="margin-top:10px;">
+                <span class="acc-tad-tag">RÉGULATION</span>
+                <span class="acc-tad-tag">FOCALISATION</span>
+                <span class="acc-tad-tag">NARRATION</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="acc-col-label">BONNE PRATIQUE</div>
+            <div class="acc-col-text">
+              <strong>Progressif :</strong> neutre au début, amber à mi-parcours, rouge dans les dernières minutes.<br><br>
+              <strong>Non bloquant :</strong> arriver à zéro ne supprime pas l'accès à la suite. Le timer est une tension narrative, pas une sanction.<br><br>
+              <strong>Calibré :</strong> comptez 8 à 10 minutes par énigme pour une classe. Testez à blanc avec un collègue avant de déployer.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-cy btn-large" onclick="goTo('s3')">ACTE III — CONCEPTION PAS À PAS →</button>
+  </div>
+</section>
+
+<!-- ══════════ ACTE 3 — CONCEPTION ══════════ -->
+<section class="screen" id="s3">
+  <div class="forge-card">
+    <div class="card-eyebrow">ACTE III // ATELIER DE CONCEPTION</div>
+    <div class="forge-title">De l'intention<br>au <span>premier déploiement</span></div>
+    <hr class="rule">
+    <p class="body-text">Sept étapes. Dans l'ordre. Ne passez pas à l'étape suivante sans avoir complété la précédente. L'outil arrive en dernier.</p>
+  </div>
+
+  <div class="steps-wrap">
+
+    <div class="step-row">
+      <div class="step-spine">
+        <div class="step-dot">1</div>
+        <div class="step-spine-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Poser la compétence</div>
+        <div class="step-body">
+          <p>Formulez en une phrase ce que l'élève doit être capable de faire à la fin. Pas un thème. Pas un chapitre. Une <span class="hl">capacité observable</span>.</p>
+          <div class="step-example">L'élève sera capable de distinguer une source primaire d'une source secondaire et d'évaluer sa fiabilité dans un contexte historiographique.</div>
+          <div class="step-warn">Si vous ne pouvez pas formuler ça clairement, arrêtez-vous. L'escape game attend.</div>
+        </div>
+        <div class="field-block" style="margin-top:16px;">
+          <div class="field-label">VOTRE COMPÉTENCE CIBLÉE</div>
+          <textarea class="field-input" rows="2" placeholder="L'élève sera capable de…" data-save="competence"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine">
+        <div class="step-dot">2</div>
+        <div class="step-spine-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Choisir le moment pédagogique</div>
+        <div class="step-body">
+          <p>L'escape game se place à quel moment dans votre séquence ? Ce choix conditionne la difficulté, les types d'énigmes et la quantité d'étayage nécessaire.</p>
+        </div>
+        <div class="forms-grid" style="grid-template-columns:repeat(3,1fr);margin-top:12px;">
+          <div class="form-card" onclick="toggleForm(this)" style="padding:16px 12px;">
+            <span class="form-icon" style="font-size:22px;">🌱</span>
+            <div class="form-title" style="font-size:15px;">Découverte</div>
+            <div class="form-desc" style="font-size:13px;">Introduire une notion nouvelle. Exige une progressivité très fine et beaucoup d'étayage intégré.</div>
+            <div class="form-detail">Conception exigeante. Chaque énigme doit construire la notion pas à pas. Risque de double charge cognitive si mal dosé. Réservez ce contexte quand vous maîtrisez déjà la conception linéaire.</div>
+          </div>
+          <div class="form-card" onclick="toggleForm(this)" style="padding:16px 12px; border-color:rgba(0,212,255,0.3);">
+            <span class="form-icon" style="font-size:22px;">🔄</span>
+            <div class="form-title" style="font-size:15px;">Révision</div>
+            <div class="form-desc" style="font-size:13px;">Consolider avant évaluation. Terrain d'élection de l'escape game. Recommandé pour une première conception.</div>
+            <div class="form-detail">Contexte optimal. Les élèves ont les compétences pour jouer sans double charge cognitive. La progressivité est plus facile à calibrer. Les feedbacks s'appuient sur des acquis existants.</div>
+          </div>
+          <div class="form-card" onclick="toggleForm(this)" style="padding:16px 12px;">
+            <span class="form-icon" style="font-size:22px;">🔗</span>
+            <div class="form-title" style="font-size:15px;">Transfert</div>
+            <div class="form-desc" style="font-size:13px;">Appliquer une compétence dans un contexte nouveau. Idéal pour les compétences transversales.</div>
+            <div class="form-detail">Très efficace pour les compétences méthodologiques (synthèse, analyse, argumentation). Le scénario peut être dans une discipline différente de la compétence ciblée.</div>
+          </div>
+        </div>
+        <div class="field-block" style="margin-top:12px;">
+          <div class="field-label">VOTRE CHOIX ET JUSTIFICATION</div>
+          <input class="field-input" type="text" placeholder="Révision / Découverte / Transfert, parce que…" data-save="moment">
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine">
+        <div class="step-dot">3</div>
+        <div class="step-spine-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Écrire le scénario</div>
+        <div class="step-body">
+          <p>Deux phrases. Elles répondent à : <span class="hl">qui est l'élève</span>, <span class="hl2">quel est l'enjeu</span>, <span class="hl3">pourquoi maintenant</span>.</p>
+          <div class="step-example">Vous êtes archiviste au Musée de l'Histoire. Un hacker a crypté les fiches de 4 documents historiques. Reconstituez leur classification avant la fermeture du musée.</div>
+          <div class="step-tip">Le scénario ne doit pas expliquer le contenu disciplinaire. Il doit juste donner une raison narrative d'agir. Plus il est ancré dans un univers familier aux élèves, plus l'immersion sera forte.</div>
+        </div>
+        <div class="field-block" style="margin-top:12px;">
+          <div class="field-label">VOTRE SCÉNARIO</div>
+          <textarea class="field-input" rows="3" placeholder="Deux phrases. Un rôle, un enjeu, une urgence…" data-save="scenario"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine">
+        <div class="step-dot">4</div>
+        <div class="step-spine-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Structurer les énigmes</div>
+        <div class="step-body">
+          <p>Sur papier d'abord. Pour chaque énigme, notez la compétence testée, le type d'activité, le niveau de difficulté et le code ou l'indice révélé.</p>
+        </div>
+        <div style="margin-top:14px; overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:12px;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border);">
+                <th style="padding:8px 12px;text-align:left;color:var(--cyan);letter-spacing:2px;font-weight:500;">ÉNIGME</th>
+                <th style="padding:8px 12px;text-align:left;color:var(--cyan);letter-spacing:2px;font-weight:500;">COMPÉTENCE</th>
+                <th style="padding:8px 12px;text-align:left;color:var(--cyan);letter-spacing:2px;font-weight:500;">TYPE</th>
+                <th style="padding:8px 12px;text-align:left;color:var(--cyan);letter-spacing:2px;font-weight:500;">DIFFICULTÉ</th>
+                <th style="padding:8px 12px;text-align:left;color:var(--cyan);letter-spacing:2px;font-weight:500;">CODE</th>
+              </tr>
+            </thead>
+            <tbody id="enigmeTable">
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:6px 12px;color:var(--grey-lit);">01</td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="ex. Identifier…" style="font-size:12px;padding:4px 2px;" data-save="e1-competence"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="Observation…" style="font-size:12px;padding:4px 2px;" data-save="e1-type"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="1/5" style="font-size:12px;padding:4px 2px;width:50px;" data-save="e1-niveau"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="Chiffre…" style="font-size:12px;padding:4px 2px;width:60px;" data-save="e1-code"></td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:6px 12px;color:var(--grey-lit);">02</td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="" style="font-size:12px;padding:4px 2px;" data-save="e2-competence"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="" style="font-size:12px;padding:4px 2px;" data-save="e2-type"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="2/5" style="font-size:12px;padding:4px 2px;width:50px;" data-save="e2-niveau"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="" style="font-size:12px;padding:4px 2px;width:60px;" data-save="e2-code"></td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:6px 12px;color:var(--grey-lit);">03</td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="" style="font-size:12px;padding:4px 2px;" data-save="e3-competence"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="" style="font-size:12px;padding:4px 2px;" data-save="e3-type"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="3/5" style="font-size:12px;padding:4px 2px;width:50px;" data-save="e3-niveau"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="" style="font-size:12px;padding:4px 2px;width:60px;" data-save="e3-code"></td>
+              </tr>
+              <tr>
+                <td style="padding:6px 12px;color:var(--grey-lit);">04</td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="" style="font-size:12px;padding:4px 2px;" data-save="e4-competence"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="" style="font-size:12px;padding:4px 2px;" data-save="e4-type"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="4/5" style="font-size:12px;padding:4px 2px;width:50px;" data-save="e4-niveau"></td>
+                <td style="padding:6px 12px;"><input class="field-input" type="text" placeholder="" style="font-size:12px;padding:4px 2px;width:60px;" data-save="e4-code"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="step-warn" style="margin-top:12px;">Vérifiez que la difficulté monte réellement d'une énigme à l'autre. Si l'énigme 3 est plus facile que l'énigme 1, c'est un signal d'alarme.</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine">
+        <div class="step-dot">5</div>
+        <div class="step-spine-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Rédiger les feedbacks</div>
+        <div class="step-body">
+          <p>C'est l'étape la plus longue. C'est aussi la plus importante pédagogiquement. Pour chaque mauvaise réponse prévisible, un feedback qui <span class="hl">explique</span>.</p>
+          <div class="step-example">Si l'élève choisit Wikipédia comme source fiable : "Wikipédia est une source secondaire collaborative, non validée par des experts. Elle peut servir de point de départ, jamais de référence finale en histoire."</div>
+          <div class="step-warn">Ne passez pas à l'outil avant d'avoir rédigé les feedbacks sur papier ou dans un document. Une fois dans Genially, on les oublie systématiquement.</div>
+        </div>
+        <div class="field-block" style="margin-top:12px;">
+          <div class="field-label">FEEDBACK TYPE — ÉNIGME 1, ERREUR LA PLUS PROBABLE</div>
+          <textarea class="field-input" rows="2" placeholder="Ce qui est inexact dans cette réponse… le concept que ça confond… l'indice pour se recadrer…" data-save="feedback1"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine">
+        <div class="step-dot">6</div>
+        <div class="step-spine-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Choisir l'outil</div>
+        <div class="step-body">
+          <p>Seulement maintenant. Partez de ce que vous voulez <span class="hl">faire</span>, pas de l'outil que vous connaissez. Chaque famille de besoins a ses outils.</p>
+        </div>
+
+        <div class="tool-families">
+
+          <!-- FAMILLE 1 -->
+          <div class="tool-family" id="tf1">
+            <div class="tf-header" onclick="toggleFamily('tf1')">
+              <div class="tf-icon">🗺️</div>
+              <div class="tf-title-wrap">
+                <div class="tf-title">Naviguer et scénariser</div>
+                <div class="tf-sub">Créer une progression entre les étapes, afficher un scénario, gérer la navigation</div>
+              </div>
+              <div class="tf-arrow">›</div>
+            </div>
+            <div class="tf-body">
+              <div class="tool-row">
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://genially.com" target="_blank" class="tool-link">Genially</a></div>
+                  <div class="tool-desc">Pages liées, boutons interactifs, animation d'intro, mise en scène visuelle complète. L'outil central pour un escape numérique.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Freemium</span><span class="t-tag t-rgpd">⚠ RGPD</span></div>
+                </div>
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://ladigitale.dev/digiscreen/" target="_blank" class="tool-link">Digiscreen</a></div>
+                  <div class="tool-desc">Affichage en classe, minuteur, fond sonore. Utile pour habiller une séance en présentiel autour de l'escape.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-rgpd-ok">✓ RGPD</span><span class="t-tag t-nocompte">Sans compte</span></div>
+                </div>
+                <div class="tool-item">
+                  <div class="tool-name"><span class="tool-link">Page HTML</span></div>
+                  <div class="tool-desc">Navigation JS totalement personnalisée, hébergement sur GitHub Pages ou ENT. Autonomie maximale.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-rgpd-ok">✓ RGPD</span><span class="t-tag t-avance">⚠ Avancé</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAMILLE 2 -->
+          <div class="tool-family" id="tf2">
+            <div class="tf-header" onclick="toggleFamily('tf2')">
+              <div class="tf-icon">🧩</div>
+              <div class="tf-title-wrap">
+                <div class="tf-title">Créer des énigmes interactives</div>
+                <div class="tf-sub">QCM, associations, textes à trous, chronologies, glisser-déposer</div>
+              </div>
+              <div class="tf-arrow">›</div>
+            </div>
+            <div class="tf-body">
+              <div class="tool-row">
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://learningapps.org" target="_blank" class="tool-link">LearningApps</a></div>
+                  <div class="tool-desc">Large palette d'activités interactives : association, classement, texte à trous, frise chronologique, jeu de mémoire. Intégrable partout via iframe ou lien direct.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-rgpd">⚠ RGPD</span></div>
+                </div>
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://ladigitale.dev/digistorm/" target="_blank" class="tool-link">Digistorm — La Digitale</a></div>
+                  <div class="tool-desc">Quiz interactif en temps réel. Les élèves répondent depuis leur appareil, les résultats s'affichent en direct. Idéal pour une énigme collective ou une validation en groupe.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-rgpd-ok">✓ RGPD</span><span class="t-tag t-nocompte">Sans compte</span></div>
+                </div>
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://ladigitale.dev/digiflip/" target="_blank" class="tool-link">Digiflip — La Digitale</a></div>
+                  <div class="tool-desc">Cartes mémo recto-verso. Utile pour une énigme d'association ou un indice caché au dos d'une carte.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-rgpd-ok">✓ RGPD</span><span class="t-tag t-nocompte">Sans compte</span></div>
+                </div>
+                <div class="tool-item">
+                  <div class="tool-name"><span class="tool-link">Page HTML</span></div>
+                  <div class="tool-desc">Activités sur mesure : drag & drop, sélection de mots dans un texte, cadenas animé, feedback différencié par réponse.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-rgpd-ok">✓ RGPD</span><span class="t-tag t-avance">⚠ Avancé</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAMILLE 3 -->
+          <div class="tool-family" id="tf3">
+            <div class="tf-header" onclick="toggleFamily('tf3')">
+              <div class="tf-icon">🔐</div>
+              <div class="tf-title-wrap">
+                <div class="tf-title">Verrouiller et déverrouiller</div>
+                <div class="tf-sub">Poser un cadenas numérique, conditionner l'accès à une ressource</div>
+              </div>
+              <div class="tf-arrow">›</div>
+            </div>
+            <div class="tf-body">
+              <div class="tool-row">
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://ladigitale.dev/digilock/" target="_blank" class="tool-link">Digilock — La Digitale</a></div>
+                  <div class="tool-desc">Cadenas numériques variés : <span class="hl">code chiffres, code lettres, piano, couleurs, images, dés</span>. Zéro compte, zéro données. Le cadenas s'intègre dans Genially, ENT ou toute page HTML via iframe. Le contenu à débloquer (texte, lien, image) est défini par le concepteur.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-rgpd-ok">✓ RGPD</span><span class="t-tag t-nocompte">Sans compte</span></div>
+                </div>
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://nuage.apps.education.fr" target="_blank" class="tool-link">Nuage (Apps.education)</a></div>
+                  <div class="tool-desc">Hébergement de fichiers protégés par mot de passe. Idéal pour cacher un document à déverrouiller : le lien est accessible mais le fichier nécessite le code trouvé via les énigmes.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-rgpd-ok">✓ RGPD</span><span class="t-tag t-edu">Éducation nationale</span></div>
+                </div>
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://ladigitale.dev/digicode/" target="_blank" class="tool-link">Digicode — La Digitale</a></div>
+                  <div class="tool-desc">QR code personnalisé. Pratique pour un escape phygital : le QR révèle une ressource ou un indice après déverrouillage.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-rgpd-ok">✓ RGPD</span><span class="t-tag t-nocompte">Sans compte</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAMILLE 4 -->
+          <div class="tool-family" id="tf4">
+            <div class="tf-header" onclick="toggleFamily('tf4')">
+              <div class="tf-icon">🎨</div>
+              <div class="tf-title-wrap">
+                <div class="tf-title">Créer du contenu immersif</div>
+                <div class="tf-sub">Image de contexte, faux document, ambiance sonore, personnage narratif</div>
+              </div>
+              <div class="tf-arrow">›</div>
+            </div>
+            <div class="tf-body">
+              <div class="tool-row">
+                <div class="tool-item">
+                  <div class="tool-name"><span class="tool-link">IA texte — Claude / Mistral</span></div>
+                  <div class="tool-desc">Rédaction d'énigmes, de feedbacks différenciés, de textes fictifs (faux article de journal, rapport d'enquête, message codé). Prompt efficace requis.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit (base)</span><span class="t-tag t-rgpd">⚠ Frugalité</span></div>
+                </div>
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://perchance.org/ai-photo-generator" target="_blank" class="tool-link">Perchance AI</a></div>
+                  <div class="tool-desc">Génération d'images sans compte, sans inscription. Idéal pour une illustration de scénario rapide et sobre.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-nocompte">Sans compte</span></div>
+                </div>
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://chatgpt.com" target="_blank" class="tool-link">ChatGPT (OpenAI)</a></div>
+                  <div class="tool-desc">Génération d'images via DALL-E intégré. Qualité élevée, compte requis. Version gratuite disponible avec limitations.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Freemium</span><span class="t-tag t-rgpd">⚠ RGPD</span></div>
+                </div>
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://gemini.google.com" target="_blank" class="tool-link">Gemini (Google)</a></div>
+                  <div class="tool-desc">Génération d'images et de textes. Compte Google requis. Résultats de qualité pour les illustrations de scénario.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-rgpd">⚠ Compte requis</span></div>
+                </div>
+                <div class="tool-item">
+                  <div class="tool-name"><a href="https://ladigitale.dev/digipad/" target="_blank" class="tool-link">Digipad — La Digitale</a></div>
+                  <div class="tool-desc">Mur collaboratif pour afficher des indices progressifs, recueillir des réponses en groupe ou créer un tableau d'enquête partagé.</div>
+                  <div class="tool-tags"><span class="t-tag t-free">Gratuit</span><span class="t-tag t-rgpd-ok">✓ RGPD</span><span class="t-tag t-nocompte">Sans compte</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COMBINAISON RECOMMANDÉE — hors accordéon, bien visible -->
+        <div class="combo-highlight">
+          <div class="combo-hl-inner">
+            <div class="combo-hl-tag">✦ COMBINAISON RECOMMANDÉE — PREMIER ESCAPE GAME</div>
+            <div class="combo-hl-text">
+              <strong>Genially</strong> pour la navigation et le scénario visuel,
+              <strong>LearningApps</strong> pour les énigmes interactives intégrées via iframe,
+              <strong>Digilock</strong> pour le cadenas final.
+              Trois outils, une heure de prise en main, un escape fonctionnel.
+            </div>
+            <div class="combo-hl-ia">
+              <span class="combo-ia-badge">⚡ IA GÉNÉRATIVE</span>
+              Si vous êtes à l'aise avec l'IA générative et l'hébergement web, une <strong>page HTML</strong> générée avec un LLM offre une liberté totale : feedbacks sur mesure, cadenas animé, design personnalisé.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-spine">
+        <div class="step-dot">7</div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Tester avant de déployer</div>
+        <div class="step-body">
+          <p>Un collègue, pas vous. Vous connaissez les réponses. Lui non.</p>
+          <p>Notez où il bloque, ce qu'il ne comprend pas, combien de temps il met.</p>
+        </div>
+        <div class="step-tip">Un escape game non testé est un escape game raté. Même 15 minutes avec un collègue révèlent plus de problèmes que 3 heures de relecture solitaire.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-cy btn-large" onclick="goTo('s4')">ACTE IV — VALIDATION →</button>
+  </div>
+
+  <!-- EXPORT BAR -->
+  <div class="export-bar" id="exportBar">
+    <div class="export-bar-left">
+      <div class="export-save-status" id="saveStatus">
+        <span class="save-dot"></span>
+        <span id="saveLabel">Non sauvegardé</span>
+      </div>
+    </div>
+    <div class="export-bar-right">
+      <button class="export-btn" onclick="clearSave()" title="Effacer et recommencer">↺ RÉINITIALISER</button>
+      <button class="export-btn export-print" onclick="printFiche()">⎙ IMPRIMER</button>
+      <button class="export-btn export-pdf" onclick="exportPDF()">⬇ PDF</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ACTE 4 — VALIDATION ══════════ -->
+<section class="screen" id="s4">
+  <div class="forge-card">
+    <div class="card-eyebrow">ACTE IV // L'ÉPREUVE DU FEU</div>
+    <div class="forge-title">Kapp joue<br>le <span>devil's advocate</span></div>
+    <hr class="rule">
+    <p class="body-text">Avant de déployer votre escape game, soumettez-le à ces six tests de résistance. Kapp va chercher les failles. Répondez honnêtement.</p>
+  </div>
+
+  <div class="kapp-block" style="margin-bottom:24px;">
+    <div class="kapp-bar">
+      <div class="kapp-ring">🕵</div>
+      <div>
+        <div class="kapp-name">AGENT KAPP</div>
+        <div class="kapp-role">INSPECTION FINALE // OPÉRATION FORGE</div>
+      </div>
+      <div class="kapp-status">● INSPECTION EN COURS</div>
+    </div>
+    <div class="kapp-narrative" style="padding:0 24px 4px;">Vous pensez avoir conçu quelque chose de solide. Je vais vérifier. Répondez honnêtement à chaque test. Si vous cochez « Oui » par défaut sans vraiment vérifier, vous vous mentez à vous-même, pas à moi.</div>
+  </div>
+
+  <div class="test-list" id="testList">
+
+    <div class="test-item" id="t1" onclick="toggleTest(this)">
+      <div class="test-check">✓</div>
+      <div class="test-content">
+        <div class="test-label">Le scénario tient sans explication orale</div>
+        <div class="test-desc">Un élève qui ouvre votre escape sans briefing comprend immédiatement qui il est, ce qu'il doit faire et pourquoi c'est urgent.</div>
+        <div class="test-feedback">Le scénario est insuffisamment ancré. Ajoutez un rôle explicite, précisez l'enjeu et rendez l'urgence temporelle visible dès la première page.</div>
+      </div>
+    </div>
+
+    <div class="test-item" id="t2" onclick="toggleTest(this)">
+      <div class="test-check">✓</div>
+      <div class="test-content">
+        <div class="test-label">Toutes les énigmes sont résolvables avec les informations fournies</div>
+        <div class="test-desc">Aucune énigme ne nécessite une information extérieure à ce que vous avez fourni dans l'escape. Pas de connaissance implicite.</div>
+        <div class="test-feedback">Une ou plusieurs énigmes supposent des connaissances que vous n'avez pas fournies. Soit vous ajoutez les ressources nécessaires, soit vous reformulez l'énigme pour qu'elle soit auto-suffisante.</div>
+      </div>
+    </div>
+
+    <div class="test-item" id="t3" onclick="toggleTest(this)">
+      <div class="test-check">✓</div>
+      <div class="test-content">
+        <div class="test-label">Le code final est entièrement déductible des réponses</div>
+        <div class="test-desc">Chaque chiffre ou lettre du code est directement issu d'une réponse correcte. Pas de combinaison arbitraire.</div>
+        <div class="test-feedback">Le code n'est pas déductible. Un code arbitraire détruit la fonction d'accomplissement du cadenas. Rechangez le code pour qu'il soit logiquement lié aux réponses.</div>
+      </div>
+    </div>
+
+    <div class="test-item" id="t4" onclick="toggleTest(this)">
+      <div class="test-check">✓</div>
+      <div class="test-content">
+        <div class="test-label">Chaque mauvaise réponse a un feedback explicatif distinct</div>
+        <div class="test-desc">Pas un seul "Faux. Réessayez." dans tout votre escape. Chaque erreur prévisible a son explication ciblée.</div>
+        <div class="test-feedback">Des feedbacks génériques sont présents. Remplacez "Faux. Réessayez." par une explication de ce qui est inexact dans la réponse donnée et du concept que ça confond.</div>
+      </div>
+    </div>
+
+    <div class="test-item" id="t5" onclick="toggleTest(this)">
+      <div class="test-check">✓</div>
+      <div class="test-content">
+        <div class="test-label">La difficulté monte progressivement</div>
+        <div class="test-desc">L'énigme 1 est plus accessible que l'énigme finale. Aucun saut brutal de difficulté entre deux énigmes consécutives.</div>
+        <div class="test-feedback">La progression n'est pas linéaire. Réordonnez les énigmes par niveau de difficulté croissant. Si deux énigmes ont le même niveau, fusionnez-les ou différenciez-les.</div>
+      </div>
+    </div>
+
+    <div class="test-item" id="t6" onclick="toggleTest(this)">
+      <div class="test-check">✓</div>
+      <div class="test-content">
+        <div class="test-label">Si je retire le jeu, il reste quelque chose de pédagogique</div>
+        <div class="test-desc">Les énigmes testent réellement la compétence ciblée. Ce n'est pas juste de la lecture ou de la mémorisation déguisée.</div>
+        <div class="test-feedback">Le contenu pédagogique est insuffisant ou mal aligné avec la compétence ciblée. Reformulez les énigmes pour qu'elles mobilisent la compétence en action, pas juste en restitution.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions" style="margin-top:20px;">
+    <button class="btn btn-cy" onclick="validateAll()">SOUMETTRE À KAPP →</button>
+  </div>
+
+  <div class="validation-result" id="validationResult">
+    <div class="vr-icon" id="vrIcon"></div>
+    <div class="vr-title" id="vrTitle"></div>
+    <div class="vr-text" id="vrText"></div>
+  </div>
+
+  <div class="cta-wrap" id="cta-final" style="margin-top:20px;">
+    <button class="cta-btn" onclick="goTo('s-final')">CLÔTURER L'OPÉRATION →</button>
+  </div>
+
+  <!-- PROFILS NUMÉRIQUES -->
+  <div class="forge-card" style="margin-top:32px;">
+    <div class="card-eyebrow">QUEL OUTIL POUR QUEL PROFIL ?</div>
+    <div class="forge-title" style="font-size:clamp(22px,3vw,32px);">Choisir selon <span>son niveau</span></div>
+    <p class="body-text" style="margin-top:10px;">Quatre profils, quatre chemins. Identifiez le vôtre et suivez la combinaison qui vous correspond.</p>
+
+    <div class="profile-grid">
+
+      <div class="profile-card" onclick="toggleProfile(this)">
+        <div class="profile-level p0">PROFIL 0</div>
+        <div class="profile-title">Débutant</div>
+        <div class="profile-desc">Je découvre les outils numériques pédagogiques. Je veux quelque chose de simple, sans compte, immédiatement utilisable.</div>
+        <div class="profile-stack">
+          <span class="p-tool">Digipad</span>
+          <span class="p-sep">+</span>
+          <span class="p-tool">LearningApps</span>
+          <span class="p-sep">+</span>
+          <span class="p-tool">Digilock</span>
+        </div>
+        <div class="profile-detail">
+          <strong>Comment ça fonctionne :</strong> Digipad sert de tableau d'enquête central (indices, éléments de scénario, ressources à explorer). LearningApps fournit les énigmes interactives via lien direct (pas d'iframe nécessaire). Digilock pose le cadenas final.<br><br>
+          <strong>Avantages :</strong> zéro compte requis, zéro installation, prise en main en 30 minutes.<br><br>
+          <strong>Limite :</strong> pas de navigation scénarisée entre les étapes. Le formateur ou un élève coordinateur gère la progression orale.
+        </div>
+      </div>
+
+      <div class="profile-card" onclick="toggleProfile(this)">
+        <div class="profile-level p1">PROFIL 1</div>
+        <div class="profile-title">Débutant+</div>
+        <div class="profile-desc">Je maîtrise les présentations. Je veux une mise en scène visuelle accessible sans apprendre un nouvel outil complexe.</div>
+        <div class="profile-stack">
+          <span class="p-tool">Canva Éducation</span>
+          <span class="p-sep">+</span>
+          <span class="p-tool">LearningApps</span>
+          <span class="p-sep">+</span>
+          <span class="p-tool">Digilock</span>
+        </div>
+        <div class="profile-detail">
+          <strong>Comment ça fonctionne :</strong> Canva Éducation (compte pro gratuit via le rectorat) sert de coquille narrative : diaporama interactif avec liens entre slides, mise en page soignée. LearningApps fournit les énigmes. Digilock verrouille la ressource finale.<br><br>
+          <strong>Avantages :</strong> interface familière, templates professionnels, liens entre slides intuitifs.<br><br>
+          <strong>Important :</strong> le compte Canva Éducation est gratuit pour l'EN, mais il faut en faire la demande via son établissement.
+        </div>
+      </div>
+
+      <div class="profile-card" onclick="toggleProfile(this)">
+        <div class="profile-level p2">PROFIL 2</div>
+        <div class="profile-title">À l'aise</div>
+        <div class="profile-desc">Je connais déjà quelques outils numériques pédagogiques. Je veux un résultat immersif et une navigation fluide entre les énigmes.</div>
+        <div class="profile-stack">
+          <span class="p-tool p-star">★ Genially</span>
+          <span class="p-sep">+</span>
+          <span class="p-tool">LearningApps</span>
+          <span class="p-sep">+</span>
+          <span class="p-tool">Digilock</span>
+        </div>
+        <div class="profile-detail">
+          <strong>Comment ça fonctionne :</strong> Genially (version freemium suffisante) gère la navigation entre pages, le scénario visuel et les interactions. LearningApps est intégré via iframe pour les énigmes complexes. Digilock fournit le cadenas final.<br><br>
+          <strong>C'est la combinaison recommandée</strong> pour un premier escape game solide. Les trois outils se complètent sans redondance.<br><br>
+          <strong>Limite :</strong> Genially freemium impose un filigrane sur les exports. Pour la classe, ça ne pose pas de problème.
+        </div>
+      </div>
+
+      <div class="profile-card" onclick="toggleProfile(this)">
+        <div class="profile-level p3">PROFIL 3</div>
+        <div class="profile-title">IA générative</div>
+        <div class="profile-desc">Je suis à l'aise avec les LLM, je sais formuler un prompt efficace et relire du code. Je veux une liberté totale de conception.</div>
+        <div class="profile-stack">
+          <span class="p-tool p-star">★ Page HTML</span>
+          <span class="p-sep">+</span>
+          <span class="p-tool">LLM (Claude, Mistral…)</span>
+          <span class="p-sep">+</span>
+          <span class="p-tool">GitHub Pages / ENT</span>
+        </div>
+        <div class="profile-detail">
+          <strong>Comment ça fonctionne :</strong> un LLM génère la page HTML sur la base d'un prompt détaillé (scénario, énigmes, feedbacks, code cadenas). Vous relisez, corrigez, ajustez. Le fichier est hébergé sur GitHub Pages ou l'ENT.<br><br>
+          <strong>Avantages :</strong> zéro dépendance à un outil tiers, feedbacks sur mesure, cadenas animé, design totalement personnalisé.<br><br>
+          <strong>Prérequis non négociables :</strong> savoir formuler un prompt précis, savoir relire du HTML/CSS/JS de base, savoir héberger un fichier statique. Sans ces trois compétences : frustration certaine.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TUTOS PRISE EN MAIN -->
+  <div class="forge-card" style="margin-top:16px;">
+    <div class="card-eyebrow">POUR ALLER PLUS LOIN</div>
+    <div class="forge-title" style="font-size:clamp(22px,3vw,32px);">Prise en main <span>pas à pas</span></div>
+    <p class="body-text" style="margin-top:10px;">Un tutoriel pour chaque outil. Suivez celui qui correspond à votre profil.</p>
+
+    <div class="tuto-grid">
+
+      <a href="https://genially.com/fr/modeles/jeux/education/" target="_blank" class="tuto-card">
+        <div class="tuto-badge t-freemium">Freemium</div>
+        <div class="tuto-icon">🎭</div>
+        <div class="tuto-title">Genially</div>
+        <div class="tuto-desc">Templates escape game et jeux éducatifs. Partez d'un modèle existant pour votre première conception. Profil 2.</div>
+        <div class="tuto-link">genially.com/modeles/jeux/education →</div>
+      </a>
+
+      <a href="https://www.canva.com/fr_fr/decouvrir/creer-un-escape-game-pedagogique/" target="_blank" class="tuto-card">
+        <div class="tuto-badge t-edu">Compte pro EN</div>
+        <div class="tuto-icon">🎨</div>
+        <div class="tuto-title">Canva — Guide escape game</div>
+        <div class="tuto-desc">Guide officiel Canva pour créer un escape game pédagogique. Voir aussi les <a href="https://www.canva.com/s/templates?query=escape+game" target="_blank" class="tool-link" onclick="event.stopPropagation()">templates escape game</a>. Profil 1.</div>
+        <div class="tuto-link">canva.com/escape-game-pedagogique →</div>
+      </a>
+
+      <a href="https://tube-sciences-technologies.apps.education.fr/w/2HPhPH4pgSLRX3rjvEM2mb" target="_blank" class="tuto-card">
+        <div class="tuto-badge t-gratuit">Gratuit</div>
+        <div class="tuto-icon">🧩</div>
+        <div class="tuto-title">LearningApps</div>
+        <div class="tuto-desc">Tutoriel vidéo sur Tube Sciences & Technologies (Apps.education). Création d'activités, récupération du lien ou de l'iframe. Tous profils.</div>
+        <div class="tuto-link">tube-sciences-technologies.apps.education.fr →</div>
+      </a>
+
+      <a href="https://tube-numerique-educatif.apps.education.fr/c/nallet_channel/videos" target="_blank" class="tuto-card">
+        <div class="tuto-badge t-gratuit">Gratuit</div>
+        <div class="tuto-icon">🔧</div>
+        <div class="tuto-title">La Digitale</div>
+        <div class="tuto-desc">Tutoriels vidéo de Johann Nallet sur tous les outils La Digitale : Digipad, Digilock, Digistorm, Digiflip. Clair, rapide, efficace.</div>
+        <div class="tuto-link">tube-numerique-educatif.apps.education.fr →</div>
+      </a>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════ FINAL ══════════ -->
+<section class="screen" id="s-final">
+  <div style="text-align:center;padding:32px 0 24px;">
+    <div class="final-badge">🔧</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:4px;color:var(--cyan);margin-bottom:8px;">OPÉRATION FORGE TERMINÉE</div>
+    <p class="body-text" style="color:var(--grey-lit);max-width:600px;margin:0 auto;">Vous avez les outils. Vous avez la méthode. Vous avez validé votre conception. Il reste une chose : déployer.</p>
+  </div>
+
+  <div class="kapp-block" style="margin:24px 0;">
+    <div class="kapp-bar">
+      <div class="kapp-ring">🔓</div>
+      <div>
+        <div class="kapp-name">AGENT KAPP</div>
+        <div class="kapp-role">RAPPORT DE CLÔTURE // OPÉRATION FORGE</div>
+      </div>
+      <div class="kapp-status">● MISSION ACCOMPLIE</div>
+    </div>
+    <div class="kapp-narrative" id="n-final"></div>
+  </div>
+
+  <div class="recap-grid">
+    <div class="recap-card">
+      <div class="recap-num">6</div>
+      <div class="recap-text">formes d'escape game pour choisir la bonne structure selon le contexte</div>
+    </div>
+    <div class="recap-card">
+      <div class="recap-num">5</div>
+      <div class="recap-text">mécaniques fondamentales, chacune ancrée dans la TAD ou le flow</div>
+    </div>
+    <div class="recap-card">
+      <div class="recap-num">7</div>
+      <div class="recap-text">étapes de conception dans l'ordre, de la compétence à l'outil</div>
+    </div>
+    <div class="recap-card">
+      <div class="recap-num">6</div>
+      <div class="recap-text">tests de validation avant déploiement</div>
+    </div>
+  </div>
+
+  <div class="forge-card" style="margin-top:8px;">
+    <div class="section-label">LA RÈGLE D'OR</div>
+    <p class="body-text" style="font-size:20px;line-height:1.7;">
+      <span class="hl3">« L'outil ne motive pas.</span><br>
+      Le design de l'expérience motive.<br>
+      <span class="hl">Un escape game pédagogique</span> n'est pas une coquille numérique habillée en jeu : c'est une expérience d'apprentissage dont chaque mécanique a une raison d'être. »
+    </p>
+    <p class="body-text" style="margin-top:12px;color:var(--grey-lit);">— Agent Kapp, rapport de clôture Opération Forge</p>
+  </div>
+
+  <div style="text-align:center;margin-top:28px;">
+    <button class="btn btn-large" onclick="location.reload()">↺ RECOMMENCER</button>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ══════════════════════════════════════
+//  CONTENU
+// ══════════════════════════════════════
+const NARRATIVES = {
+  n0: "TRM-042 est stabilisée. Mais le problème est systémique : d'autres classes, d'autres élèves, d'autres Nora. L'Académie a décidé de former des concepteurs. Vous ne serez plus seulement des agents qui diagnostiquent et analysent. Vous allez construire. Et ce que vous allez construire a un nom précis, une logique précise, des règles précises.",
+  nfinal: "Rapport de clôture, Opération Forge. Vous avez compris ce qu'est un escape game pédagogique, pas un quiz déguisé en jeu, mais un dispositif d'apprentissage immersif avec ses propres règles de conception. Vous avez les mécaniques. Vous avez la méthode. Vous avez validé votre premier design. Le reste se passe en classe, avec vos élèves. C'est là que tout se joue."
+};
+
+const RADIOS = {
+  '0': "Le réseau a diagnostiqué. Le réseau a analysé. Maintenant il construit. Mais avant de toucher aux outils, je veux que vous compreniez ce que vous êtes en train de concevoir. <strong>Pas un quiz habillé en jeu. Pas une série d'exercices avec un compte à rebours.</strong> Un escape game, c'est un dispositif complet : une expérience narrative et cognitive dans laquelle chaque élève a un rôle, une progression, un moment d'accomplissement. C'est la différence entre un fond d'écran et une architecture."
+};
+
+// ══════════════════════════════════════
+//  TYPEWRITER
+// ══════════════════════════════════════
+function typewrite(el, text, speed, cb) {
+  if (!el) return;
+  el.innerHTML = '';
+  let i = 0, inTag = false, buf = '';
+  function tick() {
+    if (i >= text.length) { if (cb) cb(); return; }
+    const ch = text[i];
+    if (ch === '<') inTag = true;
+    if (inTag) { buf += ch; if (ch === '>') { el.innerHTML += buf; buf = ''; inTag = false; } i++; setTimeout(tick, 0); }
+    else { el.innerHTML += ch; i++; setTimeout(tick, speed); }
+  }
+  tick();
+}
+
+// ══════════════════════════════════════
+//  PHASE TRACK
+// ══════════════════════════════════════
+const PHASES = [
+  {id:'s0',     label:'MANDAT'},
+  {id:'s1',     label:'ACTE I'},
+  {id:'s2',     label:'ACTE II'},
+  {id:'s3',     label:'ACTE III'},
+  {id:'s4',     label:'ACTE IV'},
+  {id:'s-final',label:'FIN'},
+];
+
+function buildTrack() {
+  const track = document.getElementById('phaseTrack');
+  PHASES.forEach((p, i) => {
+    const node = document.createElement('div');
+    node.className = 'ph-node'; node.id = 'pn'+i;
+    node.setAttribute('data-label', p.label);
+    track.appendChild(node);
+    if (i < PHASES.length - 1) {
+      const line = document.createElement('div');
+      line.className = 'ph-line'; line.id = 'pl'+i;
+      track.appendChild(line);
+    }
+  });
+  updateTrack(0);
+}
+
+function updateTrack(idx) {
+  PHASES.forEach((_, i) => {
+    const node = document.getElementById('pn'+i);
+    const line = document.getElementById('pl'+i);
+    if (!node) return;
+    node.classList.remove('done','active');
+    if (i < idx) node.classList.add('done');
+    else if (i === idx) node.classList.add('active');
+    if (line) { line.classList.remove('done'); if (i < idx) line.classList.add('done'); }
+  });
+}
+
+const SCREEN_IDX = {'s0':0,'s1':1,'s2':2,'s3':3,'s4':4,'s-final':5};
+
+// ══════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════
+function navTo(id) {
+  goTo(id);
+  updateNavMenu(id);
+}
+
+function updateNavMenu(id) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
+  const active = document.getElementById('nav-' + id);
+  if (active) active.classList.add('active-nav');
+}
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+  });
+  const t = document.getElementById(id);
+  if (!t) return;
+  t.classList.add('active');
+  updateTrack(SCREEN_IDX[id] || 0);
+  updateNavMenu(id);
+  window.scrollTo({top:0, behavior:'smooth'});
+  if (id === 's-final') initFinal();
+}
+
+// ══════════════════════════════════════
+//  SCREEN INITS
+// ══════════════════════════════════════
+function initS0() {
+  const narEl = document.getElementById('n0');
+  const tw = document.getElementById('tw0');
+  tw.classList.remove('visible');
+  typewrite(narEl, NARRATIVES.n0, 16, () => {
+    setTimeout(() => tw.classList.add('visible'), 400);
+  });
+}
+
+function triggerMsg(key) {
+  const btn = document.getElementById('tb'+key);
+  const mw  = document.getElementById('mw'+key);
+  const mt  = document.getElementById('mt'+key);
+  const cta = document.getElementById('cta'+key);
+  btn.classList.add('used');
+  mw.classList.add('visible');
+  setTimeout(() => mw.scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+  typewrite(mt, RADIOS[key], 22, () => {
+    setTimeout(() => { if(cta) cta.classList.add('visible'); }, 400);
+  });
+}
+
+function initFinal() {
+  const el = document.getElementById('n-final');
+  typewrite(el, NARRATIVES.nfinal, 14, null);
+}
+
+// ══════════════════════════════════════
+//  ACCORDION
+// ══════════════════════════════════════
+function toggleAcc(id) {
+  const item = document.getElementById(id);
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+// ══════════════════════════════════════
+//  FORMS
+// ══════════════════════════════════════
+function toggleForm(el) {
+  const wasSelected = el.classList.contains('selected');
+  el.closest('.forms-grid').querySelectorAll('.form-card').forEach(c => c.classList.remove('selected'));
+  if (!wasSelected) el.classList.add('selected');
+}
+
+// ══════════════════════════════════════
+//  VALIDATION TESTS
+// ══════════════════════════════════════
+function toggleTest(el) {
+  el.classList.toggle('pass');
+  el.classList.remove('fail');
+}
+
+function validateAll() {
+  const items = document.querySelectorAll('.test-item');
+  let fails = 0;
+  items.forEach(item => {
+    if (!item.classList.contains('pass')) {
+      item.classList.add('fail');
+      fails++;
+    }
+  });
+
+  const result = document.getElementById('validationResult');
+  const icon   = document.getElementById('vrIcon');
+  const title  = document.getElementById('vrTitle');
+  const text   = document.getElementById('vrText');
+  const cta    = document.getElementById('cta-final');
+
+  result.classList.add('visible');
+  result.classList.remove('pass-all','has-fails');
+
+  if (fails === 0) {
+    result.classList.add('pass-all');
+    icon.textContent = '✅';
+    title.textContent = 'CONCEPTION VALIDÉE';
+    text.textContent = 'Kapp valide votre conception. Tous les tests sont passés. Votre escape game est prêt à être déployé. Le travail de production peut commencer.';
+    cta.classList.add('visible');
+  } else {
+    result.classList.add('has-fails');
+    icon.textContent = '⚠️';
+    title.textContent = `${fails} TEST${fails > 1 ? 'S' : ''} EN ÉCHEC`;
+    text.textContent = `Kapp a trouvé ${fails} point${fails > 1 ? 's' : ''} à corriger. Lisez les feedbacks ci-dessus, corrigez votre conception, puis resoumettez.`;
+  }
+
+  result.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function toggleFamily(id) {
+  const fam = document.getElementById(id);
+  const wasOpen = fam.classList.contains('open');
+  document.querySelectorAll('.tool-family').forEach(f => f.classList.remove('open'));
+  if (!wasOpen) fam.classList.add('open');
+}
+
+function toggleProfile(el) {
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('open'));
+  if (!wasOpen) el.classList.add('open');
+}
+
+// ══════════════════════════════════════
+//  LOCALSTORAGE — SAVE / LOAD
+// ══════════════════════════════════════
+const SAVE_KEY = 'forge_conception';
+let saveTimeout = null;
+
+function initSave() {
+  // Load saved data
+  try {
+    const saved = localStorage.getItem(SAVE_KEY);
+    if (saved) {
+      const data = JSON.parse(saved);
+      document.querySelectorAll('[data-save]').forEach(el => {
+        const key = el.getAttribute('data-save');
+        if (data[key] !== undefined) el.value = data[key];
+      });
+      setSaveStatus('saved', 'Brouillon restauré');
+      setTimeout(() => setSaveStatus('saved', 'Sauvegardé automatiquement'), 2000);
+    }
+  } catch(e) {}
+
+  // Auto-save on input
+  document.querySelectorAll('[data-save]').forEach(el => {
+    el.addEventListener('input', () => {
+      setSaveStatus('saving', 'Sauvegarde…');
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(saveAll, 800);
+    });
+  });
+}
+
+function saveAll() {
+  try {
+    const data = {};
+    document.querySelectorAll('[data-save]').forEach(el => {
+      data[el.getAttribute('data-save')] = el.value;
+    });
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    setSaveStatus('saved', 'Sauvegardé automatiquement');
+  } catch(e) {
+    setSaveStatus('', 'Erreur de sauvegarde');
+  }
+}
+
+function setSaveStatus(state, label) {
+  const dot = document.querySelector('.save-dot');
+  const lbl = document.getElementById('saveLabel');
+  if (!dot || !lbl) return;
+  dot.classList.remove('saved','saving');
+  if (state) dot.classList.add(state);
+  lbl.textContent = label;
+}
+
+function clearSave() {
+  if (!confirm('Effacer toutes vos saisies et recommencer ?')) return;
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+  document.querySelectorAll('[data-save]').forEach(el => el.value = '');
+  setSaveStatus('', 'Non sauvegardé');
+}
+
+// ══════════════════════════════════════
+//  PRINT
+// ══════════════════════════════════════
+function printFiche() {
+  saveAll();
+  // Ensure s3 is active for print
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s3').classList.add('active');
+  setTimeout(() => {
+    window.print();
+    // Restore current screen after print dialog
+    setTimeout(() => { document.getElementById('s3').classList.add('active'); }, 500);
+  }, 150);
+}
+
+// ══════════════════════════════════════
+//  PDF — html2pdf
+// ══════════════════════════════════════
+function exportPDF() {
+  saveAll();
+
+  // Build a clean print-friendly div
+  const fields = {};
+  document.querySelectorAll('[data-save]').forEach(el => {
+    fields[el.getAttribute('data-save')] = el.value || '—';
+  });
+
+  const now = new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric'});
+
+  const content = document.createElement('div');
+  content.style.cssText = 'font-family:Arial,sans-serif;padding:32px;color:#111;max-width:760px;';
+  content.innerHTML = `
+    <div style="text-align:center;margin-bottom:24px;border-bottom:2px solid #1a6aff;padding-bottom:16px;">
+      <div style="font-size:9px;letter-spacing:4px;color:#888;margin-bottom:6px;">ACADÉMIE SECRÈTE // OPÉRATION FORGE</div>
+      <div style="font-size:28px;font-weight:900;letter-spacing:3px;color:#111;text-transform:uppercase;">Fiche de Conception</div>
+      <div style="font-size:9px;letter-spacing:3px;color:#555;margin-top:4px;">ESCAPE GAME PÉDAGOGIQUE — ${now}</div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <div style="font-size:8px;letter-spacing:3px;color:#1a6aff;margin-bottom:6px;text-transform:uppercase;">Étape 1 — Compétence ciblée</div>
+      <div style="border-bottom:1px solid #ccc;padding:8px 4px;font-size:14px;min-height:36px;">${fields['competence']}</div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <div style="font-size:8px;letter-spacing:3px;color:#1a6aff;margin-bottom:6px;text-transform:uppercase;">Étape 2 — Moment pédagogique</div>
+      <div style="border-bottom:1px solid #ccc;padding:8px 4px;font-size:14px;min-height:28px;">${fields['moment']}</div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <div style="font-size:8px;letter-spacing:3px;color:#1a6aff;margin-bottom:6px;text-transform:uppercase;">Étape 3 — Scénario</div>
+      <div style="border:1px solid #ddd;padding:10px 12px;font-size:14px;min-height:52px;">${fields['scenario']}</div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <div style="font-size:8px;letter-spacing:3px;color:#1a6aff;margin-bottom:8px;text-transform:uppercase;">Étape 4 — Structure des énigmes</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="background:#f0f4ff;">
+            <th style="border:1px solid #ccc;padding:7px 10px;text-align:left;color:#1a6aff;letter-spacing:1px;">ÉNIGME</th>
+            <th style="border:1px solid #ccc;padding:7px 10px;text-align:left;color:#1a6aff;letter-spacing:1px;">COMPÉTENCE</th>
+            <th style="border:1px solid #ccc;padding:7px 10px;text-align:left;color:#1a6aff;letter-spacing:1px;">TYPE</th>
+            <th style="border:1px solid #ccc;padding:7px 10px;text-align:left;color:#1a6aff;letter-spacing:1px;">NIVEAU</th>
+            <th style="border:1px solid #ccc;padding:7px 10px;text-align:left;color:#1a6aff;letter-spacing:1px;">CODE</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${[1,2,3,4].map(n => `
+          <tr>
+            <td style="border:1px solid #ccc;padding:8px 10px;color:#888;">0${n}</td>
+            <td style="border:1px solid #ccc;padding:8px 10px;">${fields['e'+n+'-competence']}</td>
+            <td style="border:1px solid #ccc;padding:8px 10px;">${fields['e'+n+'-type']}</td>
+            <td style="border:1px solid #ccc;padding:8px 10px;text-align:center;">${fields['e'+n+'-niveau']}</td>
+            <td style="border:1px solid #ccc;padding:8px 10px;text-align:center;">${fields['e'+n+'-code']}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <div style="font-size:8px;letter-spacing:3px;color:#1a6aff;margin-bottom:6px;text-transform:uppercase;">Étape 5 — Feedback type (énigme 1)</div>
+      <div style="border:1px solid #ddd;padding:10px 12px;font-size:14px;min-height:52px;">${fields['feedback1']}</div>
+    </div>
+
+    <div style="margin-top:32px;padding-top:12px;border-top:1px solid #ddd;font-size:9px;color:#aaa;letter-spacing:2px;text-align:center;">
+      OPÉRATION FORGE // ACADÉMIE SECRÈTE // FORMATION LUDIFICATION N2
+    </div>
+  `;
+
+  document.body.appendChild(content);
+
+  const opt = {
+    margin:      [10, 10, 10, 10],
+    filename:    'fiche-conception-escape-game.pdf',
+    image:       { type:'jpeg', quality:0.98 },
+    html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff' },
+    jsPDF:       { unit:'mm', format:'a4', orientation:'portrait' }
+  };
+
+  // Load html2pdf if not already loaded
+  if (typeof html2pdf === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+    script.onload = () => {
+      html2pdf().set(opt).from(content).save().then(() => {
+        document.body.removeChild(content);
+      });
+    };
+    document.head.appendChild(script);
+  } else {
+    html2pdf().set(opt).from(content).save().then(() => {
+      document.body.removeChild(content);
+    });
+  }
+
+  // Update button feedback
+  const btn = document.querySelector('.export-pdf');
+  btn.textContent = '⏳ GÉNÉRATION…';
+  setTimeout(() => { btn.textContent = '⬇ PDF'; }, 4000);
+}
+
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+buildTrack();
+initS0();
+updateNavMenu('s0');
+initSave();
+</script>
+</body>
+</html>
