@@ -3,1433 +3,400 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MISSION MOTIVATION — Les Chroniques de l'Agent Kapp</title>
+<title>Formation Ludification N2 — Académie Secrète</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Share+Tech+Mono&display=swap');
 
 :root {
-  --bg:         #081a10;
-  --bg2:        #0d2418;
-  --green:      #00ff88;
-  --green-dim:  #00cc66;
-  --green-dark: #002a18;
-  --amber:      #ffaa00;
-  --amber-dim:  #cc8800;
-  --amber-pale: #ffe066;
-  --red:        #ff3355;
-  --white:      #dff5ea;
-  --grey:       #4a8060;
-  --border:     rgba(0,255,136,0.2);
-  --border-lit: rgba(0,255,136,0.6);
-  --glow:       0 0 28px rgba(0,255,136,0.3);
-  --glow-amb:   0 0 28px rgba(255,170,0,0.4);
-  --glow-red:   0 0 24px rgba(255,51,85,0.4);
+  --bg:      #060c0a;
+  --green:   #00ff88;
+  --green-d: #00cc66;
+  --amber:   #ffaa00;
+  --blue:    #1a6aff;
+  --cyan:    #00d4ff;
+  --orange:  #ff6b1a;
+  --white:   #e8f5ee;
+  --grey:    #3a6050;
+  --border:  rgba(0,255,136,0.15);
+  --glow-g:  0 0 30px rgba(0,255,136,0.25);
+  --glow-a:  0 0 30px rgba(255,170,0,0.3);
+  --glow-b:  0 0 30px rgba(26,106,255,0.3);
+  --glow-c:  0 0 30px rgba(0,212,255,0.3);
 }
 
 * { box-sizing:border-box; margin:0; padding:0; }
 
 body {
   background: var(--bg);
-  color: var(--green);
+  color: var(--white);
   font-family: 'Share Tech Mono', monospace;
   min-height: 100vh;
   overflow-x: hidden;
   cursor: crosshair;
   background-image:
-    radial-gradient(ellipse 90% 50% at 50% -5%, rgba(0,255,136,0.13) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 50% at 85% 85%, rgba(255,170,0,0.09) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 40% at 10% 55%, rgba(0,200,255,0.06) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 40% at 50% 100%, rgba(0,180,80,0.07) 0%, transparent 60%);
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,255,136,0.02) 40px, rgba(0,255,136,0.02) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,255,136,0.02) 40px, rgba(0,255,136,0.02) 41px),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,255,136,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 90% 80%, rgba(26,106,255,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 10% 70%, rgba(255,170,0,0.04) 0%, transparent 50%);
+  background-size: 41px 41px, 41px 41px, 100% 100%, 100% 100%, 100% 100%;
 }
 
-/* Scanlines */
+/* SCANLINES */
 body::before {
-  content:'';
-  position:fixed; top:0;left:0;right:0;bottom:0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent, transparent 2px,
-    rgba(0,255,136,0.015) 2px, rgba(0,255,136,0.015) 4px
-  );
+  content:''; position:fixed; top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.015) 2px, rgba(0,255,136,0.015) 4px);
   pointer-events:none; z-index:9999;
 }
 
-/* Grain de bruit subtil */
+/* GRAIN */
 body::after {
-  content:'';
-  position:fixed; top:-50%;left:-50%; width:200%; height:200%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-  pointer-events:none; z-index:9998; opacity:1;
-  animation:grain 0.8s steps(2) infinite;
+  content:''; position:fixed; top:-50%;left:-50%; width:200%;height:200%;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:9998; animation:grain .8s steps(2) infinite;
+}
+@keyframes grain { 0%{transform:translate(0,0)} 25%{transform:translate(-3px,2px)} 50%{transform:translate(2px,-3px)} 75%{transform:translate(-1px,3px)} 100%{transform:translate(0,0)} }
+
+/* WRAPPER */
+.wrapper {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px 20px 60px;
+  position: relative; z-index: 1;
 }
 
-@keyframes grain {
-  0%  { transform:translate(0,0); }
-  25% { transform:translate(-3px,2px); }
-  50% { transform:translate(2px,-3px); }
-  75% { transform:translate(-1px,3px); }
-  100%{ transform:translate(0,0); }
+/* HEADER */
+.site-header {
+  text-align: center; margin-bottom: 52px;
+  animation: rise 1s ease both;
+}
+@keyframes rise { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:none} }
+
+.header-eyebrow {
+  font-size: 9px; letter-spacing: 6px; color: var(--grey);
+  margin-bottom: 12px; animation: blink 3s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.header-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(28px,6vw,56px); font-weight: 900;
+  letter-spacing: 4px; line-height: 1;
+  color: var(--green); text-shadow: var(--glow-g);
+  margin-bottom: 6px;
 }
 
-/* ═══ HUD ═══ */
-.hud {
-  position:fixed; top:0;left:0;right:0; z-index:200;
-  background: linear-gradient(180deg, rgba(5,12,9,0.98), rgba(5,12,9,0.88));
-  border-bottom:1px solid var(--border-lit);
-  padding:10px 24px;
-  display:flex; align-items:center; justify-content:space-between; gap:16px;
+.header-title span { color: var(--amber); }
+
+.header-sub {
+  font-family: 'Crimson Pro', serif;
+  font-size: clamp(16px,2.5vw,22px); font-weight: 300; font-style: italic;
+  color: rgba(232,245,238,0.6); margin-top: 10px;
 }
 
-.hud-logo {
-  font-family:'Orbitron',monospace;
-  font-size:11px; font-weight:900; letter-spacing:4px;
-  color:var(--green); text-shadow:var(--glow);
+.header-rule {
+  width: 120px; height: 1px; margin: 20px auto 0;
+  background: linear-gradient(90deg, transparent, var(--green), transparent);
 }
 
-.hud-classify {
-  font-size:9px; color:var(--red); letter-spacing:3px;
-  animation:blink 1.8s step-end infinite;
+/* CLASSIFY BADGE */
+.classify {
+  font-size: 9px; letter-spacing: 4px; color: rgba(255,51,85,0.8);
+  border: 1px solid rgba(255,51,85,0.3); padding: 4px 14px;
+  display: inline-block; margin-bottom: 20px;
+  animation: blink 1.5s step-end infinite;
 }
 
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
-.hud-right { display:flex; align-items:center; gap:20px; }
-
-.phase-track { display:flex; align-items:center; gap:0; }
-
-.phase-node {
-  width:28px; height:28px; border:1px solid var(--grey);
-  border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:9px; color:var(--grey); transition:all 0.4s;
+/* CARDS GRID */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%; max-width: 960px;
+  animation: rise 1s ease 0.2s both;
 }
-.phase-node.chapter { border-radius:3px; font-size:8px; letter-spacing:1px; }
-.phase-node.done { border-color:var(--green-dim); color:var(--green-dim); background:rgba(0,255,136,0.08); }
-.phase-node.active { border-color:var(--amber); color:var(--amber); background:rgba(255,170,0,0.1); box-shadow:var(--glow-amb); animation:pulse-node 1.5s ease infinite alternate; }
-@keyframes pulse-node { from{transform:scale(1)} to{transform:scale(1.12)} }
 
-.phase-connector { width:14px; height:1px; background:var(--border); transition:background 0.4s; }
-.phase-connector.done { background:var(--green-dim); }
-
-.hud-timer {
-  font-family:'Orbitron',monospace; font-size:20px; font-weight:700;
-  color:var(--amber); text-shadow:var(--glow-amb); min-width:62px;
-}
-.hud-timer.urgent { color:var(--red); text-shadow:var(--glow-red); animation:blink 0.5s step-end infinite; }
-
-/* ═══ MAIN ═══ */
-main { padding-top:72px; min-height:100vh; display:flex; flex-direction:column; align-items:center; }
-
-.screen { display:none; width:100%; max-width:840px; padding:32px 20px 80px; animation:fadeUp 0.6s ease; }
-.screen.active { display:block; }
-@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-
-/* ═══ CHAPTER ELEMENTS ═══ */
-.cinematic-header { text-align:center; padding:28px 0 20px; }
-.ch-eyebrow { font-size:9px; letter-spacing:5px; color:var(--grey); margin-bottom:8px; }
-.ch-title {
-  font-family:'Crimson Pro',serif; font-size:clamp(26px,5vw,42px);
-  font-weight:300; font-style:italic; color:var(--white); line-height:1.2;
-  text-shadow:0 2px 20px rgba(0,255,136,0.1);
-}
-.ch-rule { width:60px; height:1px; background:linear-gradient(90deg,transparent,var(--green-dim),transparent); margin:16px auto; }
-
-/* KAPP CARD */
-.kapp-card {
+/* CARD */
+.card {
   background:
-    radial-gradient(ellipse 120% 80% at 10% 0%, rgba(0,255,136,0.04) 0%, transparent 60%),
-    linear-gradient(160deg, rgba(8,22,16,0.98) 0%, rgba(5,12,9,0.99) 100%);
-  border:1px solid var(--border);
-  padding:28px 32px; margin:20px 0; position:relative; overflow:hidden;
-  box-shadow:
-    0 0 60px rgba(0,255,136,0.04),
-    inset 0 1px 0 rgba(0,255,136,0.07),
-    inset 0 -1px 0 rgba(0,0,0,0.3);
+    radial-gradient(ellipse 120% 80% at 5% 0%, rgba(0,255,136,0.04) 0%, transparent 55%),
+    linear-gradient(160deg, rgba(8,20,14,0.98), rgba(6,12,10,0.99));
+  border: 1px solid var(--border);
+  padding: 0;
+  position: relative; overflow: hidden;
+  text-decoration: none; color: inherit;
+  display: flex; flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer;
 }
-.kapp-card::before {
+
+.card::before {
   content:''; position:absolute; top:0;left:0;right:0; height:2px;
-  background:linear-gradient(90deg,transparent,var(--green),transparent);
-  animation:sweep 4s linear infinite;
+  transition: background 0.3s;
 }
+
+.card:hover { transform: translateY(-4px); }
+
+/* Card 1 — Mission */
+.card-1 { border-color: rgba(0,255,136,0.2); }
+.card-1::before { background:linear-gradient(90deg,transparent,var(--green),transparent); animation:sweep 3s linear infinite; }
+.card-1:hover { border-color: var(--green); box-shadow: var(--glow-g), 0 12px 40px rgba(0,0,0,0.5); }
+
+/* Card 2 — Debrief */
+.card-2 { border-color: rgba(255,170,0,0.2); }
+.card-2::before { background:linear-gradient(90deg,transparent,var(--amber),transparent); animation:sweep 3.5s linear infinite; }
+.card-2:hover { border-color: var(--amber); box-shadow: var(--glow-a), 0 12px 40px rgba(0,0,0,0.5); }
+
+/* Card 3 — Forge */
+.card-3 { border-color: rgba(26,106,255,0.2); }
+.card-3::before { background:linear-gradient(90deg,transparent,var(--cyan),transparent); animation:sweep 4s linear infinite; }
+.card-3:hover { border-color: var(--cyan); box-shadow: var(--glow-c), 0 12px 40px rgba(0,0,0,0.5); }
+
 @keyframes sweep {
   0%{transform:scaleX(0);transform-origin:left} 49%{transform:scaleX(1);transform-origin:left}
   50%{transform:scaleX(1);transform-origin:right} 100%{transform:scaleX(0);transform-origin:right}
 }
 
-.kapp-avatar {
-  display:flex; align-items:center; gap:14px; margin-bottom:20px;
-  padding-bottom:16px; border-bottom:1px solid var(--border);
-}
-.avatar-ring {
-  width:44px; height:44px; border:2px solid var(--green-dim); border-radius:50%;
-  display:flex; align-items:center; justify-content:center; font-size:20px;
-  box-shadow:var(--glow); flex-shrink:0;
-}
-.avatar-name { font-family:'Orbitron',monospace; font-size:11px; font-weight:700; color:var(--green); letter-spacing:2px; }
-.avatar-role { font-size:9px; color:var(--grey); letter-spacing:2px; margin-top:2px; }
-.avatar-status { font-size:9px; color:var(--amber); letter-spacing:2px; animation:blink 2s step-end infinite; }
-
-.narrative-text {
-  font-family:'Crimson Pro',serif; font-size:19px; line-height:1.85;
-  color:var(--white); font-weight:300; min-height:60px;
-}
-.narrative-text em { color:var(--amber-pale); font-style:italic; }
-.narrative-text strong { color:var(--green); font-weight:600; font-style:normal; font-family:'Share Tech Mono',monospace; font-size:15px; }
-
-/* THEORY BOX */
-.theory-box {
-  background:rgba(0,255,136,0.03); border:1px solid var(--border);
-  border-left:3px solid var(--green-dim); padding:18px 22px; margin:20px 0;
-  opacity:0; transform:translateX(-8px); transition:all 0.6s ease;
-}
-.theory-box.visible { opacity:1; transform:none; }
-.theory-tag { font-size:9px; letter-spacing:4px; color:var(--amber); margin-bottom:10px; }
-.theory-content { font-family:'Crimson Pro',serif; font-size:17px; line-height:1.75; color:var(--white); font-weight:300; }
-.theory-content strong { color:var(--amber-pale); font-family:'Share Tech Mono',monospace; font-size:14px; }
-
-/* ═══ RADIO — SÉPARÉ, DÉCLENCHABLE ═══ */
-.radio-trigger-wrap {
-  text-align:center; margin:28px 0 0;
-  opacity:0; transform:translateY(8px); transition:all 0.5s ease;
-}
-.radio-trigger-wrap.visible { opacity:1; transform:none; }
-
-.radio-trigger-btn {
-  font-family:'Orbitron',monospace; font-size:11px; font-weight:700;
-  letter-spacing:3px; padding:14px 32px;
-  border:1px solid var(--red); background:rgba(255,51,85,0.06);
-  color:var(--red); cursor:pointer; transition:all 0.3s;
-  position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:10px;
-}
-.radio-trigger-btn::before {
-  content:''; position:absolute; top:0;left:-100%; width:100%; height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,51,85,0.1),transparent);
-  transition:left 0.4s;
-}
-.radio-trigger-btn:hover { box-shadow:var(--glow-red); color:#ff6677; }
-.radio-trigger-btn:hover::before { left:100%; }
-.radio-trigger-btn.used { opacity:0.35; pointer-events:none; }
-
-.radio-dot {
-  width:8px; height:8px; border-radius:50%;
-  background:var(--red); box-shadow:0 0 8px var(--red);
-  animation:blink 0.6s step-end infinite; flex-shrink:0;
+/* CARD HEADER */
+.card-head {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; gap: 14px;
 }
 
-/* RADIO MESSAGE BOX — cachée jusqu'au clic */
-.radio-message-wrap {
-  margin:16px 0 0; display:none;
-  animation:fadeUp 0.5s ease;
+.card-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px; letter-spacing: 2px; line-height: 1;
+  flex-shrink: 0;
 }
-.radio-message-wrap.visible { display:block; }
+.card-1 .card-num { color: rgba(0,255,136,0.25); }
+.card-2 .card-num { color: rgba(255,170,0,0.25); }
+.card-3 .card-num { color: rgba(26,106,255,0.25); }
+.card:hover .card-num { opacity: 1; }
+.card-1:hover .card-num { color: var(--green); }
+.card-2:hover .card-num { color: var(--amber); }
+.card-3:hover .card-num { color: var(--cyan); }
 
-.radio-header {
-  display:flex; align-items:center; gap:10px; margin-bottom:10px;
+.card-title-wrap { flex: 1; }
+.card-eyebrow {
+  font-size: 8px; letter-spacing: 4px; margin-bottom: 5px;
 }
-.radio-label { font-size:9px; letter-spacing:4px; color:var(--red); }
+.card-1 .card-eyebrow { color: var(--green); }
+.card-2 .card-eyebrow { color: var(--amber); }
+.card-3 .card-eyebrow { color: var(--cyan); }
 
-.radio-box {
-  background:
-    /* Texture papier kraft sombre */
-    repeating-linear-gradient(
-      0deg,
-      transparent, transparent 22px,
-      rgba(255,51,85,0.04) 22px, rgba(255,51,85,0.04) 23px
-    ),
-    linear-gradient(135deg, rgba(30,8,8,0.95) 0%, rgba(20,5,5,0.98) 100%);
-  border:1px solid rgba(255,51,85,0.25);
-  border-top: 3px solid rgba(255,51,85,0.5);
-  padding:24px 28px 20px;
-  position:relative; overflow:hidden;
-  box-shadow:
-    0 2px 0 rgba(255,51,85,0.1),
-    inset 0 1px 0 rgba(255,100,100,0.08),
-    4px 6px 20px rgba(0,0,0,0.5);
-  /* Légère rotation façon document posé */
-  transform: rotate(-0.3deg);
+.card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(20px,2.5vw,26px); letter-spacing: 2px;
+  color: var(--white); line-height: 1.1;
 }
 
-/* Coins repliés façon papier */
-.radio-box::before {
-  content:'';
-  position:absolute; top:0; right:0;
-  width:0; height:0;
-  border-style:solid;
-  border-width:0 18px 18px 0;
-  border-color:transparent rgba(255,51,85,0.15) transparent transparent;
+/* CARD BODY */
+.card-body {
+  padding: 18px 24px; flex: 1;
 }
 
-.radio-box::after {
-  content:'';
-  position:absolute; top:0;left:0;right:0;bottom:0;
-  /* Vignette intérieure */
-  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.25) 100%);
-  pointer-events:none;
+.card-desc {
+  font-family: 'Crimson Pro', serif;
+  font-size: 17px; line-height: 1.75; font-weight: 300;
+  color: rgba(232,245,238,0.7); margin-bottom: 16px;
 }
 
-/* Trait rouge gauche façon document urgent */
-.radio-box .radio-margin {
-  position:absolute; top:0; left:40px; bottom:0;
-  width:1px;
-  background:rgba(255,51,85,0.2);
+/* TAGS */
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.tag {
+  font-size: 8px; letter-spacing: 2px; padding: 3px 8px;
+  border: 1px solid; display: inline-block;
 }
-.radio-text {
-  font-family:'Crimson Pro',serif; font-size:18px; line-height:1.9;
-  color:#ffd5d5; font-style:italic; min-height:50px;
-  position:relative; z-index:1;
-  padding-left:16px;
+.card-1 .tag { color: var(--green-d); border-color: rgba(0,204,102,0.3); }
+.card-2 .tag { color: rgba(255,170,0,0.8); border-color: rgba(255,170,0,0.3); }
+.card-3 .tag { color: var(--cyan); border-color: rgba(0,212,255,0.3); }
+
+/* DURATION */
+.card-duration {
+  font-size: 9px; letter-spacing: 3px; color: var(--grey);
+  display: flex; align-items: center; gap: 8px;
 }
-.radio-text strong { color:#ff8899; font-family:'Share Tech Mono',monospace; font-size:13px; font-style:normal; }
-.radio-signature {
-  font-size:9px; color:rgba(255,51,85,0.75); letter-spacing:3px;
-  margin-top:14px; text-align:right;
-  border-top:1px solid rgba(255,51,85,0.2); padding-top:10px;
-  position:relative; z-index:1;
+.card-duration::before {
+  content: ''; width: 16px; height: 1px;
+}
+.card-1 .card-duration::before { background: var(--green-d); }
+.card-2 .card-duration::before { background: var(--amber); }
+.card-3 .card-duration::before { background: var(--cyan); }
+
+/* CARD FOOTER */
+.card-foot {
+  padding: 14px 24px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: space-between;
 }
 
-/* CTA */
-.cta-wrap {
-  text-align:center; margin-top:24px;
-  opacity:0; transform:translateY(8px); transition:all 0.5s ease;
+.card-cta {
+  font-size: 10px; letter-spacing: 3px; font-weight: 700;
+  transition: color 0.2s;
 }
-.cta-wrap.visible { opacity:1; transform:none; }
+.card-1 .card-cta { color: var(--green); }
+.card-2 .card-cta { color: var(--amber); }
+.card-3 .card-cta { color: var(--cyan); }
 
-.cta-btn {
-  font-family:'Orbitron',monospace; font-size:12px; font-weight:700;
-  letter-spacing:4px; padding:16px 40px;
-  border:1px solid var(--amber); background:rgba(255,170,0,0.07);
-  color:var(--amber); cursor:pointer; transition:all 0.3s;
-  position:relative; overflow:hidden;
+.card-arrow {
+  font-size: 18px; transition: transform 0.3s;
 }
-.cta-btn::before {
-  content:''; position:absolute; top:0;left:-100%; width:100%; height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,170,0,0.12),transparent);
-  transition:left 0.4s;
-}
-.cta-btn:hover { box-shadow:var(--glow-amb); color:var(--amber-pale); }
-.cta-btn:hover::before { left:100%; }
-.cta-sub { font-size:9px; color:var(--grey); letter-spacing:3px; margin-top:10px; }
+.card-1 .card-arrow { color: var(--green); }
+.card-2 .card-arrow { color: var(--amber); }
+.card-3 .card-arrow { color: var(--cyan); }
+.card:hover .card-arrow { transform: translateX(6px); }
 
-/* ═══ MISSION ELEMENTS ═══ */
-.mission-header { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
-.mission-badge {
-  font-family:'Orbitron',monospace; font-size:9px; font-weight:700; letter-spacing:3px;
-  padding:5px 12px; border:1px solid var(--green-dim); color:var(--green-dim);
-  background:rgba(0,255,136,0.05);
+/* STATUS DOT */
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  animation: blink 1.5s step-end infinite;
 }
-.mission-title-text { font-family:'Orbitron',monospace; font-size:13px; font-weight:700; color:var(--amber); letter-spacing:2px; }
+.card-1 .status-dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.card-2 .status-dot { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+.card-3 .status-dot { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
 
-.card {
-  background:
-    radial-gradient(ellipse 100% 60% at 0% 0%, rgba(0,255,136,0.03) 0%, transparent 50%),
-    linear-gradient(160deg, rgba(8,22,16,0.97) 0%, rgba(5,12,9,0.99) 100%);
-  border:1px solid var(--border); padding:28px 32px; margin-bottom:20px;
-  position:relative; overflow:hidden;
-  box-shadow: inset 0 1px 0 rgba(0,255,136,0.06), 0 4px 24px rgba(0,0,0,0.4);
+/* FLOW INDICATOR */
+.flow {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 32px; flex-wrap: wrap; justify-content: center;
+  animation: rise 1s ease 0.4s both;
 }
-.card::before {
-  content:''; position:absolute; top:0;left:0;right:0; height:2px;
-  background:linear-gradient(90deg,transparent,var(--green),transparent);
-  animation:sweep 3s linear infinite;
+.flow-node {
+  font-size: 9px; letter-spacing: 2px; color: var(--grey);
+  padding: 4px 10px; border: 1px solid rgba(58,96,80,0.4);
+  transition: all 0.3s;
 }
-.card-tag { font-size:9px; letter-spacing:3px; color:var(--amber); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
-.card-tag::before { content:''; width:20px; height:1px; background:var(--amber); }
+.flow-node:hover { color: var(--green); border-color: rgba(0,255,136,0.3); }
+.flow-arrow { font-size: 14px; color: var(--grey); }
 
-.body-text { font-family:'Crimson Pro',serif; font-size:18px; line-height:1.8; color:var(--white); font-weight:300; margin-bottom:14px; }
-.hl  { color:var(--amber); font-weight:600; font-family:'Share Tech Mono',monospace; font-size:15px; }
-.hl2 { color:var(--green); font-weight:600; font-family:'Share Tech Mono',monospace; font-size:15px; }
-hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
+/* FOOTER */
+.site-footer {
+  margin-top: 48px; text-align: center;
+  font-size: 9px; letter-spacing: 3px; color: var(--grey);
+  animation: rise 1s ease 0.5s both;
+}
 
-/* PROFILES */
-.profiles-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin:20px 0; }
-.profile-card { border:1px solid var(--border); padding:16px; cursor:pointer; transition:all 0.3s; background:rgba(0,20,12,0.5); }
-.profile-card:hover { border-color:var(--green-dim); transform:translateY(-2px); box-shadow:var(--glow); }
-.profile-card.correct { border-color:var(--green); background:rgba(0,50,30,0.7); box-shadow:var(--glow); }
-.profile-card.wrong { border-color:var(--red); animation:shake 0.4s ease; }
-.profile-name { font-size:10px; letter-spacing:2px; color:var(--amber); margin-bottom:8px; font-family:'Orbitron',monospace; }
-.profile-text { font-family:'Crimson Pro',serif; font-size:15px; color:var(--green-dim); line-height:1.6; }
-@keyframes shake { 0%,100%{transform:none} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
-
-/* CORPUS */
-.text-corpus { font-family:'Crimson Pro',serif; font-size:18px; line-height:2.1; color:var(--white); margin:16px 0; }
-.word-btn {
-  display:inline; background:none; border:none; cursor:pointer;
-  font-family:'Crimson Pro',serif; font-size:18px; color:var(--amber);
-  padding:1px 3px; border-radius:2px; transition:all 0.2s; line-height:2.1;
-  text-decoration:underline; text-decoration-style:dotted; text-decoration-color:rgba(255,170,0,0.4);
+/* KAPP SIGNATURE */
+.kapp-sig {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 16px; border: 1px solid var(--border);
+  margin-top: 10px; font-size: 9px; letter-spacing: 2px; color: var(--grey);
 }
-.word-btn:hover { background:rgba(255,170,0,0.15); }
-.word-btn.selected { background:rgba(255,170,0,0.2); border-bottom:2px solid var(--amber); }
-.word-btn.correct-word { background:rgba(0,255,136,0.15); color:var(--green); border-bottom:2px solid var(--green); }
-.word-btn.revealed { color:var(--grey); pointer-events:none; text-decoration:none; }
-.sel-counter { font-size:10px; color:var(--grey); margin:8px 0; }
-.sel-counter span { color:var(--amber); }
-
-/* SORTABLE */
-.sortable-list { display:flex; flex-direction:column; gap:10px; margin:16px 0; }
-.sortable-item {
-  border:1px solid var(--border); padding:14px 18px; background:rgba(0,20,12,0.6);
-  cursor:grab; display:flex; align-items:center; gap:14px; transition:all 0.2s; user-select:none;
-}
-.sortable-item:hover { border-color:var(--green-dim); }
-.sortable-item.dragging { opacity:0.3; border-style:dashed; }
-.sortable-item.drag-over { border-color:var(--amber); transform:scale(1.01); }
-.item-rank { font-family:'Orbitron',monospace; font-size:13px; color:var(--amber); min-width:22px; }
-.item-text { font-family:'Crimson Pro',serif; font-size:16px; color:var(--white); flex:1; }
-.item-labels { display:flex; gap:8px; margin-bottom:5px; flex-wrap:wrap; }
-.label-flow  { font-size:9px; letter-spacing:1px; color:var(--amber); border:1px solid rgba(255,170,0,0.4); padding:2px 7px; }
-.label-bloom { font-size:9px; letter-spacing:1px; color:var(--green-dim); border:1px solid rgba(0,204,102,0.4); padding:2px 7px; }
-.drag-handle { font-size:16px; color:var(--grey); }
-
-/* SYNTHESIS */
-.syn-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0; }
-@media(max-width:580px) { .syn-grid { grid-template-columns:1fr; } }
-.syn-item {
-  border:1px solid var(--border); padding:16px; background:rgba(0,20,12,0.5);
-  cursor:pointer; transition:all 0.3s; font-family:'Crimson Pro',serif; font-size:16px; color:var(--white); line-height:1.5;
-}
-.syn-item:hover { border-color:var(--green-dim); }
-.syn-item.correct { border-color:var(--green); background:rgba(0,50,30,0.6); color:var(--green); }
-.syn-item.wrong { border-color:var(--red); animation:shake 0.4s ease; }
-.syn-label { font-size:9px; letter-spacing:2px; color:var(--amber); margin-bottom:8px; font-family:'Share Tech Mono',monospace; }
-
-/* FEEDBACK */
-.feedback {
-  border-left:3px solid var(--green); padding:14px 18px; margin:14px 0;
-  background:rgba(0,255,136,0.04); font-family:'Crimson Pro',serif;
-  font-size:17px; line-height:1.7; color:var(--white); display:none; animation:fadeUp 0.4s ease;
-}
-.feedback.visible { display:block; }
-.feedback.error { border-color:var(--red); background:rgba(255,51,85,0.04); color:#ffbbcc; }
-
-/* CODE REVEAL */
-.code-revealed {
-  font-family:'Orbitron',monospace; font-size:22px; font-weight:900;
-  color:var(--amber); text-shadow:var(--glow-amb); letter-spacing:10px;
-  text-align:center; margin:14px 0; padding:14px;
-  border:1px solid rgba(255,170,0,0.35); background:rgba(40,20,0,0.4); display:none;
-}
-.code-revealed.visible { display:block; animation:fadeUp 0.8s ease; }
-
-/* PADLOCK */
-.padlock-section { display:flex; flex-direction:column; align-items:center; padding:28px; gap:20px; }
-.padlock-svg-wrap { width:110px; height:130px; }
-.padlock-svg-wrap svg { width:100%; height:100%; }
-.padlock-shackle { transition:transform 0.7s cubic-bezier(0.175,0.885,0.32,1.275); transform-origin:center bottom; }
-.padlock-shackle.open { transform:rotate(-40deg) translateY(-16px); }
-.padlock-body-rect { transition:fill 0.3s; }
-.code-dials { display:flex; gap:10px; align-items:center; }
-.dial-wrap { display:flex; flex-direction:column; align-items:center; gap:5px; }
-.dial-btn { background:none; border:none; color:var(--green-dim); font-size:16px; cursor:pointer; padding:3px 10px; transition:color 0.2s; line-height:1; }
-.dial-btn:hover { color:var(--green); }
-.dial-display {
-  font-family:'Orbitron',monospace; font-size:32px; font-weight:900;
-  color:var(--amber); text-shadow:var(--glow-amb); width:52px; height:58px;
-  display:flex; align-items:center; justify-content:center;
-  border:1px solid rgba(255,170,0,0.4); background:rgba(20,10,0,0.8);
-  overflow:hidden; position:relative;
-}
-.digit-inner { position:absolute; width:100%; text-align:center; transition:transform 0.2s,opacity 0.2s; }
-.dial-sep { font-family:'Orbitron',monospace; font-size:24px; color:var(--grey); padding-bottom:24px; }
-.padlock-msg { font-size:10px; color:var(--grey); letter-spacing:2px; text-align:center; }
-.padlock-msg.success { color:var(--green); text-shadow:var(--glow); }
-.padlock-msg.error { color:var(--red); animation:shake 0.4s ease; }
-.btn-validate {
-  font-family:'Orbitron',monospace; font-size:10px; font-weight:700; letter-spacing:3px;
-  padding:12px 30px; border:1px solid rgba(255,170,0,0.5); background:rgba(40,20,0,0.5);
-  color:var(--amber); cursor:pointer; transition:all 0.3s;
-}
-.btn-validate:hover { border-color:var(--amber); box-shadow:var(--glow-amb); }
-@keyframes flash-green { 0%{fill:#003322} 50%{fill:#00aa55} 100%{fill:#003322} }
-@keyframes flash-red   { 0%{fill:#003322} 50%{fill:#440011} 100%{fill:#003322} }
-.flash-success { animation:flash-green 0.8s ease forwards; }
-.flash-error   { animation:flash-red 0.4s ease; }
-
-.enigme-box { border:1px solid rgba(255,170,0,0.3); padding:18px 22px; background:rgba(40,20,0,0.25); margin-top:20px; border-top:2px solid var(--amber); }
-.enigme-box-tag { font-size:9px; letter-spacing:3px; color:var(--amber); margin-bottom:10px; }
-.enigme-box-text { font-family:'Crimson Pro',serif; font-size:17px; color:var(--white); line-height:1.7; }
-
-/* BUTTONS */
-.btn {
-  font-family:'Orbitron',monospace; font-size:11px; font-weight:700; letter-spacing:2px;
-  padding:13px 26px; border:1px solid var(--green-dim); background:transparent;
-  color:var(--green); cursor:pointer; transition:all 0.3s; position:relative; overflow:hidden;
-}
-.btn::before { content:''; position:absolute; top:0;left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(0,255,136,0.08),transparent); transition:left 0.4s; }
-.btn:hover { border-color:var(--green); box-shadow:var(--glow); color:var(--white); }
-.btn:hover::before { left:100%; }
-.btn-amber { border-color:var(--amber-dim); color:var(--amber); }
-.btn-amber:hover { border-color:var(--amber); box-shadow:var(--glow-amb); }
-.actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
-
-/* FINAL */
-.badge-ring {
-  width:130px; height:130px; border-radius:50%; border:3px solid var(--green);
-  box-shadow:0 0 50px rgba(0,255,136,0.4),inset 0 0 30px rgba(0,255,136,0.1);
-  display:flex; align-items:center; justify-content:center; margin:0 auto 24px; font-size:50px;
-  animation:ring-pulse 2s ease infinite;
-}
-@keyframes ring-pulse {
-  0%,100%{box-shadow:0 0 40px rgba(0,255,136,0.4),inset 0 0 30px rgba(0,255,136,0.1)}
-  50%{box-shadow:0 0 70px rgba(0,255,136,0.7),inset 0 0 40px rgba(0,255,136,0.2)}
-}
-.debrief-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin:20px 0; }
-.debrief-card { border:1px solid var(--border); padding:18px; background:rgba(0,20,12,0.7); }
-.debrief-concept { font-family:'Orbitron',monospace; font-size:10px; color:var(--amber); letter-spacing:2px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border); }
-.debrief-def { font-family:'Crimson Pro',serif; font-size:16px; color:var(--white); line-height:1.6; font-weight:300; }
-/* ═══ IMAGE SLOTS ═══ */
-.img-slot {
-  width:100%; margin:20px 0;
-  border:1px solid var(--border);
-  background:rgba(0,20,12,0.5);
-  position:relative; overflow:hidden;
-}
-.img-slot img {
-  width:100%; display:block;
-  object-fit:cover; opacity:0.85;
-  filter:saturate(0.7) brightness(0.75);
-  transition:opacity 0.3s;
-}
-.img-slot:hover img { opacity:0.95; }
-.img-slot .img-caption {
-  position:absolute; bottom:0; left:0; right:0;
-  padding:8px 14px;
-  background:linear-gradient(0deg,rgba(5,12,9,0.92),transparent);
-  font-size:9px; letter-spacing:3px; color:var(--grey);
-}
-/* Placeholder quand pas d'image */
-.img-slot.empty {
-  height:220px;
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center; gap:10px;
-  border-style:dashed;
-}
-.img-slot.empty .img-placeholder-label {
-  font-size:9px; letter-spacing:3px; color:var(--grey);
-}
-.img-slot.empty .img-placeholder-id {
-  font-family:'Orbitron',monospace; font-size:11px;
-  color:rgba(0,255,136,0.3); letter-spacing:2px;
-}
+.kapp-sig::before { content: '🕵'; font-size: 14px; }
 </style>
 </head>
 <body>
 
-<!-- HUD -->
-<header class="hud">
-  <div>
-    <div class="hud-logo">MISSION MOTIVATION</div>
-    <div class="hud-classify">● DOSSIER CLASSIFIÉ — ACADÉMIE SECRÈTE</div>
-  </div>
-  <div class="hud-right">
-    <div class="phase-track" id="phaseTrack"></div>
-    <div class="hud-timer" id="hudTimer">20:00</div>
-  </div>
-</header>
+<div class="wrapper">
 
-<main>
-
-<!-- ══ INTRO ══ -->
-<section class="screen active" id="s0">
-  <div class="cinematic-header">
-    <div class="ch-eyebrow">ACADÉMIE SECRÈTE // PROTOCOLE D'URGENCE</div>
-    <div class="ch-title">Les Chroniques<br>de l'Agent Kapp</div>
-    <div class="ch-rule"></div>
+  <!-- HEADER -->
+  <div class="site-header">
+    <div class="classify">● ACADÉMIE SECRÈTE // DOSSIER FORMATION</div>
+    <div class="header-eyebrow">FORMATION LUDIFICATION — NIVEAU 2</div>
+    <div class="header-title">MISSION<br><span>CONCEPTION</span></div>
+    <div class="header-sub">Concevoir un escape game pédagogique</div>
+    <div class="header-rule"></div>
   </div>
 
- <!-- IMAGE 1 — Salle de crise / poste de commandement -->
-<div class="img-slot" id="img-1">
-  <img src="img-01-crise.jpg" alt="">
-  <div class="img-caption">ACADÉMIE SECRÈTE // SALLE DE CRISE</div>
+  <!-- CARDS -->
+  <div class="cards">
+
+    <a href="mission_motivation_v3.html" class="card card-1">
+      <div class="card-head">
+        <div class="card-num">01</div>
+        <div class="card-title-wrap">
+          <div class="card-eyebrow">PARTIE 1 // EXPÉRIENCE</div>
+          <div class="card-title">Mission<br>Motivation</div>
+        </div>
+        <div class="status-dot"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Vivez un escape game de l'intérieur. Découvrez les principes de la motivation en jouant, portés par la trame narrative de l'Agent Kapp.</div>
+        <div class="card-tags">
+          <span class="tag">EXPÉRIENCE</span>
+          <span class="tag">TAD</span>
+          <span class="tag">FLOW</span>
+          <span class="tag">AMOTIVATION</span>
+        </div>
+        <div class="card-duration">15 — 20 MIN</div>
+      </div>
+      <div class="card-foot">
+        <div class="card-cta">LANCER LA MISSION</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a href="dossier_debrief.html" class="card card-2">
+      <div class="card-head">
+        <div class="card-num">02</div>
+        <div class="card-title-wrap">
+          <div class="card-eyebrow">PARTIE 2 // ANALYSE</div>
+          <div class="card-title">Dossier<br>Debrief</div>
+        </div>
+        <div class="status-dot"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Autopsie de ce que vous venez de vivre. Pourquoi ça a fonctionné ? Quelles mécaniques ont activé quels leviers motivationnels ?</div>
+        <div class="card-tags">
+          <span class="tag">ANALYSE</span>
+          <span class="tag">MÉCANIQUES</span>
+          <span class="tag">DIAGNOSTIC</span>
+          <span class="tag">CAS D'USAGE</span>
+        </div>
+        <div class="card-duration">45 — 60 MIN</div>
+      </div>
+      <div class="card-foot">
+        <div class="card-cta">OUVRIR LE DOSSIER</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a href="operation_forge.html" class="card card-3">
+      <div class="card-head">
+        <div class="card-num">03</div>
+        <div class="card-title-wrap">
+          <div class="card-eyebrow">PARTIE 3 // CONCEPTION</div>
+          <div class="card-title">Opération<br>Forge</div>
+        </div>
+        <div class="status-dot"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Construisez votre propre escape game pédagogique. De la définition de la compétence jusqu'au déploiement en classe.</div>
+        <div class="card-tags">
+          <span class="tag">CONCEPTION</span>
+          <span class="tag">7 ÉTAPES</span>
+          <span class="tag">OUTILS</span>
+          <span class="tag">VALIDATION</span>
+        </div>
+        <div class="card-duration">1H — 3H</div>
+      </div>
+      <div class="card-foot">
+        <div class="card-cta">LANCER L'OPÉRATION</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- FLOW -->
+  <div class="flow">
+    <div class="flow-node">VIVRE</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">ANALYSER</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">CONCEVOIR</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">DÉPLOYER</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="site-footer">
+    <div>FORMATION LUDIFICATION N2 // DRANE PACA // ACADÉMIE DE NICE</div>
+    <div class="kapp-sig">AGENT KAPP // ACADÉMIE SECRÈTE // OPÉRATION EN COURS</div>
+  </div>
+
 </div>
 
-  <div class="kapp-card">
-    <div class="kapp-avatar">
-      <div class="avatar-ring">🕵</div>
-      <div class="avatar-info">
-        <div class="avatar-name">AGENT KAPP</div>
-        <div class="avatar-role">INSPECTEUR // ACADÉMIE SECRÈTE</div>
-      </div>
-      <div class="avatar-status">● EN LIGNE</div>
-    </div>
-    <div class="narrative-text" id="n-intro"></div>
-  </div>
-
-  <div class="theory-box" id="th-intro">
-    <div class="theory-tag">// CONTEXTE OPÉRATIONNEL</div>
-    <div class="theory-content">
-      Avant d'entrer dans le vif du sujet, voici ce que vous devez savoir. La motivation d'un élève n'est pas une qualité fixe — c'est un état qui fluctue selon les conditions dans lesquelles il apprend. Les psychologues distinguent trois états : agir pour le plaisir de l'activité elle-même, agir pour une raison externe, ou <strong>ne plus percevoir de raison d'agir du tout</strong>. Ce troisième état est le plus dangereux — et le plus silencieux.
-    </div>
-  </div>
-
-  <div class="radio-trigger-wrap" id="rt-intro">
-    <button class="radio-trigger-btn" onclick="triggerRadio('intro')" id="rtb-intro">
-      <span class="radio-dot"></span>
-      MESSAGE DE L'AGENT KAPP
-    </button>
-  </div>
-
-  <div class="radio-message-wrap" id="rm-intro">
-    <div class="radio-header">
-      <div class="radio-dot"></div>
-      <div class="radio-label">TRANSMISSION ENTRANTE // AGENT KAPP</div>
-    </div>
-    <div class="radio-box"><div class="radio-margin"></div>
-      <div class="radio-text" id="r-intro"></div>
-      <div class="radio-signature">— KAPP // CRYPTÉ // PRIORITÉ ABSOLUE</div>
-    </div>
-  </div>
-
-  <div class="cta-wrap" id="cta-intro">
-    <button class="cta-btn" onclick="goTo('s-m1')">RÉPONDRE À L'APPEL</button>
-    <div class="cta-sub">↓ MISSION 01 — DIAGNOSTIC DE CLASSE</div>
-  </div>
-</section>
-
-<!-- ══ MISSION 1 ══ -->
-<section class="screen" id="s-m1">
-  <div class="mission-header">
-    <div class="mission-badge">MISSION 01 / 04</div>
-    <div class="mission-title-text">DIAGNOSTIC DE CLASSE</div>
-  </div>
-  <div class="card">
-    <div class="card-tag">DOSSIER TRM-042 — FICHES ÉLÈVES</div>
-    <p class="body-text">Kapp vous a transmis quatre profils. <span class="hl">Un seul élève</span> est en état d'<span class="hl">amotivation</span> — il ne perçoit plus aucun lien entre ses actions et leurs résultats. Ni peur. Ni plaisir. Rien.</p>
-    <p class="body-text">Identifiez-le et transmettez votre analyse à Kapp.</p>
-  </div>
-  <div class="profiles-grid">
-    <div class="profile-card" onclick="selectProfile(this,false)">
-      <div class="profile-name">ÉLÈVE A // LUCAS</div>
-      <div class="profile-text">"Je fais mes devoirs parce que mes parents me retirent la tablette si je ne les fais pas. Mais bon, au moins je sais pourquoi je travaille."</div>
-    </div>
-    <div class="profile-card" onclick="selectProfile(this,true)">
-      <div class="profile-name">ÉLÈVE B // NORA</div>
-      <div class="profile-text">"Je comprends pas à quoi ça sert. Que je travaille ou pas, ça change rien. J'ai arrêté d'essayer."</div>
-    </div>
-    <div class="profile-card" onclick="selectProfile(this,false)">
-      <div class="profile-name">ÉLÈVE C // MEHDI</div>
-      <div class="profile-text">"J'adore les maths. Je résous des problèmes même le week-end — pas pour les notes, juste parce que c'est bon quand ça clique."</div>
-    </div>
-    <div class="profile-card" onclick="selectProfile(this,false)">
-      <div class="profile-name">ÉLÈVE D // CAMILLE</div>
-      <div class="profile-text">"Je travaille pour avoir mon bac. Après je verrai. Pour l'instant je fais ce qu'il faut faire."</div>
-    </div>
-  </div>
-  <div class="feedback" id="fb-m1"></div>
-  <div class="code-revealed" id="code-1">CODE — <span class="hl2">7</span> _ _ _</div>
-  <div class="actions">
-    <button class="btn btn-amber" id="btn-next-m1" onclick="goTo('s-ch1')" style="display:none;">TRANSMETTRE À KAPP →</button>
-  </div>
-</section>
-
-<!-- ══ CHAPITRE 1 ══ -->
-<section class="screen" id="s-ch1">
-  <div class="cinematic-header">
-    <div class="ch-eyebrow">CHAPITRE 1 // RAPPORT DE TERRAIN</div>
-    <div class="ch-title">Les trois besoins<br>que personne ne voit</div>
-    <div class="ch-rule"></div>
-  </div>
-  <div class="kapp-card">
-    <div class="kapp-avatar">
-      <div class="avatar-ring">🕵</div>
-      <div class="avatar-info">
-        <div class="avatar-name">AGENT KAPP</div>
-        <div class="avatar-role">RAPPORT DE TERRAIN // CONFIDENTIEL</div>
-      </div>
-      <div class="avatar-status">● TRANSMISSION EN COURS</div>
-    </div>
-    <div class="narrative-text" id="n-ch1"></div>
-  </div>
-<!-- IMAGE 2 — Archives / dossiers de recherche -->
-<div class="img-slot" id="img-2">
-  <img src="img-02-archives.jpg" alt="">
-  <div class="img-caption">DECI & RYAN // ARCHIVES DE TERRAIN</div>
-</div>
-
-  <div class="theory-box" id="th-ch1">
-    <div class="theory-tag">// DOSSIER THÉORIQUE — DECI & RYAN, 1985</div>
-    <div class="theory-content">
-      Deci et Ryan ont passé trente ans à observer ce qui fait qu'un être humain s'engage ou se retire. Leur conclusion : trois besoins psychologiques fondamentaux doivent être satisfaits pour que la motivation soit durable.<br><br>
-      Ces trois besoins portent chacun un nom précis. Ils concernent la façon dont un individu perçoit sa propre action, son efficacité, et sa relation aux autres. Quand ils sont nourris simultanément, la motivation intrinsèque s'installe d'elle-même. Quand l'un d'eux est ignoré, le système se fragilise. Quand tous trois sont absents — <strong>c'est Nora</strong>.
-    </div>
-  </div>
-  <div class="radio-trigger-wrap" id="rt-ch1">
-    <button class="radio-trigger-btn" onclick="triggerRadio('ch1')" id="rtb-ch1">
-      <span class="radio-dot"></span>
-      MESSAGE DE L'AGENT KAPP
-    </button>
-  </div>
-  <div class="radio-message-wrap" id="rm-ch1">
-    <div class="radio-header">
-      <div class="radio-dot"></div>
-      <div class="radio-label">TRANSMISSION ENTRANTE // AGENT KAPP</div>
-    </div>
-    <div class="radio-box"><div class="radio-margin"></div>
-      <div class="radio-text" id="r-ch1"></div>
-      <div class="radio-signature">— KAPP // CRYPTÉ // PRIORITÉ HAUTE</div>
-    </div>
-  </div>
-  <div class="cta-wrap" id="cta-ch1">
-    <button class="cta-btn" onclick="goTo('s-m2')">ANALYSER LE CORPUS →</button>
-    <div class="cta-sub">↓ MISSION 02 — EXTRACTION DES BESOINS</div>
-  </div>
-</section>
-
-<!-- ══ MISSION 2 ══ -->
-<section class="screen" id="s-m2">
-  <div class="mission-header">
-    <div class="mission-badge">MISSION 02 / 04</div>
-    <div class="mission-title-text">EXTRACTION DES BESOINS</div>
-  </div>
-  <div class="card">
-    <div class="card-tag">RAPPORT INFILTRÉ — DOSSIER DECI & RYAN</div>
-    <p class="body-text">Kapp a intercepté un rapport pédagogique, mais un agent adverse y a glissé <span class="hl">6 leurres</span> parmi les termes cliquables. Votre mission : cliquer sur les <span class="hl2">3 besoins authentiques</span> selon Deci & Ryan.</p>
-    <div class="sel-counter">Sélection : <span id="wordCount">0</span> / 3</div>
-  </div>
-  <div class="card">
-    <div class="text-corpus" id="wordCorpus"></div>
-  </div>
-  <div class="feedback" id="fb-m2"></div>
-  <div class="code-revealed" id="code-2">CODE — 7 <span class="hl2">3</span> _ _</div>
-  <div class="actions">
-    <button class="btn btn-amber" onclick="checkWords()">VALIDER LA SÉLECTION</button>
-    <button class="btn" id="btn-next-m2" onclick="goTo('s-ch2')" style="display:none;">TRANSMETTRE À KAPP →</button>
-  </div>
-</section>
-
-<!-- ══ CHAPITRE 2 ══ -->
-<section class="screen" id="s-ch2">
-  <div class="cinematic-header">
-    <div class="ch-eyebrow">CHAPITRE 2 // RAPPORT DE TERRAIN</div>
-    <div class="ch-title">La zone où tout<br>devient possible</div>
-    <div class="ch-rule"></div>
-  </div>
-  <div class="kapp-card">
-    <div class="kapp-avatar">
-      <div class="avatar-ring">🕵</div>
-      <div class="avatar-info">
-        <div class="avatar-name">AGENT KAPP</div>
-        <div class="avatar-role">RAPPORT DE TERRAIN // CONFIDENTIEL</div>
-      </div>
-      <div class="avatar-status">● TRANSMISSION EN COURS</div>
-    </div>
-    <div class="narrative-text" id="n-ch2"></div>
-  </div>
-
- <!-- IMAGE 3 — Alpiniste / musicien / état de flow -->
-<div class="img-slot" id="img-3">
-  <img src="img-03-flow.jpg" alt="">
-  <div class="img-caption">FLOW // CSIKSZENTMIHALYI</div>
-</div>
-
-  <div class="theory-box" id="th-ch2">
-    <div class="theory-tag">// DOSSIER THÉORIQUE — CSIKSZENTMIHALYI, 1990</div>
-    <div class="theory-content">
-      Mihaly Csikszentmihalyi a observé des chirurgiens, des alpinistes, des musiciens de jazz. Il cherchait à comprendre quand les êtres humains sont le plus engagés. Sa réponse : lorsque le défi est légèrement supérieur à la compétence actuelle.<br><br>
-      Trop facile → <strong>ennui</strong>. L'élève décroche par le bas.<br>
-      Trop difficile → <strong>anxiété</strong>. L'élève décroche par le haut.<br>
-      Équilibre parfait → <strong>flow</strong>. L'élève ne voit plus le temps passer.<br><br>
-      Le flow n'est pas un accident. C'est le résultat d'une progression délibérément calibrée. Le plan de cours de TRM-042 a été saboté — cet équilibre a été délibérément détruit.
-    </div>
-  </div>
-  <div class="radio-trigger-wrap" id="rt-ch2">
-    <button class="radio-trigger-btn" onclick="triggerRadio('ch2')" id="rtb-ch2">
-      <span class="radio-dot"></span>
-      MESSAGE DE L'AGENT KAPP
-    </button>
-  </div>
-  <div class="radio-message-wrap" id="rm-ch2">
-    <div class="radio-header">
-      <div class="radio-dot"></div>
-      <div class="radio-label">TRANSMISSION ENTRANTE // AGENT KAPP</div>
-    </div>
-    <div class="radio-box"><div class="radio-margin"></div>
-      <div class="radio-text" id="r-ch2"></div>
-      <div class="radio-signature">— KAPP // CRYPTÉ // PRIORITÉ HAUTE</div>
-    </div>
-  </div>
-  <div class="cta-wrap" id="cta-ch2">
-    <button class="cta-btn" onclick="goTo('s-m3')">RECONSTRUIRE LE PLAN →</button>
-    <div class="cta-sub">↓ MISSION 03 — RECONSTRUCTION DE LA SÉQUENCE</div>
-  </div>
-</section>
-
-<!-- ══ MISSION 3 ══ -->
-<section class="screen" id="s-m3">
-  <div class="mission-header">
-    <div class="mission-badge">MISSION 03 / 04</div>
-    <div class="mission-title-text">RECONSTRUCTION DE LA SÉQUENCE</div>
-  </div>
-  <div class="card">
-    <div class="card-tag">PLAN DE COURS SABOTÉ — RECONSTRUCTION REQUISE</div>
-    <p class="body-text">Le plan de cours de TRM-042 a été délibérément désordonné. Pour recréer les conditions du <span class="hl">flow</span>, les activités doivent progresser selon l'équilibre <span class="hl2">défi / compétence</span>. Remettez-les dans l'ordre. Glissez-déposez.</p>
-  </div>
-  <div class="sortable-list" id="sortableList"></div>
-  <div class="feedback" id="fb-m3"></div>
-  <div class="code-revealed" id="code-3">CODE — 7 3 <span class="hl2">9</span> _</div>
-  <div class="actions">
-    <button class="btn btn-amber" onclick="checkOrder()">VALIDER L'ORDRE</button>
-    <button class="btn" id="btn-next-m3" onclick="goTo('s-ch3')" style="display:none;">TRANSMETTRE À KAPP →</button>
-  </div>
-</section>
-
-<!-- ══ CHAPITRE 3 ══ -->
-<section class="screen" id="s-ch3">
-  <div class="cinematic-header">
-    <div class="ch-eyebrow">CHAPITRE 3 // DERNIÈRE TRANSMISSION</div>
-    <div class="ch-title">Le cas Amara</div>
-    <div class="ch-rule"></div>
-  </div>
-  <div class="kapp-card">
-    <div class="kapp-avatar">
-      <div class="avatar-ring">🕵</div>
-      <div class="avatar-info">
-        <div class="avatar-name">AGENT KAPP</div>
-        <div class="avatar-role">SYNTHÈSE OPÉRATIONNELLE // URGENT</div>
-      </div>
-      <div class="avatar-status">● TRANSMISSION FINALE</div>
-    </div>
-    <div class="narrative-text" id="n-ch3"></div>
-  </div>
-
-<!-- IMAGE 4 — Élève seul en classe, regard détaché -->
-<div class="img-slot" id="img-4">
-  <img src="img-04-amara.jpg" alt="">
-  <div class="img-caption">DOSSIER TRM-042 // CAS AMARA</div>
-</div>
-
-  <div class="theory-box" id="th-ch3">
-    <div class="theory-tag">// SYNTHÈSE — TROIS OUTILS, UN OBJECTIF</div>
-    <div class="theory-content">
-      Vous disposez maintenant de trois grilles de lecture. La <strong>TAD</strong> pour diagnostiquer ce qui manque. Le <strong>flow</strong> pour calibrer le bon niveau de défi. La distinction entre les trois états motivationnels pour comprendre où se situe un élève.<br><br>
-      Un dispositif pédagogique efficace active les trois besoins ET place l'élève dans la zone de flow — simultanément. C'est une décision de conception, pas un accident. Kapp vous demande de prendre cette décision maintenant, pour Amara.
-    </div>
-  </div>
-  <div class="radio-trigger-wrap" id="rt-ch3">
-    <button class="radio-trigger-btn" onclick="triggerRadio('ch3')" id="rtb-ch3">
-      <span class="radio-dot"></span>
-      MESSAGE DE L'AGENT KAPP
-    </button>
-  </div>
-  <div class="radio-message-wrap" id="rm-ch3">
-    <div class="radio-header">
-      <div class="radio-dot"></div>
-      <div class="radio-label">TRANSMISSION ENTRANTE // AGENT KAPP</div>
-    </div>
-    <div class="radio-box"><div class="radio-margin"></div>
-      <div class="radio-text" id="r-ch3"></div>
-      <div class="radio-signature">— KAPP // CRYPTÉ // DÉCISION FINALE</div>
-    </div>
-  </div>
-  <div class="cta-wrap" id="cta-ch3">
-    <button class="cta-btn" onclick="goTo('s-m4')">PRENDRE LA DÉCISION →</button>
-    <div class="cta-sub">↓ MISSION 04 — SYNTHÈSE FINALE</div>
-  </div>
-</section>
-
-<!-- ══ MISSION 4 ══ -->
-<section class="screen" id="s-m4">
-  <div class="mission-header">
-    <div class="mission-badge">MISSION 04 / 04</div>
-    <div class="mission-title-text">DÉCISION FINALE — CAS AMARA</div>
-  </div>
-  <div class="card">
-    <div class="card-tag">FICHE ÉLÈVE — AMARA, 16 ANS</div>
-    <p class="body-text">Amara est douée mais ne participe plus. Elle dit : <em style="color:var(--amber-pale);">"Je sais faire, mais ça ne sert à rien ici."</em></p>
-    <p class="body-text">Kapp vous demande de choisir l'intervention qui active simultanément les <span class="hl2">3 besoins fondamentaux</span> et respecte le principe du <span class="hl">flow</span>. Une seule répond à ces deux critères.</p>
-  </div>
-  <div class="syn-grid">
-    <div class="syn-item" onclick="selectSyn(this,false)">
-      <div class="syn-label">OPTION A</div>
-      Donner à Amara une note bonus pour chaque participation volontaire en classe.
-    </div>
-    <div class="syn-item" onclick="selectSyn(this,false)">
-      <div class="syn-label">OPTION B</div>
-      Lui proposer de refaire tous les exercices depuis le début du trimestre pour rebâtir ses bases.
-    </div>
-    <div class="syn-item" onclick="selectSyn(this,true)">
-      <div class="syn-label">OPTION C</div>
-      Lui confier le rôle de tutrice sur une notion qu'elle maîtrise, avec un défi légèrement plus difficile en parallèle.
-    </div>
-    <div class="syn-item" onclick="selectSyn(this,false)">
-      <div class="syn-label">OPTION D</div>
-      Lui rappeler l'importance de la motivation pour réussir le baccalauréat.
-    </div>
-  </div>
-  <div class="feedback" id="fb-m4"></div>
-  <div class="card" id="padlock-card" style="display:none;">
-    <div class="card-tag">CADENAS — DOSSIER TRM-042</div>
-    <div class="padlock-section">
-      <div class="padlock-svg-wrap">
-        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-          <g class="padlock-shackle" id="padlockShackle">
-            <path d="M 28 60 Q 28 20 50 20 Q 72 20 72 60" fill="none" stroke="#00cc66" stroke-width="8" stroke-linecap="round"/>
-          </g>
-          <rect class="padlock-body-rect" id="padlockBody" x="15" y="55" width="70" height="55" rx="4" fill="#003322" stroke="#00cc66" stroke-width="2"/>
-          <circle cx="50" cy="80" r="7" fill="none" stroke="#ffaa00" stroke-width="2"/>
-          <rect x="47" y="80" width="6" height="14" rx="1" fill="none" stroke="#ffaa00" stroke-width="2"/>
-          <line x1="22" y1="100" x2="78" y2="100" stroke="rgba(0,255,136,0.15)" stroke-width="1"/>
-        </svg>
-      </div>
-      <div style="font-size:9px;color:var(--grey);letter-spacing:3px;">CODE À 4 CHIFFRES</div>
-      <div class="code-dials">
-        <div class="dial-wrap">
-          <button class="dial-btn" onclick="dialUp(0)">▲</button>
-          <div class="dial-display"><span class="digit-inner" id="d0">7</span></div>
-          <button class="dial-btn" onclick="dialDown(0)">▼</button>
-        </div>
-        <div class="dial-sep">·</div>
-        <div class="dial-wrap">
-          <button class="dial-btn" onclick="dialUp(1)">▲</button>
-          <div class="dial-display"><span class="digit-inner" id="d1">3</span></div>
-          <button class="dial-btn" onclick="dialDown(1)">▼</button>
-        </div>
-        <div class="dial-sep">·</div>
-        <div class="dial-wrap">
-          <button class="dial-btn" onclick="dialUp(2)">▲</button>
-          <div class="dial-display"><span class="digit-inner" id="d2">9</span></div>
-          <button class="dial-btn" onclick="dialDown(2)">▼</button>
-        </div>
-        <div class="dial-sep">·</div>
-        <div class="dial-wrap">
-          <button class="dial-btn" onclick="dialUp(3)">▲</button>
-          <div class="dial-display"><span class="digit-inner" id="d3">0</span></div>
-          <button class="dial-btn" onclick="dialDown(3)">▼</button>
-        </div>
-      </div>
-      <div class="padlock-msg" id="padlockMsg">ENTREZ LE CODE POUR DÉVERROUILLER</div>
-      <button class="btn-validate" onclick="validatePadlock()">▶ DÉVERROUILLER</button>
-      <div class="enigme-box" id="enigme-4" style="display:none;">
-        <div class="enigme-box-tag">🔑 ÉNIGME — 4ème CHIFFRE</div>
-        <div class="enigme-box-text">
-          Vous avez traversé cette mission en mobilisant les besoins fondamentaux de la motivation.<br>
-          Combien sont-ils, exactement, selon Deci & Ryan ?<br>
-          <span style="color:var(--amber);font-size:13px;margin-top:8px;display:block;letter-spacing:1px;">Ce chiffre est votre quatrième code.</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ FINAL ══ -->
-<section class="screen" id="s-final">
-  <div class="cinematic-header">
-    <div class="ch-eyebrow">ÉPILOGUE // RAPPORT DE CLÔTURE</div>
-    <div class="ch-title">Dossier TRM-042<br>déverrouillé</div>
-    <div class="ch-rule"></div>
-  </div>
-  <div class="kapp-card">
-    <div class="kapp-avatar">
-      <div class="avatar-ring">🔓</div>
-      <div class="avatar-info">
-        <div class="avatar-name">AGENT KAPP</div>
-        <div class="avatar-role">RAPPORT DE CLÔTURE // ACADÉMIE SECRÈTE</div>
-      </div>
-      <div class="avatar-status">● MISSION ACCOMPLIE</div>
-    </div>
-    <div class="narrative-text" id="n-final"></div>
-  </div>
-
-<!-- IMAGE 5 — Dossier refermé / cadenas ouvert -->
-<div class="img-slot" id="img-5">
-  <img src="img-05-epilogue.jpg" alt="">
-  <div class="img-caption">MISSION ACCOMPLIE // DOSSIER CLOS</div>
-</div>
-
-  <div style="text-align:center;margin:24px 0;">
-    <div class="badge-ring">🔓</div>
-  </div>
-  <div class="card">
-    <div class="card-tag">BILAN CONCEPTUEL — RAPPORT KAPP</div>
-    <div class="debrief-grid">
-      <div class="debrief-card">
-        <div class="debrief-concept">AMOTIVATION</div>
-        <div class="debrief-def">Absence totale de régulation. L'élève ne perçoit plus de lien entre son effort et ses résultats. Signal d'alarme prioritaire.</div>
-      </div>
-      <div class="debrief-card">
-        <div class="debrief-concept">MOTIVATION INTRINSÈQUE</div>
-        <div class="debrief-def">Agir pour le plaisir de l'activité elle-même. Source la plus durable et la plus résistante aux obstacles.</div>
-      </div>
-      <div class="debrief-card">
-        <div class="debrief-concept">TAD — DECI & RYAN</div>
-        <div class="debrief-def">Trois besoins fondamentaux : autonomie (agir par choix), compétence (se sentir efficace), appartenance (se sentir relié).</div>
-      </div>
-      <div class="debrief-card">
-        <div class="debrief-concept">FLOW — CSIKSZENTMIHALYI</div>
-        <div class="debrief-def">État d'engagement optimal quand défi et compétence sont en équilibre. Se calibre par une progression délibérée.</div>
-      </div>
-      <div class="debrief-card">
-        <div class="debrief-concept">LEVIER DE CONCEPTION</div>
-        <div class="debrief-def">Un dispositif motivant active les 3 besoins ET place l'élève dans la zone de flow — simultanément. C'est une décision, pas un accident.</div>
-      </div>
-      <div class="debrief-card" style="border-color:var(--amber);background:rgba(40,20,0,0.4);">
-        <div class="debrief-concept" style="color:var(--green);">RAPPORT KAPP</div>
-        <div class="debrief-def">"Ce qui semblait être un problème de discipline était une absence de conditions motivationnelles. Le réseau l'a vu. Moi seul, je ne l'aurais pas vu."</div>
-      </div>
-    </div>
-  </div>
-  <div style="text-align:center;margin-top:28px;">
-    <button class="btn btn-amber" onclick="location.reload()">↺ RECOMMENCER LA MISSION</button>
-  </div>
-</section>
-
-</main>
-
-<script>
-// ══════════════════════════════════════════
-//  CONTENU
-// ══════════════════════════════════════════
-const NARRATIVES = {
-  intro:   "Six classes. Trois semaines. Un même symptôme : des élèves qui disparaissent sans bruit. Pas de conflit, pas d'incident. Juste une présence qui s'efface, un regard qui se détourne. L'Académie m'a chargé d'enquêter. J'ai ouvert le dossier TRM-042 et j'ai trouvé quatre profils. L'un d'eux m'a arrêté net — pas parce qu'il est rebelle ou paresseux, mais parce qu'il ne perçoit plus rien. Aucune raison d'agir. Ni dedans, ni dehors.",
-  ch1:     "Vous avez trouvé Nora. Ce que j'ai vu dans son dossier correspond exactement à ce qu'un chercheur américain a décrit il y a quarante ans — un état qu'il a appelé l'amotivation. Pas un manque de volonté. Une absence de sens. Deci et son collègue Ryan ont consacré leur carrière à comprendre pourquoi certains élèves s'investissent et d'autres s'effacent. Ils ont identifié trois besoins fondamentaux que tout être humain porte en lui — trois besoins dont les noms sont précis, et dont la satisfaction simultanée conditionne tout le reste.",
-  ch2:     "Les trois besoins sont entre vos mains maintenant. Mais quelque chose m'échappait encore. J'ai vu des classes où ces besoins semblaient satisfaits — et pourtant les élèves décrochaient à mi-séance. Comme si l'énergie s'évaporait sans raison. J'ai fini par consulter les travaux d'un chercheur hongrois, Csikszentmihalyi, qui a passé sa vie à observer des chirurgiens, des alpinistes, des musiciens de jazz dans leurs moments d'engagement le plus intense. Sa réponse tient en un mot : le flow. Un état qui n'arrive pas par accident — il se construit, étape par étape.",
-  ch3:     "Amara. 16 ans. Notes solides jusqu'en début de trimestre. Puis le silence. Elle ne perturbe pas, elle ne refuse pas — elle s'est simplement retirée, comme si elle avait décidé que sa présence n'avait plus d'effet sur ce qui se passait en classe. J'ai relu ses copies. Il n'y a pas de lacune disciplinaire. Il y a une absence de conditions. Personne ne lui a donné de rôle. Personne n'a ajusté le défi à son niveau réel. Personne n'a remarqué qu'elle avait cessé d'essayer.",
-  final:   "Rapport de clôture — Agent Kapp, Académie Secrète. Dossier TRM-042 déverrouillé. Ce qui semblait être un problème de discipline était une absence totale de conditions motivationnelles : trois besoins non satisfaits, un équilibre défi-compétence ignoré, une élève progressivement effacée du dispositif. Le réseau l'a vu. Vous avez mobilisé les bons cadres théoriques et vous les avez appliqués à un cas réel. Ce n'est pas un exercice. C'est la compétence que vous emportez d'ici."
-};
-
-const RADIOS = {
-  intro: "Ici Kapp. J'ai besoin de votre regard sur ce dossier. Quatre élèves, quatre postures face à l'apprentissage. Trois d'entre eux ont encore une raison d'agir — quelle qu'elle soit. <strong>Le quatrième ne l'a plus.</strong> Je ne peux pas me tromper de cible. Analysez les profils et identifiez-le.",
-  ch1:   "Kapp à réseau. J'ai un rapport pédagogique compromis entre les mains — quelqu'un a mélangé les vrais besoins motivationnels avec des leurres pour brouiller les pistes. Je ne peux pas prendre le risque de me tromper. <strong>Extrayez les trois besoins authentiques du corpus.</strong> Ne vous laissez pas piéger par le vocabulaire familier.",
-  ch2:   "Transmission urgente. Le plan de cours de TRM-042 a été manipulé — les activités ont été réordonnées pour <strong>casser la montée en charge progressive</strong>. La logique du flow a été sabotée. J'ai besoin que vous reconstruisiez la séquence correcte. Vous avez les clés théoriques. Utilisez-les.",
-  ch3:   "Dernière transmission avant déverrouillage. Voici le cas Amara. J'ai identifié quatre interventions possibles — une seule active les trois besoins et respecte son niveau de flow. <strong>Je veux votre confirmation avant d'agir.</strong> Faites le bon choix."
-};
-
-// ══════════════════════════════════════════
-//  TYPEWRITER
-// ══════════════════════════════════════════
-function typewrite(el, text, speed, cb) {
-  el.innerHTML = '';
-  let i = 0, inTag = false, buf = '';
-  function tick() {
-    if (i >= text.length) { if (cb) cb(); return; }
-    const ch = text[i];
-    if (ch === '<') inTag = true;
-    if (inTag) {
-      buf += ch;
-      if (ch === '>') { el.innerHTML += buf; buf = ''; inTag = false; }
-      i++; setTimeout(tick, 0);
-    } else {
-      el.innerHTML += ch; i++;
-      setTimeout(tick, speed);
-    }
-  }
-  tick();
-}
-
-// ══════════════════════════════════════════
-//  TIMER
-// ══════════════════════════════════════════
-let secondsLeft = 20 * 60, timerStarted = false, timerInterval = null;
-
-function startTimer() {
-  if (timerStarted) return;
-  timerStarted = true;
-  timerInterval = setInterval(() => {
-    secondsLeft--;
-    const m = Math.floor(secondsLeft / 60), s = secondsLeft % 60;
-    const el = document.getElementById('hudTimer');
-    el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-    if (secondsLeft <= 300) el.classList.add('urgent');
-    if (secondsLeft <= 0) clearInterval(timerInterval);
-  }, 1000);
-}
-
-// ══════════════════════════════════════════
-//  PHASE TRACK
-// ══════════════════════════════════════════
-const PHASES = [
-  {id:'s0',     label:'PRO', type:'chapter'},
-  {id:'s-m1',   label:'M1',  type:'mission'},
-  {id:'s-ch1',  label:'CH1', type:'chapter'},
-  {id:'s-m2',   label:'M2',  type:'mission'},
-  {id:'s-ch2',  label:'CH2', type:'chapter'},
-  {id:'s-m3',   label:'M3',  type:'mission'},
-  {id:'s-ch3',  label:'CH3', type:'chapter'},
-  {id:'s-m4',   label:'M4',  type:'mission'},
-  {id:'s-final',label:'FIN', type:'chapter'},
-];
-
-function buildPhaseTrack() {
-  const track = document.getElementById('phaseTrack');
-  PHASES.forEach((p, i) => {
-    const node = document.createElement('div');
-    node.className = 'phase-node' + (p.type === 'chapter' ? ' chapter' : '');
-    node.id = 'pn' + i;
-    node.textContent = p.label;
-    track.appendChild(node);
-    if (i < PHASES.length - 1) {
-      const conn = document.createElement('div');
-      conn.className = 'phase-connector';
-      conn.id = 'pc' + i;
-      track.appendChild(conn);
-    }
-  });
-  updatePhase(0);
-}
-
-function updatePhase(idx) {
-  PHASES.forEach((_, i) => {
-    const node = document.getElementById('pn'+i);
-    const conn = document.getElementById('pc'+i);
-    if (!node) return;
-    node.classList.remove('done','active');
-    if (i < idx) node.classList.add('done');
-    else if (i === idx) node.classList.add('active');
-    if (conn) { conn.classList.remove('done'); if (i < idx) conn.classList.add('done'); }
-  });
-}
-
-// ══════════════════════════════════════════
-//  NAVIGATION
-// ══════════════════════════════════════════
-const SCREEN_PHASE = { 's0':0,'s-m1':1,'s-ch1':2,'s-m2':3,'s-ch2':4,'s-m3':5,'s-ch3':6,'s-m4':7,'s-final':8 };
-
-function goTo(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  updatePhase(SCREEN_PHASE[id] || 0);
-  window.scrollTo({top:0, behavior:'smooth'});
-  if (id !== 's0') startTimer();
-
-  const inits = {
-    's0':    () => initChapter('intro', false),
-    's-ch1': () => initChapter('ch1', true),
-    's-ch2': () => initChapter('ch2', true),
-    's-ch3': () => initChapter('ch3', true),
-    's-final': initFinal,
-    's-m2':  buildCorpus,
-    's-m3':  buildSortable,
-  };
-  if (inits[id]) inits[id]();
-}
-
-// ══════════════════════════════════════════
-//  CHAPTER INIT — narrative + theory, radio séparée
-// ══════════════════════════════════════════
-function initChapter(key, hasTheory) {
-  const narEl = document.getElementById('n-' + key);
-  const theoryEl = document.getElementById('th-' + key);
-  const rtWrap = document.getElementById('rt-' + key);
-  const rmWrap = document.getElementById('rm-' + key);
-  const ctaWrap = document.getElementById('cta-' + key);
-  const rtBtn = document.getElementById('rtb-' + key);
-
-  // reset
-  if (theoryEl) { theoryEl.classList.remove('visible'); }
-  if (rtWrap)   { rtWrap.classList.remove('visible'); }
-  if (rmWrap)   { rmWrap.classList.remove('visible'); rmWrap.style.display = 'none'; }
-  if (ctaWrap)  { ctaWrap.classList.remove('visible'); }
-  if (rtBtn)    { rtBtn.classList.remove('used'); }
-
-  typewrite(narEl, NARRATIVES[key], 16, () => {
-    if (theoryEl) {
-      setTimeout(() => {
-        theoryEl.classList.add('visible');
-        setTimeout(() => { if (rtWrap) rtWrap.classList.add('visible'); }, 600);
-      }, 300);
-    } else {
-      setTimeout(() => { if (rtWrap) rtWrap.classList.add('visible'); }, 400);
-    }
-  });
-}
-
-// ══════════════════════════════════════════
-//  RADIO TRIGGER — clic sur bouton
-// ══════════════════════════════════════════
-function triggerRadio(key) {
-  const btn   = document.getElementById('rtb-' + key);
-  const rmWrap = document.getElementById('rm-' + key);
-  const radioEl = document.getElementById('r-' + key);
-  const ctaWrap = document.getElementById('cta-' + key);
-
-  btn.classList.add('used');
-  rmWrap.style.display = 'block';
-  setTimeout(() => rmWrap.classList.add('visible'), 50);
-
-  typewrite(radioEl, RADIOS[key], 22, () => {
-    setTimeout(() => { if (ctaWrap) ctaWrap.classList.add('visible'); }, 400);
-  });
-
-  setTimeout(() => rmWrap.scrollIntoView({behavior:'smooth', block:'start'}), 200);
-}
-
-function initFinal() {
-  clearInterval(timerInterval);
-  typewrite(document.getElementById('n-final'), NARRATIVES.final, 14, null);
-}
-
-// ══════════════════════════════════════════
-//  MISSION 1
-// ══════════════════════════════════════════
-let m1Done = false, score = 100;
-
-function selectProfile(el, correct) {
-  if (m1Done) return;
-  document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('correct','wrong'));
-  const fb = document.getElementById('fb-m1');
-  if (correct) {
-    el.classList.add('correct'); m1Done = true;
-    fb.className = 'feedback visible';
-    fb.innerHTML = '✓ IDENTIFICATION CONFIRMÉE — Nora est en état d\'<strong>amotivation</strong>. Elle ne perçoit plus aucun lien entre son effort et ses résultats — ni contrainte externe (Lucas), ni plaisir interne (Mehdi), ni objectif intermédiaire (Camille). C\'est l\'état le plus critique et le plus discret.';
-    document.getElementById('code-1').classList.add('visible');
-    setTimeout(() => { document.getElementById('btn-next-m1').style.display = 'inline-block'; }, 800);
-    playTone([523,659,784], 0.1);
-  } else {
-    el.classList.add('wrong'); score = Math.max(0, score - 5);
-    const name = el.querySelector('.profile-name').textContent;
-    fb.className = 'feedback error visible';
-    if (name.includes('LUCAS'))   fb.innerHTML = '✗ Lucas a une motivation <strong>extrinsèque</strong> : il agit sous contrainte externe. Il sait pourquoi il travaille. L\'amotivation, c\'est précisément l\'absence de cette perception.';
-    else if (name.includes('MEHDI')) fb.innerHTML = '✗ Mehdi présente une motivation <strong>intrinsèque</strong> forte : il agit pour le plaisir. Cas diamétralement opposé à l\'amotivation.';
-    else fb.innerHTML = '✗ Camille a une motivation <strong>extrinsèque régulée</strong> : elle vise un objectif. L\'amotivation, c\'est ne plus en avoir aucun.';
-    setTimeout(() => el.classList.remove('wrong'), 500);
-  }
-}
-
-// ══════════════════════════════════════════
-//  MISSION 2
-// ══════════════════════════════════════════
-let m2Done = false, selectedWords = [];
-const TARGET_WORDS = ['autonomie','compétence','appartenance'];
-const CORPUS = [
-  {text:"Selon la théorie de l'autodétermination, les individus sont naturellement orientés vers la croissance. Mais cette croissance nécessite que trois besoins psychologiques soient satisfaits.", h:false},
-  {text:" Le premier besoin est celui d'", h:false},
-  {text:"autonomie", h:true, ok:true},
-  {text:" : le sentiment d'agir par choix, et non sous ", h:false},
-  {text:"contrôle", h:true, ok:false},
-  {text:" externe. Quand un élève perçoit ses actions comme imposées — sous pression d'", h:false},
-  {text:"évaluation", h:true, ok:false},
-  {text:" ou de ", h:false},
-  {text:"conformité", h:true, ok:false},
-  {text:" —, sa motivation s'effondre.", h:false},
-  {text:" Le deuxième besoin est la ", h:false},
-  {text:"compétence", h:true, ok:true},
-  {text:" : se sentir efficace, capable de progresser. Toute activité qui valorise la seule ", h:false},
-  {text:"performance", h:true, ok:false},
-  {text:" sans soutenir ce sentiment risque de l'éroder.", h:false},
-  {text:" Enfin, le besoin d'", h:false},
-  {text:"appartenance", h:true, ok:true},
-  {text:" — se sentir relié à ses pairs et à ses enseignants — reste un moteur souvent sous-estimé. Aucune ", h:false},
-  {text:"récompense", h:true, ok:false},
-  {text:" externe ne peut durablement le remplacer.", h:false},
-];
-
-function buildCorpus() {
-  const c = document.getElementById('wordCorpus');
-  c.innerHTML = ''; selectedWords = [];
-  CORPUS.forEach(seg => {
-    if (!seg.h) { c.insertAdjacentText('beforeend', seg.text); return; }
-    const btn = document.createElement('button');
-    btn.className = 'word-btn';
-    btn.dataset.ok = seg.ok;
-    btn.textContent = seg.text;
-    btn.onclick = () => toggleWord(btn);
-    c.appendChild(btn);
-  });
-}
-
-function toggleWord(btn) {
-  if (m2Done) return;
-  const w = btn.textContent;
-  if (btn.classList.contains('selected')) {
-    btn.classList.remove('selected');
-    selectedWords = selectedWords.filter(x => x !== w);
-  } else {
-    if (selectedWords.length >= 3) return;
-    btn.classList.add('selected');
-    selectedWords.push(w);
-  }
-  document.getElementById('wordCount').textContent = selectedWords.length;
-}
-
-function checkWords() {
-  if (m2Done) return;
-  const fb = document.getElementById('fb-m2');
-  const ok = TARGET_WORDS.every(w => selectedWords.includes(w)) && selectedWords.length === 3;
-  if (ok) {
-    m2Done = true;
-    document.querySelectorAll('.word-btn').forEach(b => {
-      b.classList.remove('selected');
-      b.classList.add(b.dataset.ok === 'true' ? 'correct-word' : 'revealed');
-    });
-    fb.className = 'feedback visible';
-    fb.innerHTML = '✓ EXTRACTION VALIDÉE — Les trois besoins authentiques : <strong>autonomie</strong> (agir par choix), <strong>compétence</strong> (se sentir efficace), <strong>appartenance</strong> (se sentir relié). Les six leurres appartiennent au registre de la contrainte externe ou de la performance — ils peuvent inhiber la motivation intrinsèque.';
-    document.getElementById('code-2').classList.add('visible');
-    setTimeout(() => { document.getElementById('btn-next-m2').style.display = 'inline-block'; }, 800);
-    playTone([523,659,784], 0.1);
-  } else {
-    score = Math.max(0, score - 5);
-    fb.className = 'feedback error visible';
-    if (selectedWords.length < 3) fb.innerHTML = '✗ Sélection incomplète — identifiez exactement 3 besoins. Relisez chaque terme en contexte.';
-    else {
-      const wrong = selectedWords.filter(w => !TARGET_WORDS.includes(w));
-      fb.innerHTML = `✗ "${wrong.join('", "')}" n'est pas un besoin fondamental selon la TAD. Réessayez.`;
-    }
-  }
-}
-
-// ══════════════════════════════════════════
-//  MISSION 3
-// ══════════════════════════════════════════
-let m3Done = false, dragSrcIdx = null;
-const CORRECT_ORDER = [0,1,2,3,4];
-const FLOW_ITEMS = [
-  {id:0, text:"Rappel d'une notion connue — exercice simple pour ancrer la confiance", flow:"ZONE DE CONFORT", bloom:"MÉMORISER / COMPRENDRE"},
-  {id:1, text:"Découverte guidée — nouvelle notion avec étayage fort et exemples", flow:"LÉGÈREMENT NOUVEAU", bloom:"COMPRENDRE / APPLIQUER"},
-  {id:2, text:"Pratique accompagnée — exercices progressifs avec feedback immédiat", flow:"DÉFI MODÉRÉ", bloom:"APPLIQUER / ANALYSER"},
-  {id:3, text:"Résolution de problème — tâche ouverte avec autonomie croissante", flow:"DÉFI ÉLEVÉ", bloom:"ANALYSER / ÉVALUER"},
-  {id:4, text:"Production créative — tâche d'intégration choisie par l'élève", flow:"FLOW MAXIMAL", bloom:"CRÉER"},
-];
-let currentOrder = [2,4,0,3,1];
-
-function buildSortable() {
-  const list = document.getElementById('sortableList');
-  list.innerHTML = '';
-  currentOrder.forEach((itemId, pos) => {
-    const item = FLOW_ITEMS[itemId];
-    const div = document.createElement('div');
-    div.className = 'sortable-item'; div.dataset.id = itemId; div.draggable = true;
-    div.innerHTML = `<span class="item-rank">${pos+1}</span><div class="item-text"><div class="item-labels" style="display:none;"><span class="label-flow">${item.flow}</span><span class="label-bloom">${item.bloom}</span></div>${item.text}</div><span class="drag-handle">⠿</span>`;
-    div.addEventListener('dragstart', e => { dragSrcIdx = [...e.currentTarget.parentNode.children].indexOf(e.currentTarget); e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
-    div.addEventListener('dragover',  e => { e.preventDefault(); e.currentTarget.classList.add('drag-over'); });
-    div.addEventListener('dragleave', e => e.currentTarget.classList.remove('drag-over'));
-    div.addEventListener('drop', e => {
-      e.preventDefault();
-      const dropIdx = [...e.currentTarget.parentNode.children].indexOf(e.currentTarget);
-      if (dragSrcIdx !== dropIdx) { const d = currentOrder.splice(dragSrcIdx,1)[0]; currentOrder.splice(dropIdx,0,d); buildSortable(); }
-      else e.currentTarget.classList.remove('drag-over');
-    });
-    div.addEventListener('dragend', () => { div.classList.remove('dragging'); document.querySelectorAll('.sortable-item').forEach(i => i.classList.remove('drag-over')); });
-    list.appendChild(div);
-  });
-}
-
-function checkOrder() {
-  if (m3Done) return;
-  const fb = document.getElementById('fb-m3');
-  if (currentOrder.every((id,pos) => id === CORRECT_ORDER[pos])) {
-    m3Done = true;
-    // Reveal levels with animation
-    document.querySelectorAll('.sortable-item').forEach((el, i) => {
-      const labelsEl = el.querySelector('.item-labels');
-      setTimeout(() => {
-        labelsEl.style.display = 'flex';
-        labelsEl.style.animation = 'fadeUp 0.4s ease';
-      }, i * 120);
-    });
-    fb.className = 'feedback visible';
-    fb.innerHTML = '✓ SÉQUENCE VALIDÉE — Deux lectures apparaissent sur chaque étape. En <span style="color:var(--amber)">amber</span> : le niveau d\'engagement perçu selon Csikszentmihalyi — la charge de défi ressentie par l\'élève. En <span style="color:var(--green-dim)">vert</span> : le niveau cognitif correspondant selon la taxonomie de Bloom. Les deux progressent ensemble — ce n\'est pas un hasard. Un dispositif en flow active naturellement des opérations cognitives de plus en plus complexes.';
-    document.getElementById('code-3').classList.add('visible');
-    setTimeout(() => { document.getElementById('btn-next-m3').style.display = 'inline-block'; }, 800);
-    playTone([523,659,784], 0.1);
-  } else {
-    score = Math.max(0, score - 5);
-    fb.className = 'feedback error visible';
-    fb.innerHTML = '✗ Ordre incorrect — La logique du flow exige une montée continue. Commencez par ce qui est maîtrisé, finissez par ce qui demande le plus d\'autonomie.';
-  }
-}
-
-// ══════════════════════════════════════════
-//  MISSION 4
-// ══════════════════════════════════════════
-let m4Done = false;
-
-function selectSyn(el, correct) {
-  if (m4Done) return;
-  document.querySelectorAll('.syn-item').forEach(i => i.classList.remove('correct','wrong'));
-  const fb = document.getElementById('fb-m4');
-  if (correct) {
-    el.classList.add('correct'); m4Done = true;
-    fb.className = 'feedback visible';
-    fb.innerHTML = '✓ DÉCISION VALIDÉE — L\'option C active les 3 besoins : <strong>appartenance</strong> (rôle de tutrice), <strong>compétence</strong> (domaine maîtrisé + progression), <strong>autonomie</strong> (choix du rôle). Le défi parallèle maintient Amara dans sa zone de flow. Les autres options activent au plus un levier et risquent d\'aggraver le retrait.';
-    setTimeout(() => {
-      const pc = document.getElementById('padlock-card');
-      pc.style.display = 'block';
-      document.getElementById('enigme-4').style.display = 'block';
-      pc.scrollIntoView({behavior:'smooth'});
-    }, 1200);
-    playTone([523,659,784], 0.1);
-  } else {
-    el.classList.add('wrong'); score = Math.max(0, score - 5);
-    const labels = {
-      A: 'La récompense externe risque d\'étouffer la motivation intrinsèque d\'Amara. Elle ne répond ni au besoin d\'appartenance ni à un défi adapté.',
-      B: 'Recommencer depuis le début ignore les compétences acquises d\'Amara et crée une situation trop facile — le contraire du flow.',
-      D: 'Rappeler l\'importance de la motivation est une injonction externe qui ne crée rien. Elle ne satisfait aucun des 3 besoins.'
-    };
-    const opt = el.querySelector('.syn-label').textContent.slice(-1);
-    fb.className = 'feedback error visible';
-    fb.innerHTML = `✗ Option ${opt} — ${labels[opt]}`;
-    setTimeout(() => el.classList.remove('wrong'), 500);
-  }
-}
-
-// ══════════════════════════════════════════
-//  CADENAS
-// ══════════════════════════════════════════
-const CORRECT_CODE = [7,3,9,3];
-const dialValues   = [7,3,9,0];
-
-function dialUp(i)   { dialValues[i] = (dialValues[i]+1)%10; animateDial(i,'up'); }
-function dialDown(i) { dialValues[i] = (dialValues[i]+9)%10; animateDial(i,'down'); }
-
-function animateDial(i, dir) {
-  const el = document.getElementById('d'+i);
-  el.style.transform = dir==='up'?'translateY(-20px)':'translateY(20px)';
-  el.style.opacity = '0';
-  setTimeout(() => {
-    el.textContent = dialValues[i];
-    el.style.transform = dir==='up'?'translateY(20px)':'translateY(-20px)';
-    el.style.opacity = '0';
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      el.style.transform = 'translateY(0)'; el.style.opacity = '1';
-      el.style.transition = 'transform 0.2s,opacity 0.2s';
-    }));
-  }, 100);
-}
-
-function validatePadlock() {
-  const msg    = document.getElementById('padlockMsg');
-  const body   = document.getElementById('padlockBody');
-  const shackle = document.getElementById('padlockShackle');
-  if (dialValues.every((v,i) => v === CORRECT_CODE[i])) {
-    playTone([523,659,784,1047], 0.18);
-    body.classList.add('flash-success');
-    shackle.classList.add('open');
-    msg.textContent = 'DÉVERROUILLÉ — ACCÈS AUTORISÉ';
-    msg.className = 'padlock-msg success';
-    setTimeout(() => goTo('s-final'), 2200);
-  } else {
-    body.classList.add('flash-error');
-    msg.textContent = 'CODE INVALIDE — RÉESSAYEZ';
-    msg.className = 'padlock-msg error';
-    score = Math.max(0, score - 3);
-    setTimeout(() => { body.classList.remove('flash-error'); msg.textContent = 'ENTREZ LE CODE POUR DÉVERROUILLER'; msg.className = 'padlock-msg'; }, 1000);
-  }
-}
-
-// ══════════════════════════════════════════
-//  AUDIO
-// ══════════════════════════════════════════
-function playTone(freqs, vol) {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    freqs.forEach((f,i) => {
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = f; o.type = 'sine';
-      g.gain.setValueAtTime(vol, ctx.currentTime + i*0.12);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.12 + 0.4);
-      o.start(ctx.currentTime + i*0.12);
-      o.stop(ctx.currentTime + i*0.12 + 0.5);
-    });
-  } catch(e) {}
-}
-document.querySelectorAll('.dial-btn').forEach(b => b.addEventListener('click', () => playTone([700], 0.03)));
-
-// ══════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════
-buildPhaseTrack();
-initChapter('intro', false);
-</script>
 </body>
 </html>
