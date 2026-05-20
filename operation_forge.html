@@ -769,7 +769,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
 .tuto-card {
   border:1px solid var(--border); padding:20px;
   background:rgba(15,21,32,0.7); position:relative;
-  text-decoration:none; display:flex; flex-direction:column; gap:6px;
+  display:flex; flex-direction:column; gap:6px;
   transition:all 0.25s;
 }
 .tuto-card:hover { border-color:var(--blue-lit); transform:translateY(-2px); box-shadow:var(--glow-b); }
@@ -786,8 +786,8 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
 .tuto-icon  { font-size:28px; }
 .tuto-title { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; color:var(--white); }
 .tuto-desc  { font-family:'DM Sans',sans-serif; font-size:13px; line-height:1.6; color:var(--grey-lit); flex:1; }
-.tuto-link  { font-family:'DM Mono',monospace; font-size:10px; color:var(--cyan); letter-spacing:1px; margin-top:6px; }
-.tuto-card:hover .tuto-link { color:var(--white); }
+.tuto-link  { font-family:'DM Mono',monospace; font-size:10px; color:var(--cyan); letter-spacing:1px; margin-top:6px; text-decoration:none; display:inline-block; }
+.tuto-link:hover { color:var(--white); text-decoration:underline; }
 
 /* ═══ TOOL FAMILIES ═══ */
 .tool-families { display:flex; flex-direction:column; gap:0; margin:16px 0; border:1px solid var(--border); }
@@ -1879,7 +1879,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
         <div class="profile-detail">
           <strong>Comment ça fonctionne :</strong> Digipad sert de tableau d'enquête central (indices, éléments de scénario, ressources à explorer). LearningApps fournit les énigmes interactives via lien direct (pas d'iframe nécessaire). Digilock pose le cadenas final.<br><br>
           <strong>Avantages :</strong> zéro compte requis, zéro installation, prise en main en 30 minutes.<br><br>
-          <strong>Limite :</strong> pas de navigation scénarisée entre les étapes. Le formateur ou un élève coordinateur gère la progression orale.
+          <strong>Limite :</strong> pas de navigation scénarisée entre les étapes. On peut enrichir avec des images générées par IA et de courts textes d'intro, mais la progression reste linéaire et sans interaction.
         </div>
       </div>
 
@@ -1897,7 +1897,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
         <div class="profile-detail">
           <strong>Comment ça fonctionne :</strong> Canva Éducation (compte pro gratuit via le rectorat) sert de coquille narrative : diaporama interactif avec liens entre slides, mise en page soignée. LearningApps fournit les énigmes. Digilock verrouille la ressource finale.<br><br>
           <strong>Avantages :</strong> interface familière, templates professionnels, liens entre slides intuitifs.<br><br>
-          <strong>Important :</strong> le compte Canva Éducation est gratuit pour l'EN, mais il faut en faire la demande via son établissement.
+          <strong>Important :</strong> le compte Canva Éducation est gratuit pour l'EN. Il suffit de s'inscrire avec son adresse académique.
         </div>
       </div>
 
@@ -1913,9 +1913,9 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
           <span class="p-tool">Digilock</span>
         </div>
         <div class="profile-detail">
-          <strong>Comment ça fonctionne :</strong> Genially (version freemium suffisante) gère la navigation entre pages, le scénario visuel et les interactions. LearningApps est intégré via iframe pour les énigmes complexes. Digilock fournit le cadenas final.<br><br>
+          <strong>Comment ça fonctionne :</strong> Genially gère la navigation entre pages, le scénario visuel et les interactions. LearningApps est intégré via iframe pour les énigmes complexes. Digilock fournit le cadenas final.<br><br>
           <strong>C'est la combinaison recommandée</strong> pour un premier escape game solide. Les trois outils se complètent sans redondance.<br><br>
-          <strong>Limite :</strong> Genially freemium impose un filigrane sur les exports. Pour la classe, ça ne pose pas de problème.
+          <strong>Limites :</strong> Genially peut être déroutant si on n'est pas habitué aux interfaces complexes. La version freemium est aussi plus limitée en fonctionnalités. Si on est à l'aise avec les outils numériques et prêt à explorer, c'est l'outil le plus puissant. Sinon, prévoir un temps de prise en main.
         </div>
       </div>
 
@@ -1948,37 +1948,37 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
 
     <div class="tuto-grid">
 
-      <a href="https://genially.com/fr/modeles/jeux/education/" target="_blank" class="tuto-card">
+      <div class="tuto-card">
         <div class="tuto-badge t-freemium">Freemium</div>
         <div class="tuto-icon">🎭</div>
         <div class="tuto-title">Genially</div>
         <div class="tuto-desc">Templates escape game et jeux éducatifs. Partez d'un modèle existant pour votre première conception. Profil 2.</div>
-        <div class="tuto-link">genially.com/modeles/jeux/education →</div>
-      </a>
+        <a href="https://genially.com/fr/modeles/jeux/education/" target="_blank" class="tuto-link">genially.com/modeles/jeux/education →</a>
+      </div>
 
-      <a href="https://www.canva.com/fr_fr/decouvrir/creer-un-escape-game-pedagogique/" target="_blank" class="tuto-card">
+      <div class="tuto-card">
         <div class="tuto-badge t-edu">Compte pro EN</div>
         <div class="tuto-icon">🎨</div>
         <div class="tuto-title">Canva — Guide escape game</div>
-        <div class="tuto-desc">Guide officiel Canva pour créer un escape game pédagogique. Voir aussi les <a href="https://www.canva.com/s/templates?query=escape+game" target="_blank" class="tool-link" onclick="event.stopPropagation()">templates escape game</a>. Profil 1.</div>
-        <div class="tuto-link">canva.com/escape-game-pedagogique →</div>
-      </a>
+        <div class="tuto-desc">Guide officiel Canva pour créer un escape game pédagogique. Voir aussi les <a href="https://www.canva.com/s/templates?query=escape+game" target="_blank" class="tool-link">templates escape game</a>. Profil 1.</div>
+        <a href="https://www.canva.com/fr_fr/decouvrir/creer-un-escape-game-pedagogique/" target="_blank" class="tuto-link">canva.com/escape-game-pedagogique →</a>
+      </div>
 
-      <a href="https://tube-sciences-technologies.apps.education.fr/w/2HPhPH4pgSLRX3rjvEM2mb" target="_blank" class="tuto-card">
+      <div class="tuto-card">
         <div class="tuto-badge t-gratuit">Gratuit</div>
         <div class="tuto-icon">🧩</div>
         <div class="tuto-title">LearningApps</div>
         <div class="tuto-desc">Tutoriel vidéo sur Tube Sciences & Technologies (Apps.education). Création d'activités, récupération du lien ou de l'iframe. Tous profils.</div>
-        <div class="tuto-link">tube-sciences-technologies.apps.education.fr →</div>
-      </a>
+        <a href="https://tube-sciences-technologies.apps.education.fr/w/2HPhPH4pgSLRX3rjvEM2mb" target="_blank" class="tuto-link">tube-sciences-technologies.apps.education.fr →</a>
+      </div>
 
-      <a href="https://tube-numerique-educatif.apps.education.fr/c/nallet_channel/videos" target="_blank" class="tuto-card">
+      <div class="tuto-card">
         <div class="tuto-badge t-gratuit">Gratuit</div>
         <div class="tuto-icon">🔧</div>
         <div class="tuto-title">La Digitale</div>
         <div class="tuto-desc">Tutoriels vidéo de Johann Nallet sur tous les outils La Digitale : Digipad, Digilock, Digistorm, Digiflip. Clair, rapide, efficace.</div>
-        <div class="tuto-link">tube-numerique-educatif.apps.education.fr →</div>
-      </a>
+        <a href="https://tube-numerique-educatif.apps.education.fr/c/nallet_channel/videos" target="_blank" class="tuto-link">tube-numerique-educatif.apps.education.fr →</a>
+      </div>
 
     </div>
   </div>
