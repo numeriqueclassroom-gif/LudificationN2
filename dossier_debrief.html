@@ -1081,7 +1081,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:28px 0; }
       Trois actes. Pas de chronomètre.
     </span></p>
     <hr class="rule">
-    <div class="ornament">, ✦ —</div>
+    <div class="ornament">— ✦ —</div>
   </div>
 
   <div class="kapp-card-db">
@@ -1103,7 +1103,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:28px 0; }
     <div class="kapp-msg-wrap" id="km-intro">
       <div class="kapp-msg-box">
         <div class="kapp-msg-text" id="kmsg-intro"></div>
-        <div class="kapp-signature">, KAPP // POST-MISSION // ACADÉMIE SECRÈTE</div>
+        <div class="kapp-signature">— KAPP // POST-MISSION // ACADÉMIE SECRÈTE</div>
       </div>
     </div>
     <div class="actions" style="justify-content:center;padding:0 28px;margin-top:20px;">
@@ -1257,7 +1257,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:28px 0; }
 
     <!-- M4 -->
     <div class="mission-row">
-      <div class="row-cell mission-name">04<br>Synthèse + cadenas</div>
+      <div class="row-cell mission-name">04<br>Décision finale (cas Amara)</div>
       <div class="row-cell" style="padding:8px;">
         <div class="drop-target" id="drop-m4-tad" data-correct="appartenance"
           ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="dropChip(event,this)">
@@ -1332,7 +1332,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:28px 0; }
       </div>
       <div style="border:1px solid rgba(139,58,26,0.3);padding:14px 16px;border-radius:1px;">
         <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--rust-lit);letter-spacing:2px;margin-bottom:6px;">ÉNIGME 3</div>
-        <div class="ev-col-text">Un QCM de vocabulaire sur la génétique, dans la continuité de la mise en activité. Timer affiché en rouge depuis l'ouverture, décompte depuis 60 minutes.</div>
+        <div class="ev-col-text">Un second schéma de croisement génétique à compléter, combinaison d'allèles différente de l'énigme 2. Timer affiché en rouge depuis l'ouverture, décompte depuis 60 minutes.</div>
       </div>
       <div style="border:1px solid rgba(139,58,26,0.3);padding:14px 16px;border-radius:1px;">
         <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--rust-lit);letter-spacing:2px;margin-bottom:6px;">ÉNIGME 4 + CADENAS</div>
@@ -1496,7 +1496,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:28px 0; }
               <button class="btn" style="font-size:9px;padding:10px 20px;" onclick="revealDiag(5)">VOIR L'ANALYSE</button>
               <div class="diag-reveal" id="reveal5">
                 <div class="ev-col-label" style="margin-top:16px;">ANALYSE</div>
-                <div class="ev-col-text">Le timer est en amber et non bloquant : c'est déjà un bon choix. <strong>Le point délicat est son apparition dès le début</strong>, avant même que l'élève ait commencé à s'engager. Une heure de cours, un timer amber visible dès l'ouverture : la pression temporelle est présente alors que l'immersion n'est pas encore installée. Elle peut distraire plutôt que stimuler. <strong>Second point :</strong> le timer n'est ancré dans aucun élément du scénario. Le virus et le verrouillage imminent justifieraient parfaitement un compte à rebours narratif, mais ce lien n'est pas explicité. <strong>Correction :</strong> afficher le timer à partir de l'énigme 2, avec un message d'ancrage : "Alerte : verrouillage du système dans 40 minutes."</div>
+                <div class="ev-col-text">Le timer est en amber et non bloquant : c'est déjà un bon choix. <strong>Le point délicat est son apparition dès le début</strong>, avant même que l'élève ait commencé à s'engager. Une heure de cours, un timer amber visible dès l'ouverture : la pression temporelle est présente alors que l'immersion n'est pas encore installée. Elle peut distraire plutôt que stimuler. <strong>Second point :</strong> le timer n'est ancré dans aucun élément du scénario. Le virus et le verrouillage imminent justifieraient parfaitement un compte à rebours narratif, mais ce lien n'est pas explicité. <strong>Correction :</strong> afficher le timer dès le début mais en gris neutre, ancré dans le scénario dès l'ouverture : "Verrouillage du système dans 60 minutes." Il passe en amber à mi-parcours, rouge uniquement dans les 5 dernières minutes. L'élève a une visibilité complète sans pression anxiogène immédiate.</div>
               </div>
             </div>
           </div>
@@ -1545,7 +1545,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:28px 0; }
         </button>
         <button class="verdict-btn" onclick="renderVerdict('case1','non',this)">
           <div class="vb-label">INADAPTÉ</div>
-          <div class="vb-text">L'objet ludifié game ne convient pas à cette situation</div>
+          <div class="vb-text">L'objet ludifié ne convient pas à cette situation</div>
         </button>
       </div>
       <div class="verdict-feedback" id="vf-case1">
@@ -1573,7 +1573,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:28px 0; }
         </button>
         <button class="verdict-btn" onclick="renderVerdict('case2','non',this)">
           <div class="vb-label">INADAPTÉ</div>
-          <div class="vb-text">L'objet ludifié game ne convient pas à cette situation</div>
+          <div class="vb-text">L'objet ludifié ne convient pas à cette situation</div>
         </button>
       </div>
       <div class="verdict-feedback" id="vf-case2">
@@ -1601,7 +1601,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:28px 0; }
         </button>
         <button class="verdict-btn" onclick="renderVerdict('case3','non',this)">
           <div class="vb-label">INADAPTÉ</div>
-          <div class="vb-text">L'objet ludifié game ne convient pas à cette situation</div>
+          <div class="vb-text">L'objet ludifié ne convient pas à cette situation</div>
         </button>
       </div>
       <div class="verdict-feedback" id="vf-case3">
@@ -1720,7 +1720,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:28px 0; }
       Vous avez joué. Vous avez déconstruit. Vous avez jugé. Vous avez cadré.<br>
       Vous êtes prêts à concevoir.
     </p>
-    <div class="ornament">, ✦ —</div>
+    <div class="ornament">— ✦ —</div>
   </div>
 
   <div class="debrief-final">
