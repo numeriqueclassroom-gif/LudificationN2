@@ -668,7 +668,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     </div>
     <div class="radio-box"><div class="radio-margin"></div>
       <div class="radio-text" id="r-intro"></div>
-      <div class="radio-signature">, KAPP // CRYPTÉ // PRIORITÉ ABSOLUE</div>
+      <div class="radio-signature"> ACADÉMIE SECRÈTE — KAPP // CRYPTÉ // PRIORITÉ ABSOLUE</div>
     </div>
   </div>
 
@@ -761,7 +761,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
       <strong style="color:var(--amber);">THÉO</strong> : le feedback bienveillant sur l'erreur et l'absence d'enjeu de note réduisent la pression introjectée. Attention aux classements et aux scores visibles.<br><br>
       <strong style="color:var(--amber);">JONAS</strong> : le rôle narratif et le travail en groupe réactivent le besoin d'appartenance. C'est souvent suffisant pour réamorcer l'engagement.<br><br>
       <strong style="color:var(--amber);">NORA</strong> : les micro-succès des premières énigmes peuvent recréer un sentiment de compétence. Mais c'est fragile : une énigme trop difficile casse tout. L'escape game est un point d'entrée, pas une solution.<br><br>
-      <strong style="color:var(--amber);">CAMILLE</strong> : l'urgence narrative du compte à rebours remplace l'échéance du contrôle. Efficace à court terme pour maintenir l'engagement.<br><br>
+      <strong style="color:var(--amber);">CAMILLE</strong> : le timer crée une urgence narrative qui peut activer une forme d'engagement. Mais attention : renforcer la contrainte externe ne construit pas de motivation durable. C'est un point d'entrée, pas un levier de fond.<br><br>
       <strong style="color:var(--amber);">SAMIR</strong> : une énigme finale complexe, un rôle de leader de groupe. Il faut que le défi soit réel pour qu'il s'investisse.<br><br>
       <strong>La limite :</strong> l'escape game ne résout pas une amotivation structurelle. Il peut créer les conditions d'un réamorçage, pas d'une guérison.
     </div>
@@ -779,7 +779,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     </div>
     <div class="radio-box"><div class="radio-margin"></div>
       <div class="radio-text" id="r-ch1"></div>
-      <div class="radio-signature">, KAPP // CRYPTÉ // PRIORITÉ HAUTE</div>
+      <div class="radio-signature"> ACADÉMIE SECRÈTE — KAPP // CRYPTÉ // PRIORITÉ HAUTE</div>
     </div>
   </div>
   <div class="cta-wrap" id="cta-ch1">
@@ -857,7 +857,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     </div>
     <div class="radio-box"><div class="radio-margin"></div>
       <div class="radio-text" id="r-ch2"></div>
-      <div class="radio-signature">, KAPP // CRYPTÉ // PRIORITÉ HAUTE</div>
+      <div class="radio-signature"> ACADÉMIE SECRÈTE — KAPP // CRYPTÉ // PRIORITÉ HAUTE</div>
     </div>
   </div>
   <div class="cta-wrap" id="cta-ch2">
@@ -929,7 +929,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     </div>
     <div class="radio-box"><div class="radio-margin"></div>
       <div class="radio-text" id="r-ch3"></div>
-      <div class="radio-signature">, KAPP // CRYPTÉ // DÉCISION FINALE</div>
+      <div class="radio-signature"> ACADÉMIE SECRÈTE — KAPP // CRYPTÉ // DÉCISION FINALE</div>
     </div>
   </div>
   <div class="cta-wrap" id="cta-ch3">
@@ -1011,12 +1011,12 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     <div style="display:flex;flex-direction:column;gap:14px;">
 
       <div class="enigme-box">
-        <div class="enigme-box-tag">① LE CHERCHEUR DONT LA TAD PORTE LE NOM</div>
+        <div class="enigme-box-tag">① LA TAD PORTE LES INITIALES DE DEUX CHERCHEURS. LE PREMIER PAR ORDRE ALPHABÉTIQUE.</div>
         <div class="enigme-box-text">Première lettre → table de conversion → <strong>premier chiffre du code</strong></div>
       </div>
 
       <div class="enigme-box">
-        <div class="enigme-box-tag">② LE VERBE DE BLOOM QUI SUIT "APPLIQUER"</div>
+        <div class="enigme-box-tag">② L'ÉTAT D'ENGAGEMENT OPTIMAL DÉCRIT PAR CSIKSZENTMIHALYI</div>
         <div class="enigme-box-text">Première lettre → table de conversion → <strong>deuxième chiffre</strong></div>
       </div>
 
@@ -1386,7 +1386,7 @@ function selectProfile(el, correct) {
     else if (name.includes('JONAS'))
       fb.innerHTML = '✗ Attention : Jonas ressemble à Nora en surface, mais son désengagement est <strong>récent et circonstanciel</strong>. Un incident a détruit son besoin d\'appartenance. C\'est une amotivation situationnelle, pas structurelle. Levier direct pour le prof : reconnaître, réparer, redonner un rôle.';
     else if (name.includes('CAMILLE'))
-      fb.innerHTML = '✗ Camille a une <strong>motivation extrinsèque régulée par contrainte</strong>. Elle agit sous pression d\'échéance. Sans contrôle, pas d\'engagement. Mais elle perçoit encore une raison d\'agir. Levier pour le prof : multiplier les micro-échéances et progressivement connecter l\'activité à un sens.';
+      fb.innerHTML = '✗ Camille a une <strong>motivation extrinsèque régulée par contrainte pure</strong>. Elle agit uniquement sous pression d\'échéance externe, pas parce qu\'elle perçoit un sens à l\'activité. Un escape game avec timer peut maintenir son engagement de surface, mais ne nourrit pas ses besoins d\'autonomie ou de compétence. Levier pour le prof : créer des micro-succès visibles et progressivement donner du sens à l\'activité au-delà de la note.';
     else if (name.includes('SAMIR'))
       fb.innerHTML = '✗ Samir est désengagé par <strong>ennui cognitif</strong>. Le défi est trop bas par rapport à son niveau réel : il est en dehors de la zone de flow, du côté de l\'ennui. Ce n\'est pas de l\'amotivation. Levier direct : relever le curseur, proposer un rôle de référent, une tâche complexe.';
     else
@@ -1583,11 +1583,11 @@ const WS_WORDS = [
   {word:'COMPETENCE',   r:13, c:6,  dr:0, dc:1, key:true,  codeIdx:2, codeVal:'3'},
   {word:'AUTONOMIE',    r:17, c:6,  dr:0, dc:1, key:false},
   {word:'ANALYSE',      r:14, c:7,  dr:0, dc:1, key:false},
-  {word:'EVALUER',      r:4,  c:9,  dr:0, dc:1, key:true,  codeIdx:1, codeVal:'5'},
+  {word:'EVALUER',      r:4,  c:9,  dr:0, dc:1, key:false},
   {word:'BLOOM',        r:5,  c:9,  dr:0, dc:1, key:false},
   {word:'AMARA',        r:12, c:6,  dr:0, dc:1, key:false},
   {word:'CREER',        r:3,  c:9,  dr:0, dc:1, key:false},
-  {word:'FLOW',         r:0,  c:5,  dr:0, dc:1, key:false},
+  {word:'FLOW',         r:0,  c:5,  dr:0, dc:1, key:true,  codeIdx:1, codeVal:'6'},
   {word:'NORA',         r:15, c:14, dr:0, dc:1, key:false},
   {word:'KAPP',         r:4,  c:4,  dr:0, dc:1, key:false},
   {word:'DECI',         r:5,  c:3,  dr:0, dc:1, key:true,  codeIdx:0, codeVal:'4'},
@@ -1752,7 +1752,7 @@ function wsCheckWord() {
 // ══════════════════════════════════════════
 //  CADENAS
 // ══════════════════════════════════════════
-const CORRECT_CODE = [4,5,3,9];
+const CORRECT_CODE = [4,6,3,9];
 const dialValues   = [0,0,0,0];
 
 function dialUp(i)   { dialValues[i] = (dialValues[i]+1)%10; animateDial(i,'up'); }
