@@ -909,7 +909,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     <div class="forge-title">Concevoir un <span>escape game</span><br>pédagogique</div>
     <hr class="rule">
     <p class="body-text">Vous avez vécu. Vous avez analysé. Maintenant vous construisez.</p>
-    <p class="body-text">Cette opération vous guide de la définition d'un objectif pédagogique jusqu'à un escape game prêt à déployer en classe. Trois actes, un mandat, une fiche de conception à emporter.</p>
+    <p class="body-text">Cette opération vous guide de la définition d'un objectif pédagogique jusqu'à un escape game prêt à déployer en classe. Quatre actes, un mandat, une fiche imprimable à emporter.</p>
   </div>
 
   <!-- MENU DE NAVIGATION -->
@@ -1176,7 +1176,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
       <div class="form-card" onclick="toggleForm(this)">
         <div class="form-level avancé">INVERSÉ</div>
         <span class="form-icon">🔄</span>
-        <div class="form-title">Break-in game</div>
+        <div class="form-title">Breakout game</div>
         <div class="form-desc">Les élèves doivent entrer dans quelque chose plutôt qu'en sortir : déverrouiller une boîte, accéder à un fichier secret, ouvrir un coffre.</div>
         <div class="form-tags">
           <span class="form-tag">Coffre</span>
@@ -1468,7 +1468,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
         <div class="step-title">Écrire le scénario</div>
         <div class="step-body">
           <p>Deux phrases. Elles répondent à : <span class="hl">qui est l'élève</span>, <span class="hl2">quel est l'enjeu</span>, <span class="hl3">pourquoi maintenant</span>.</p>
-          <div class="step-example">Vous êtes archiviste au Musée de l'Histoire. Un hacker a crypté les fiches de 4 documents historiques. Reconstituez leur classification avant la fermeture du musée.</div>
+          <div class="step-example">Vous êtes expert en cryptographie pour Interpol. Trois suspects ont été identifiés mais les preuves numériques ont été effacées. Reconstituez la piste documentaire avant l'expiration du mandat d'arrêt.</div>
           <div class="step-tip">Le scénario ne doit pas expliquer le contenu disciplinaire. Il doit juste donner une raison narrative d'agir. Plus il est ancré dans un univers familier aux élèves, plus l'immersion sera forte.</div>
         </div>
         <div class="field-block" style="margin-top:12px;">
@@ -1744,10 +1744,6 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
 
   </div>
 
-  <div class="actions">
-    <button class="btn btn-cy btn-large" onclick="goTo('s4')">ACTE IV — VALIDATION →</button>
-  </div>
-
   <!-- EXPORT BAR -->
   <div class="export-bar" id="exportBar">
     <div class="export-bar-left">
@@ -1758,10 +1754,14 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:22px 0; }
     </div>
     <div class="export-bar-right">
       <button class="export-btn" onclick="clearSave()" title="Effacer et recommencer">↺ RÉINITIALISER</button>
-      <button class="export-btn export-print" onclick="printFiche()">⎙ IMPRIMER</button>
-      <button class="export-btn export-pdf" onclick="exportPDF()">⬇ PDF</button>
+      <button class="export-btn export-print" onclick="printFiche()">⎙ IMPRIMER / ENREGISTRER EN PDF</button>
     </div>
   </div>
+
+  <div class="actions">
+    <button class="btn btn-cy btn-large" onclick="goTo('s4')">ACTE IV — VALIDATION →</button>
+  </div>
+
 </section>
 
 <!-- ══════════ ACTE 4 — VALIDATION ══════════ -->
